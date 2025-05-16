@@ -8,6 +8,11 @@ const bigCheck = document.getElementById('bigCheck');
 const overlay = document.getElementById('overlay');
 const spinner = document.getElementById('spinner');
 
+// Lottie animation
+const lottieContainer = document.getElementById('lottie-success');
+const successText = document.getElementById('successText');
+let lottieInstance = null;
+
 let selectedNumber = null;
 let takenNumbers = [];
 
@@ -44,31 +49,33 @@ function triggerConfetti() {
 
 // Hàm hiển thị hiệu ứng thành công mới
 function showSuccessMessage(message) {
-  // Hiện overlay và hiệu ứng
   overlay.classList.add('active');
   successEffect.classList.add('active');
-  spinner.style.display = 'block';
-  bigCheck.style.display = 'none';
+  successText.textContent = message || 'Đăng ký thành công!';
 
-  // Hiện loading 1.2s, sau đó hiện tích xanh
+  // Xóa animation cũ nếu có
+  if (lottieInstance) {
+    lottieInstance.destroy();
+    lottieInstance = null;
+  }
+  // Load animation Lottie với đường dẫn mới
+  lottieInstance = lottie.loadAnimation({
+    container: lottieContainer,
+    renderer: 'svg',
+    loop: false,
+    autoplay: true,
+    path: 'https://raw.githubusercontent.com/Thanhtin5520/VQMM_Client/refs/heads/main/success.json'
+  });
+
+  // Ẩn hiệu ứng sau 2.2s (hoặc đúng thời lượng animation)
   setTimeout(() => {
-    spinner.style.display = 'none';
-    bigCheck.style.display = 'block';
-
-    // Ẩn hiệu ứng sau 1.2s nữa
-    setTimeout(() => {
-      overlay.classList.remove('active');
-      successEffect.classList.remove('active');
-      bigCheck.style.display = 'none';
-    }, 1200);
-  }, 1200);
-
-  // Hiện thông báo
-  messageDiv.textContent = message;
-  messageDiv.classList.add('show');
-  setTimeout(() => {
-    messageDiv.classList.remove('show');
-  }, 2400);
+    overlay.classList.remove('active');
+    successEffect.classList.remove('active');
+    if (lottieInstance) {
+      lottieInstance.destroy();
+      lottieInstance = null;
+    }
+  }, 2200);
 }
 
 // Lấy danh sách người chơi để biết số đã chọn

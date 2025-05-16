@@ -6,6 +6,7 @@
   <title>Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 </head>
 <body>
   <div class="logo-akhue">
@@ -22,14 +23,48 @@
     <div id="message"></div>
     <div id="overlay" class="overlay"></div>
     <div id="successEffect" class="success-effect">
-      <div id="spinner" class="spinner"></div>
-      <svg id="bigCheck" viewBox="0 0 120 120" width="100" height="100" style="display:none">
-        <circle cx="60" cy="60" r="55" stroke="#4CAF50" stroke-width="8" fill="none"/>
-        <polyline points="35,65 55,85 85,40" fill="none" stroke="#4CAF50" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <div id="lottie-success" style="width:120px;height:120px;margin:auto"></div>
+      <div id="successText" class="success-text">Đăng ký thành công!</div>
     </div>
   </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>
+<<<<<<< HEAD
 </html>  
+=======
+</html>
+
+<style>
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 999;
+  display: none;
+}
+.overlay.active {
+  display: block;
+}
+.success-effect {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.success-effect.active {
+  display: flex;
+}
+.success-text {
+  color: #4CAF50;
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-top: 10px;
+  text-shadow: 0 2px 8px #fff;
+}
+</style>  
+>>>>>>> 6812a5d (capnhatha5)
