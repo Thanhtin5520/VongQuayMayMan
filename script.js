@@ -58,7 +58,11 @@ function showSuccessMessage(message) {
     lottieInstance.destroy();
     lottieInstance = null;
   }
+<<<<<<< HEAD
   // Load animation Lottie với đường dẫn mới
+=======
+  // Load animation Lottie với đường dẫn mới nhất
+>>>>>>> 1c4c01a (capnhatha6)
   lottieInstance = lottie.loadAnimation({
     container: lottieContainer,
     renderer: 'svg',
