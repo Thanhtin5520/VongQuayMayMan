@@ -1,4 +1,4 @@
-const socket = io('https://3e8c-118-69-72-133.ngrok-free.app/');
+const socket = io('https://vong-quay-may-man-opal.vercel.app/');
 const form = document.getElementById('registerForm');
 const messageDiv = document.getElementById('message');
 const numberGrid = document.getElementById('numberGrid');
@@ -10,7 +10,7 @@ let takenNumbers = [];
 // Lấy danh sách người chơi để biết số đã chọn
 async function fetchTakenNumbers() {
   try {
-    const response = await fetch('https://3e8c-118-69-72-133.ngrok-free.app/players');
+    const response = await fetch('https://vong-quay-may-man-opal.vercel.app/players');
     const players = await response.json();
     takenNumbers = players.map(p => parseInt(p.number));
     renderNumberGrid();
@@ -53,7 +53,7 @@ form.addEventListener('submit', async (e) => {
     return;
   }
   try {
-    const response = await fetch('https://3e8c-118-69-72-133.ngrok-free.app/register', {
+    const response = await fetch('https://vong-quay-may-man-opal.vercel.app/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
