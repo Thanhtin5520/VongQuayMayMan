@@ -1,4 +1,4 @@
-const socket = io('https://b3b6-118-69-72-133.ngrok-free.app');
+const socket = io('https://vongquaymayman-production.up.railway.app/');
 const playerList = document.getElementById('players');
 const resultDiv = document.getElementById('result');
 const spinButton = document.getElementById('spin');
@@ -15,7 +15,7 @@ let spinInterval;
 // Lấy danh sách người chơi từ server
 async function fetchPlayers() {
   try {
-    const response = await fetch('https://b3b6-118-69-72-133.ngrok-free.app/players');
+    const response = await fetch('https://vongquaymayman-production.up.railway.app/players');
     players = await response.json();
     updatePlayerList();
   } catch (error) {
