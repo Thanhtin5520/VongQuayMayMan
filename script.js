@@ -46,7 +46,7 @@ function triggerConfetti() {
     });
   }, 250);
 }
-
+ 
 // Hàm hiển thị hiệu ứng thành công mới
 function showSuccessMessage(message) {
   overlay.classList.add('active');
