@@ -4,8 +4,7 @@ const messageDiv = document.getElementById('message');
 const numberGrid = document.getElementById('numberGrid');
 const numberInput = document.getElementById('number');
 const successEffect = document.getElementById('successEffect');
-const spinner = successEffect.querySelector('.spinner');
-const checkmark = successEffect.querySelector('.checkmark');
+const bigCheck = document.getElementById('bigCheck');
 
 let selectedNumber = null;
 let takenNumbers = [];
@@ -41,28 +40,22 @@ function triggerConfetti() {
   }, 250);
 }
 
-// Hàm hiển thị thông báo thành công
+// Hàm hiển thị hiệu ứng thành công mới
 function showSuccessMessage(message) {
-  // Hiển thị hiệu ứng xoay vòng
+  // Hiện hiệu ứng tích xanh lớn
   successEffect.classList.add('active');
-  spinner.style.display = 'block';
-  checkmark.classList.remove('show');
-  
-  // Sau 1.5 giây, hiển thị dấu tích
+  bigCheck.style.display = 'block';
+
+  // Hiển thị thông báo
+  messageDiv.textContent = message;
+  messageDiv.classList.add('show');
+
+  // Ẩn hiệu ứng sau 2 giây
   setTimeout(() => {
-    spinner.style.display = 'none';
-    checkmark.classList.add('show');
-    
-    // Hiển thị thông báo
-    messageDiv.textContent = message;
-    messageDiv.classList.add('show');
-    
-    // Ẩn hiệu ứng sau 2 giây
-    setTimeout(() => {
-      successEffect.classList.remove('active');
-      messageDiv.classList.remove('show');
-    }, 2000);
-  }, 1500);
+    successEffect.classList.remove('active');
+    bigCheck.style.display = 'none';
+    messageDiv.classList.remove('show');
+  }, 2000);
 }
 
 // Lấy danh sách người chơi để biết số đã chọn
