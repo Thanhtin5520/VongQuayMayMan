@@ -6,6 +6,10 @@ const stopButton = document.getElementById('stop');
 const resetButton = document.getElementById('reset');
 const wheelCanvas = document.getElementById('wheelCanvas');
 const ctx = wheelCanvas.getContext('2d');
+const successEffect = document.getElementById('successEffect');
+const spinner = successEffect.querySelector('.spinner');
+const checkmark = successEffect.querySelector('.checkmark');
+const messageDiv = document.getElementById('message');
 
 let players = [];
 let isSpinning = false;
@@ -74,6 +78,7 @@ function spin() {
     currentRotation += 0.1;
     drawWheel();
   }, 50);
+  showSuccessMessage('Đang quay số...');
 }
 
 // Dừng vòng quay
@@ -84,6 +89,7 @@ function stop() {
   const winnerIndex = Math.floor(Math.random() * players.length);
   const winner = players[winnerIndex];
   resultDiv.textContent = `Người trúng thưởng: ${winner.name} - Số: ${winner.number}`;
+  showSuccessMessage('Đã dừng quay!');
 }
 
 // Quay lại lượt trước
@@ -91,6 +97,7 @@ function reset() {
   currentRotation = 0;
   drawWheel();
   resultDiv.textContent = '';
+  showSuccessMessage('Đã reset vòng quay!');
 }
 
 // Kết nối Socket.io
@@ -105,6 +112,30 @@ socket.on('playerRemoved', (number) => {
   updatePlayerList();
   drawWheel();
 });
+
+// Hàm hiển thị thông báo thành công
+function showSuccessMessage(message) {
+  // Hiển thị hiệu ứng xoay vòng
+  successEffect.classList.add('active');
+  spinner.style.display = 'block';
+  checkmark.classList.remove('show');
+  
+  // Sau 1.5 giây, hiển thị dấu tích
+  setTimeout(() => {
+    spinner.style.display = 'none';
+    checkmark.classList.add('show');
+    
+    // Hiển thị thông báo
+    messageDiv.textContent = message;
+    messageDiv.classList.add('show');
+    
+    // Ẩn hiệu ứng sau 2 giây
+    setTimeout(() => {
+      successEffect.classList.remove('active');
+      messageDiv.classList.remove('show');
+    }, 2000);
+  }, 1500);
+}
 
 // Khởi tạo
 fetchPlayers();

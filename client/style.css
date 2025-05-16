@@ -6,6 +6,34 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
+  position: relative;
+}
+
+.logo-akhue {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
+
+.akw-logo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #2193b0;
+  text-decoration: none;
+}
+
+.akw-logo:hover {
+  color: #6dd5ed;
+}
+
+.akw-logo-small {
+  font-size: 0.8em;
+  color: #2193b0;
+  margin-left: 10px;
 }
 
 .container {
@@ -14,6 +42,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
+  position: relative;
 }
 
 h1 {
@@ -45,9 +74,57 @@ button:hover {
   background-color: #45a049;
 }
 
+.success-effect {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-effect.active {
+  display: flex;
+}
+
+#bigCheck {
+  animation: popCheck 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+  display: block !important;
+}
+
+@keyframes popCheck {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 #message {
   margin-top: 20px;
-  color: #333;
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 1.2em;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+#message.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .number-grid {
@@ -89,34 +166,17 @@ button:hover {
   color: #888;
 }
 
-.success-effect {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1000;
-}
-
-@keyframes successMessage {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
 .success-message {
-  animation: successMessage 0.5s ease-out;
+  margin-top: 20px;
   color: #4CAF50;
   font-weight: bold;
   font-size: 1.2em;
-  text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+.success-message.show {
+  opacity: 1;
+  transform: translateY(0);
 } 

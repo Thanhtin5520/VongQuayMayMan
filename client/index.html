@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vòng Quay Con Số May Mắn</title>
+  <title>Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+  <div class="logo-akhue">
+    <img src="https://raw.githubusercontent.com/Thanhtin5520/VQMM_Client/main/image/H-LOGO-AKW-FULL-BLACK.png" alt="Anh Khuê Watch" height="60">
+  </div>
   <div class="container">
-    <h1>Vòng Quay Con Số May Mắn</h1>
+    <h1>Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
     <form id="registerForm">
       <input type="text" id="name" placeholder="Nhập tên của bạn" required>
       <div id="numberGrid" class="number-grid"></div>
@@ -17,9 +20,16 @@
       <button type="submit">Chơi</button>
     </form>
     <div id="message"></div>
-    <div id="successEffect" class="success-effect"></div>
+    <div id="overlay" class="overlay"></div>
+    <div id="successEffect" class="success-effect">
+      <div id="spinner" class="spinner"></div>
+      <svg id="bigCheck" viewBox="0 0 120 120" width="100" height="100" style="display:none">
+        <circle cx="60" cy="60" r="55" stroke="#4CAF50" stroke-width="8" fill="none"/>
+        <polyline points="35,65 55,85 85,40" fill="none" stroke="#4CAF50" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
   </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>
-</html> 
+</html>  

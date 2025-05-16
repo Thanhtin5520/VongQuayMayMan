@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Vòng Quay Con Số May Mắn</title>
+  <title>Admin - Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <a href="#" class="akw-logo">AKW</a>
   <div class="container">
-    <h1>Admin - Vòng Quay Con Số May Mắn</h1>
+    <h1>Admin - Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
     <div id="playerList">
       <h2>Danh sách người chơi</h2>
       <ul id="players"></ul>
@@ -23,6 +24,11 @@
       </div>
     </div>
     <div id="result"></div>
+    <div id="successEffect" class="success-effect">
+      <div class="spinner"></div>
+      <div class="checkmark">✓</div>
+    </div>
+    <div id="message"></div>
   </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>

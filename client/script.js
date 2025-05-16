@@ -3,6 +3,10 @@ const form = document.getElementById('registerForm');
 const messageDiv = document.getElementById('message');
 const numberGrid = document.getElementById('numberGrid');
 const numberInput = document.getElementById('number');
+const successEffect = document.getElementById('successEffect');
+const bigCheck = document.getElementById('bigCheck');
+const overlay = document.getElementById('overlay');
+const spinner = document.getElementById('spinner');
 
 let selectedNumber = null;
 let takenNumbers = [];
@@ -38,16 +42,33 @@ function triggerConfetti() {
   }, 250);
 }
 
-// Hàm hiển thị thông báo thành công
+// Hàm hiển thị hiệu ứng thành công mới
 function showSuccessMessage(message) {
-  messageDiv.textContent = message;
-  messageDiv.className = 'success-message';
-  triggerConfetti();
-  
-  // Reset animation sau 3 giây
+  // Hiện overlay và hiệu ứng
+  overlay.classList.add('active');
+  successEffect.classList.add('active');
+  spinner.style.display = 'block';
+  bigCheck.style.display = 'none';
+
+  // Hiện loading 1.2s, sau đó hiện tích xanh
   setTimeout(() => {
-    messageDiv.className = '';
-  }, 3000);
+    spinner.style.display = 'none';
+    bigCheck.style.display = 'block';
+
+    // Ẩn hiệu ứng sau 1.2s nữa
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      successEffect.classList.remove('active');
+      bigCheck.style.display = 'none';
+    }, 1200);
+  }, 1200);
+
+  // Hiện thông báo
+  messageDiv.textContent = message;
+  messageDiv.classList.add('show');
+  setTimeout(() => {
+    messageDiv.classList.remove('show');
+  }, 2400);
 }
 
 // Lấy danh sách người chơi để biết số đã chọn
@@ -105,7 +126,7 @@ form.addEventListener('submit', async (e) => {
     });
     const data = await response.json();
     if (data.success) {
-      showSuccessMessage('Đăng ký thành công! 🎉');
+      showSuccessMessage('Đăng ký thành công!');
       form.reset();
       selectedNumber = null;
       fetchTakenNumbers();
