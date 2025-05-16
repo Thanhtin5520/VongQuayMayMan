@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vòng Quay Con Số May Mắn</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Vòng Quay Con Số May Mắn</h1>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Nhập tên của bạn" required>
+      <div id="numberGrid" class="number-grid"></div>
+      <input type="hidden" id="number" name="number" required>
+      <button type="submit">Chơi</button>
+    </form>
+    <div id="message"></div>
+  </div>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html> 
