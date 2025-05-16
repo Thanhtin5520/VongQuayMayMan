@@ -18,8 +18,8 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')));
 // Route cho trang chủ
 app.get('/', (req, res) => {
   res.redirect('/admin');
-});
-
+}); 
+  
 // Route cho client
 app.get('/client', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'index.html'));
