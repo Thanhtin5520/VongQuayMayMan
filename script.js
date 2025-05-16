@@ -5,6 +5,8 @@ const numberGrid = document.getElementById('numberGrid');
 const numberInput = document.getElementById('number');
 const successEffect = document.getElementById('successEffect');
 const bigCheck = document.getElementById('bigCheck');
+const overlay = document.getElementById('overlay');
+const spinner = document.getElementById('spinner');
 
 let selectedNumber = null;
 let takenNumbers = [];
@@ -42,20 +44,31 @@ function triggerConfetti() {
 
 // Hàm hiển thị hiệu ứng thành công mới
 function showSuccessMessage(message) {
-  // Hiện hiệu ứng tích xanh lớn
+  // Hiện overlay và hiệu ứng
+  overlay.classList.add('active');
   successEffect.classList.add('active');
-  bigCheck.style.display = 'block';
+  spinner.style.display = 'block';
+  bigCheck.style.display = 'none';
 
-  // Hiển thị thông báo
+  // Hiện loading 1.2s, sau đó hiện tích xanh
+  setTimeout(() => {
+    spinner.style.display = 'none';
+    bigCheck.style.display = 'block';
+
+    // Ẩn hiệu ứng sau 1.2s nữa
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      successEffect.classList.remove('active');
+      bigCheck.style.display = 'none';
+    }, 1200);
+  }, 1200);
+
+  // Hiện thông báo
   messageDiv.textContent = message;
   messageDiv.classList.add('show');
-
-  // Ẩn hiệu ứng sau 2 giây
   setTimeout(() => {
-    successEffect.classList.remove('active');
-    bigCheck.style.display = 'none';
     messageDiv.classList.remove('show');
-  }, 2000);
+  }, 2400);
 }
 
 // Lấy danh sách người chơi để biết số đã chọn
