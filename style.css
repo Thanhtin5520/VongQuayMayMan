@@ -23,6 +23,12 @@ body {
   color: #6dd5ed;
 }
 
+.akw-logo-small {
+  font-size: 0.8em;
+  color: #2193b0;
+  margin-left: 10px;
+}
+
 .container {
   background-color: white;
   padding: 20px;
@@ -63,7 +69,17 @@ button:hover {
 
 #message {
   margin-top: 20px;
-  color: #333;
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 1.2em;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+#message.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .number-grid {
