@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vòng Quay Con Số May Mắn</title>
+  <title>Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+  <a href="#" class="akw-logo">AKW</a>
   <div class="container">
-    <h1>Vòng Quay Con Số May Mắn</h1>
+    <h1>Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
     <form id="registerForm">
       <input type="text" id="name" placeholder="Nhập tên của bạn" required>
       <div id="numberGrid" class="number-grid"></div>
@@ -17,7 +18,10 @@
       <button type="submit">Chơi</button>
     </form>
     <div id="message"></div>
-    <div id="successEffect" class="success-effect"></div>
+    <div id="successEffect" class="success-effect">
+      <div class="spinner"></div>
+      <div class="checkmark">✓</div>
+    </div>
   </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>

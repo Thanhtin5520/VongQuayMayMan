@@ -3,6 +3,9 @@ const form = document.getElementById('registerForm');
 const messageDiv = document.getElementById('message');
 const numberGrid = document.getElementById('numberGrid');
 const numberInput = document.getElementById('number');
+const successEffect = document.getElementById('successEffect');
+const spinner = successEffect.querySelector('.spinner');
+const checkmark = successEffect.querySelector('.checkmark');
 
 let selectedNumber = null;
 let takenNumbers = [];
@@ -40,14 +43,26 @@ function triggerConfetti() {
 
 // Hàm hiển thị thông báo thành công
 function showSuccessMessage(message) {
-  messageDiv.textContent = message;
-  messageDiv.className = 'success-message';
-  triggerConfetti();
+  // Hiển thị hiệu ứng xoay vòng
+  successEffect.classList.add('active');
+  spinner.style.display = 'block';
+  checkmark.classList.remove('show');
   
-  // Reset animation sau 3 giây
+  // Sau 1.5 giây, hiển thị dấu tích
   setTimeout(() => {
-    messageDiv.className = '';
-  }, 3000);
+    spinner.style.display = 'none';
+    checkmark.classList.add('show');
+    
+    // Hiển thị thông báo
+    messageDiv.textContent = message;
+    messageDiv.classList.add('show');
+    
+    // Ẩn hiệu ứng sau 2 giây
+    setTimeout(() => {
+      successEffect.classList.remove('active');
+      messageDiv.classList.remove('show');
+    }, 2000);
+  }, 1500);
 }
 
 // Lấy danh sách người chơi để biết số đã chọn
@@ -105,7 +120,7 @@ form.addEventListener('submit', async (e) => {
     });
     const data = await response.json();
     if (data.success) {
-      showSuccessMessage('Đăng ký thành công! 🎉');
+      showSuccessMessage('Đăng ký thành công!');
       form.reset();
       selectedNumber = null;
       fetchTakenNumbers();
