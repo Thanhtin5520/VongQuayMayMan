@@ -7,6 +7,49 @@ const numberInput = document.getElementById('number');
 let selectedNumber = null;
 let takenNumbers = [];
 
+// Hàm tạo hiệu ứng confetti
+function triggerConfetti() {
+  const duration = 3 * 1000;
+  const animationEnd = Date.now() + duration;
+  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  const interval = setInterval(function() {
+    const timeLeft = animationEnd - Date.now();
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+
+    const particleCount = 50 * (timeLeft / duration);
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+    });
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+    });
+  }, 250);
+}
+
+// Hàm hiển thị thông báo thành công
+function showSuccessMessage(message) {
+  messageDiv.textContent = message;
+  messageDiv.className = 'success-message';
+  triggerConfetti();
+  
+  // Reset animation sau 3 giây
+  setTimeout(() => {
+    messageDiv.className = '';
+  }, 3000);
+}
+
 // Lấy danh sách người chơi để biết số đã chọn
 async function fetchTakenNumbers() {
   try {
@@ -62,7 +105,7 @@ form.addEventListener('submit', async (e) => {
     });
     const data = await response.json();
     if (data.success) {
-      messageDiv.textContent = 'Đăng ký thành công!';
+      showSuccessMessage('Đăng ký thành công! 🎉');
       form.reset();
       selectedNumber = null;
       fetchTakenNumbers();
