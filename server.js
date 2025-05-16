@@ -17,7 +17,7 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
 // Route cho trang chủ
 app.get('/', (req, res) => {
-  res.redirect('/client');
+  res.redirect('/admin');
 });
 
 // Route cho client
