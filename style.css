@@ -1,12 +1,13 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Roboto', Arial, sans-serif;
+  background-color: #121212;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   margin: 0;
   position: relative;
+  background-image: none;
 }
 
 .logo-akhue {
@@ -22,62 +23,100 @@ body {
   left: 10px;
   font-size: 24px;
   font-weight: bold;
-  color: #2193b0;
+  color: #ff0000;
   text-decoration: none;
 }
 
 .akw-logo:hover {
-  color: #6dd5ed;
+  color: #ff3333;
 }
 
 .akw-logo-small {
   font-size: 0.8em;
-  color: #2193b0;
+  color: #ff0000;
   margin-left: 10px;
 }
 
 .container {
-  background-color: white;
+  background-color: #1e1e1e;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
   text-align: center;
   position: relative;
+  max-width: 90%;
+  width: 700px;
+  border: 1px solid #333;
 }
 
 h1 {
   margin-bottom: 20px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 input {
-  padding: 10px;
-  border: 1px solid #ccc;
+  padding: 12px;
+  border: 1px solid #444;
   border-radius: 4px;
+  background-color: #2a2a2a;
+  color: white;
+}
+
+input::placeholder {
+  color: #aaa;
 }
 
 button {
-  padding: 10px;
-  background-color: #4CAF50;
+  padding: 12px;
+  background-color: #ff0000;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #cc0000;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+  z-index: -1;
+}
+
+button:hover:before {
+  left: 100%;
 }
 
 .overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.8);
   z-index: 999;
   display: none;
 }
@@ -123,7 +162,7 @@ button:hover {
 
 #message {
   margin-top: 20px;
-  color: #4CAF50;
+  color: #ff0000;
   font-weight: bold;
   font-size: 1.2em;
   opacity: 0;
@@ -138,46 +177,108 @@ button:hover {
 
 .number-grid {
   display: grid;
-  grid-template-columns: repeat(4, 60px);
-  grid-gap: 16px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 12px;
   justify-content: center;
   margin: 20px 0;
 }
 
+/* Đồng hồ số kiểu mới */
 .number-btn {
   width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  height: 75px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
   font-weight: bold;
   border: none;
-  background: linear-gradient(135deg, #6dd5ed, #2193b0);
-  color: #fff;
+  background-color: #fff;
+  color: black;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   transition: 0.2s;
   position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  border: 2px solid #333;
+  font-family: 'Digital', monospace;
+  padding-bottom: 5px;
+  overflow: hidden;
+}
+
+.number-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background-color: #333;
+  border-radius: 6px 6px 0 0;
+  z-index: 0;
+}
+
+.number-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 15px;
+  background: repeating-linear-gradient(90deg, #333, #333 2px, transparent 2px, transparent 4px);
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.number-btn span {
+  position: relative;
+  z-index: 1;
+  margin-top: 10px;
+  background-color: #222;
+  color: #0f0;
+  padding: 2px 5px;
+  border-radius: 2px;
+  text-shadow: 0 0 2px rgba(0,255,0,0.7);
+}
+
+.number-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
 
 .number-btn.selected {
-  border: 3px solid #ff9800;
-  background: linear-gradient(135deg, #ffe259, #ffa751);
-  color: #333;
+  border-color: #ff0000;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+.number-btn.selected span {
+  color: #ff0;
+  text-shadow: 0 0 5px rgba(255,255,0,0.7);
 }
 
 .number-btn.taken {
-  opacity: 0.3;
+  opacity: 0.5;
   cursor: not-allowed;
-  background: #ccc;
-  color: #888;
+  filter: grayscale(0.8);
+}
+
+.sky-background {
+  background-color: rgba(80, 80, 80, 0.7);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px 0;
+  max-height: 65vh;
+  overflow-y: auto;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  position: relative;
+  border: 1px solid #444;
 }
 
 .success-message {
   margin-top: 20px;
-  color: #4CAF50;
+  color: #ff0000;
   font-weight: bold;
   font-size: 1.2em;
   opacity: 0;
@@ -191,11 +292,136 @@ button:hover {
 }
 
 .success-text {
-  color: #4CAF50;
-  font-size: 2em;
+  color: #ff0000;
+  font-size: 1.8em;
   font-weight: bold;
   margin-top: 18px;
-  text-shadow: 0 2px 8px #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
   letter-spacing: 1px;
   line-height: 1.2;
+}
+
+/* G-Shock watch display */
+.gshock-display {
+  width: 120px;
+  height: 48px;
+  display: inline-block;
+  margin-left: 10px;
+  position: relative;
+  vertical-align: middle;
+  background-color: #000;
+  border: 2px solid #333;
+  border-radius: 5px;
+  padding: 2px;
+  box-shadow: 0 0 5px rgba(0,100,0,0.2);
+  overflow: visible;
+}
+
+.gshock-label {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: 100%;
+  font-size: 8px;
+  font-weight: bold;
+  color: #ff0000;
+  text-align: center;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 0 2px #000;
+  background-color: #000;
+  border-radius: 2px;
+  padding: 1px 0;
+  box-shadow: 0 0 3px rgba(255,0,0,0.3);
+  z-index: 2;
+}
+
+.gshock-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  font-family: 'Digital', monospace;
+  font-size: 22px;
+  font-weight: bold;
+  color: #0f0;
+  text-shadow: 0 0 5px rgba(0,255,0,0.7);
+  position: relative;
+}
+
+.gshock-seconds {
+  font-size: 16px;
+  margin-left: 3px;
+  position: relative;
+  top: 2px;
+  opacity: 0.8;
+  animation: secondsPulse 1s infinite;
+}
+
+@keyframes secondsPulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.gshock-time::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background-color: rgba(0,0,0,0.3);
+  border-radius: 2px 2px 0 0;
+  z-index: 0;
+}
+
+.airplane {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 24px;
+  animation: fly 15s infinite linear;
+}
+
+@keyframes fly {
+  0% {
+    transform: translate(-100px, 50px) rotate(30deg);
+  }
+  100% {
+    transform: translate(calc(100% + 100px), -50px) rotate(30deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .number-grid {
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 8px;
+  }
+  
+  .number-btn {
+    width: 50px;
+    height: 65px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .number-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 6px;
+  }
+  
+  .number-btn {
+    width: 45px;
+    height: 60px;
+    font-size: 16px;
+  }
+}
+
+/* Digital font for clock */
+@font-face {
+  font-family: 'Digital';
+  src: url('https://fonts.gstatic.com/s/orbitron/v9/yMJRMIlzdpvBhQQL_Qq7dy1biN15.woff2') format('woff2');
 } 

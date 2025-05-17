@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 </head> 
@@ -13,10 +14,23 @@
     <img src="https://raw.githubusercontent.com/Thanhtin5520/VQMM_Client/main/image/H-LOGO-AKW-FULL-BLACK.png" alt="Anh Khuê Watch" height="60">
   </div>
   <div class="container">
-    <h1>Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
+    <h1>
+      Vòng Quay Con Số May Mắn AKW
+      <div class="gshock-display">
+        <div class="gshock-label">G-SHOCK</div>
+        <div class="gshock-time">
+          <span id="gshockTimeHeader">00:00</span>
+          <span class="gshock-seconds" id="gshockSeconds">00</span>
+        </div>
+      </div>
+    </h1>
+    
     <form id="registerForm">
       <input type="text" id="name" placeholder="Nhập tên của bạn" required>
-      <div id="numberGrid" class="number-grid"></div>
+      <div class="sky-background">
+        <div id="numberGrid" class="number-grid"></div>
+        <div class="airplane">✈️</div>
+      </div>
       <input type="hidden" id="number" name="number" required>
       <button type="submit">Tham Gia</button>
     </form>
@@ -30,35 +44,4 @@
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>
-<style>
-.overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 999;
-  display: none;
-}
-.overlay.active {
-  display: block;
-}
-.success-effect {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.success-effect.active {
-  display: flex;
-}
-.success-text {
-  color: #4CAF50;
-  font-size: 1.3em;
-  font-weight: bold;
-  margin-top: 10px;
-  text-shadow: 0 2px 8px #fff;
-}
-</style>   
+</html>   
