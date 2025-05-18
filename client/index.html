@@ -1,68 +1,75 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi"> 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vòng Quay Con Số May Mắn - AKW</title>
+  <title>Vòng Quay Con Số May Mắns</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-</head>
-<body> 
-  <div class="logo-akhue">
-    <img src="https://raw.githubusercontent.com/Thanhtin5520/VQMM_Client/main/image/H-LOGO-AKW-FULL-BLACK.png" alt="Anh Khuê Watch" height="60">
-  </div>
+</head> 
+<body>
   <div class="container">
-    <h1>Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
-    <form id="registerForm">
-      <input type="text" id="name" placeholder="Nhập tên của bạn" required>
-      <div id="numberGrid" class="number-grid"></div>
-      <input type="hidden" id="number" name="number" required>
-      <button type="submit">Tham Gia</button>
-    </form>
-    <div id="message"></div>
-    <div id="overlay" class="overlay"></div>
-    <div id="successEffect" class="success-effect">
-      <div id="lottie-success" style="width:120px;height:120px;margin:auto"></div>
-      <div id="successText" class="success-text">Đăng ký thành công!</div>
+    <div class="logo-akhue">
+      <img src="https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/image/H-LOGO-AKW-FULL-WHITE.png" alt="Anh Khuê Watch" height="60">
+    </div>
+    <div class="content">
+      <h1>
+        Vòng Quay Con Số May Mắn
+        <div class="gshock-display">
+          <div class="gshock-label">G-SHOCK</div>
+          <div class="gshock-time">
+            <span id="gshockTimeHeader">00:00</span>
+            <span class="gshock-seconds" id="gshockSeconds">00</span>
+          </div>
+        </div>
+      </h1>
+      
+      <form id="registerForm">
+        <input type="text" id="name" placeholder="Nhập tên của bạn" required>
+        <div class="sky-background">
+          <div id="numberGrid" class="number-grid">
+            <button class="number-btn"><span class="lcd">23</span></button>
+            <button class="number-btn"><span class="lcd">02</span></button>
+            <button class="number-btn"><span class="lcd">03</span></button>
+            <button class="number-btn"><span class="lcd">04</span></button>
+            <button class="number-btn"><span class="lcd">05</span></button>
+            <button class="number-btn"><span class="lcd">06</span></button>
+            <button class="number-btn"><span class="lcd">07</span></button>
+            <button class="number-btn"><span class="lcd">08</span></button>
+          </div>
+          <div class="airplane airplane1">ICOINIC</div>
+          <div class="airplane airplane2">ICOINIC</div>
+          <div class="airplane airplane3">ICOINIC</div>
+          <div class="airplane airplane4">ICOINIC</div>
+          <div class="airplane airplane5">ICOINIC</div>
+          <div class="airplane airplane6">ICOINIC</div>
+          <div class="airplane airplane7">ICOINIC</div>
+          <div class="airplane airplane8">ICOINIC</div>
+        </div>
+        <input type="hidden" id="number" name="number" required>
+        <button type="submit">Tham Gia</button>
+      </form>
+      <div id="message"></div>
+      <div id="overlay" class="overlay"></div>
+      <div id="successEffect" class="success-effect">
+        <div id="lottie-success" style="width:120px;height:120px;margin:auto"></div>
+        <div id="successText" class="success-text">Đăng ký thành công!</div>
+      </div>
     </div>
   </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
+  <script>
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      successEffect.classList.remove('active');
+      if (lottieInstance) {
+        lottieInstance.destroy();
+        lottieInstance = null;
+      }
+    }, 4800);
+  </script>
 </body>
-
-</html>
-
-<style>
-.overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 999;
-  display: none;
-}
-.overlay.active {
-  display: block;
-}
-.success-effect {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.success-effect.active {
-  display: flex;
-}
-.success-text {
-  color: #4CAF50;
-  font-size: 1.3em;
-  font-weight: bold;
-  margin-top: 10px;
-  text-shadow: 0 2px 8px #fff;
-}
-</style>  
-
+</html>   

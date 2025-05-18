@@ -4,9 +4,9 @@ const messageDiv = document.getElementById('message');
 const numberGrid = document.getElementById('numberGrid');
 const numberInput = document.getElementById('number');
 const successEffect = document.getElementById('successEffect');
-const bigCheck = document.getElementById('bigCheck');
 const overlay = document.getElementById('overlay');
-const spinner = document.getElementById('spinner');
+const gshockTimeHeader = document.getElementById('gshockTimeHeader');
+const gshockSeconds = document.getElementById('gshockSeconds');
 
 // Lottie animation
 const lottieContainer = document.getElementById('lottie-success');
@@ -15,6 +15,29 @@ let lottieInstance = null;
 
 let selectedNumber = null;
 let takenNumbers = [];
+
+// Cập nhật thời gian cho đồng hồ G-Shock
+function updateGShockTime() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  gshockTimeHeader.textContent = `${hours}:${minutes}`;
+}
+
+// Cập nhật giây cho đồng hồ G-Shock
+function updateGShockSeconds() {
+  const now = new Date();
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  gshockSeconds.textContent = seconds;
+}
+
+// Cập nhật thời gian mỗi phút
+setInterval(updateGShockTime, 60000);
+updateGShockTime(); // Cập nhật ngay lần đầu
+
+// Cập nhật giây mỗi giây
+setInterval(updateGShockSeconds, 1000);
+updateGShockSeconds(); // Cập nhật giây ngay lần đầu
 
 // Hàm tạo hiệu ứng confetti
 function triggerConfetti() {
@@ -53,33 +76,62 @@ function showSuccessMessage(message) {
   successEffect.classList.add('active');
   successText.textContent = message || 'Đăng ký thành công!';
 
-  // Xóa animation cũ nếu có
-  if (lottieInstance) {
-    lottieInstance.destroy();
-    lottieInstance = null;
-  }
-<<<<<<< HEAD
-  // Load animation Lottie với đường dẫn mới
-=======
-  // Load animation Lottie với đường dẫn mới nhất
->>>>>>> 1c4c01a (capnhatha6)
-  lottieInstance = lottie.loadAnimation({
-    container: lottieContainer,
-    renderer: 'svg',
-    loop: false,
-    autoplay: true,
-    path: 'https://raw.githubusercontent.com/Thanhtin5520/VQMM_Client/refs/heads/main/success.json'
-  });
+  // Thêm nền trắng bo góc cho popup
+  successEffect.style.background = '#fff';
+  successEffect.style.borderRadius = '18px';
+  successEffect.style.padding = '18px 28px';
+  successEffect.style.boxShadow = '0 4px 32px rgba(0,0,0,0.18)';
+  successEffect.style.display = 'flex';
+  successEffect.style.flexDirection = 'column';
+  successEffect.style.alignItems = 'center';
 
-  // Ẩn hiệu ứng sau 2.2s (hoặc đúng thời lượng animation)
+  // SVG tick: vòng tròn to, tích nhỏ, nằm giữa tâm
+  lottieContainer.innerHTML = `
+    <svg id="tickSVG" width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="54" stroke="#00c853" stroke-width="7" fill="none" opacity="0.18"/>
+      <polyline points="50,65 60,80 80,50" stroke="#00c853" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `;
+  // Hiệu ứng vẽ tick
+  const style = document.createElement('style');
+  style.innerHTML = `
+    #tickSVG polyline {
+      stroke-dasharray: 60;
+      stroke-dashoffset: 60;
+      animation: drawTick 1s ease forwards;
+    }
+    @keyframes drawTick {
+      to { stroke-dashoffset: 0; }
+    }
+    .success-text {
+      color: #ff0000 !important;
+      font-size: 2em;
+      font-family: 'Roboto', Arial, sans-serif;
+      font-weight: bold;
+      margin-top: 10px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: none;
+      text-align: center;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Hiệu ứng confetti
+  triggerConfetti();
+
+  // Ẩn hiệu ứng sau 3.5s
   setTimeout(() => {
     overlay.classList.remove('active');
     successEffect.classList.remove('active');
-    if (lottieInstance) {
-      lottieInstance.destroy();
-      lottieInstance = null;
-    }
-  }, 2200);
+    lottieContainer.innerHTML = '';
+    style.remove();
+    // Reset style popup
+    successEffect.style.background = '';
+    successEffect.style.borderRadius = '';
+    successEffect.style.padding = '';
+    successEffect.style.boxShadow = '';
+    successText.textContent = '';
+  }, 3500);
 }
 
 // Lấy danh sách người chơi để biết số đã chọn
@@ -91,42 +143,101 @@ async function fetchTakenNumbers() {
     renderNumberGrid();
   } catch (error) {
     messageDiv.textContent = 'Không thể tải danh sách số đã chọn';
+    messageDiv.classList.add('show');
+    setTimeout(() => messageDiv.classList.remove('show'), 3000);
   }
+}
+
+// Hiệu ứng cho số khi hover và chọn
+function addNumberEffects() {
+  const buttons = document.querySelectorAll('.number-btn:not(.taken)');
+  
+  buttons.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      if (!btn.classList.contains('selected')) {
+        btn.style.transform = 'translateY(-2px)';
+      }
+    });
+    
+    btn.addEventListener('mouseleave', () => {
+      if (!btn.classList.contains('selected')) {
+        btn.style.transform = '';
+      }
+    });
+  });
 }
 
 // Hiển thị lưới số
 function renderNumberGrid() {
   numberGrid.innerHTML = '';
-  for (let i = 1; i <= 16; i++) {
+  const totalNumbers = 50; // Tổng số là 50
+  
+  for (let i = 1; i <= totalNumbers; i++) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'number-btn';
-    btn.textContent = i.toString().padStart(2, '0');
+    btn.dataset.number = i;
+    
+    // Tạo các thẻ span cho số để trông giống đồng hồ
+    const numSpan = document.createElement('span');
+    numSpan.textContent = i.toString().padStart(2, '0');
+    btn.appendChild(numSpan);
+    
     if (takenNumbers.includes(i)) {
       btn.classList.add('taken');
       btn.disabled = true;
     }
+    
     if (selectedNumber === i) {
       btn.classList.add('selected');
     }
+    
     btn.addEventListener('click', () => {
       if (btn.classList.contains('taken')) return;
+      
+      // Bỏ chọn số trước đó nếu có
+      const prevSelected = document.querySelector('.number-btn.selected');
+      if (prevSelected) {
+        prevSelected.classList.remove('selected');
+      }
+      
+      // Hiệu ứng chọn số
       selectedNumber = i;
       numberInput.value = i;
-      renderNumberGrid();
+      btn.classList.add('selected');
+      
+      // Thêm hiệu ứng âm thanh khi chọn số
+      playSelectSound();
     });
+    
     numberGrid.appendChild(btn);
   }
+  
+  addNumberEffects();
 }
+
+// Hiệu ứng âm thanh khi chọn số
+function playSelectSound() {
+  const audio = new Audio('sound/tic.mp3');
+  audio.volume = 0.5;
+  audio.play();
+}
+
+// Đảm bảo fetchTakenNumbers() luôn được gọi khi load trang
+fetchTakenNumbers();
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('name').value;
   const number = parseInt(numberInput.value);
+  
   if (!number) {
     messageDiv.textContent = 'Vui lòng chọn số!';
+    messageDiv.classList.add('show');
+    setTimeout(() => messageDiv.classList.remove('show'), 3000);
     return;
   }
+  
   try {
     const response = await fetch('https://vongquaymayman-production.up.railway.app/register', {
       method: 'POST',
@@ -136,6 +247,7 @@ form.addEventListener('submit', async (e) => {
       body: JSON.stringify({ name, number }),
     });
     const data = await response.json();
+    
     if (data.success) {
       showSuccessMessage('Đăng ký thành công!');
       form.reset();
@@ -143,10 +255,14 @@ form.addEventListener('submit', async (e) => {
       fetchTakenNumbers();
     } else {
       messageDiv.textContent = data.error || 'Lỗi đăng ký';
+      messageDiv.classList.add('show');
+      setTimeout(() => messageDiv.classList.remove('show'), 3000);
       fetchTakenNumbers();
     }
   } catch (error) {
     messageDiv.textContent = 'Lỗi kết nối server';
+    messageDiv.classList.add('show');
+    setTimeout(() => messageDiv.classList.remove('show'), 3000);
   }
 });
 
@@ -156,6 +272,4 @@ socket.on('newPlayer', () => {
 });
 socket.on('playerRemoved', () => {
   fetchTakenNumbers();
-});
-
-fetchTakenNumbers(); 
+}); 

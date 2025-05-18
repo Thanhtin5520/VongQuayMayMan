@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>G-SHOCK Button</title>
+<style>
+  body {
+    background: #f5f0e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  button.gshock {
+    position: relative;
+    background: #0b0b0b;
+    border: 6px solid #f0f0f0;
+    border-radius: 20px 20px 35px 35px;
+    width: 220px;
+    height: 220px;
+    cursor: pointer;
+    box-shadow: 0 0 15px #111;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  button.gshock::before {
+    content: "G-SHOCK";
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 3px;
+  }
+  button.gshock .screen {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 110px;
+    background: #191919;
+    border: 6px solid #e3e3e3;
+    border-radius: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  button.gshock .screen .number {
+    color: #22ff22;
+    font-weight: 900;
+    font-size: 80px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  /* Text around screen */
+  button.gshock .adjust {
+    position: absolute;
+    top: 82px;
+    left: 20px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    writing-mode: vertical-rl;
+    letter-spacing: 2px;
+  }
+  button.gshock .mode {
+    position: absolute;
+    bottom: 55px;
+    left: 45px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  button.gshock .startstop {
+    position: absolute;
+    bottom: 55px;
+    right: 45px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  /* Hover effect */
+  button.gshock:hover .screen {
+    background: #1d1d1d;
+    box-shadow: 0 0 12px #22ff22;
+  }
+</style>
+</head>
+<body>
+
+<button class="gshock" aria-label="G-SHOCK button">
+  <div class="adjust">ADJUST</div>
+  <div class="screen">
+    <div class="number">13</div>
+  </div>
+  <div class="mode">MODE</div>
+  <div class="startstop">START-STOP</div>
+</button>
+
+</body>
+</html>

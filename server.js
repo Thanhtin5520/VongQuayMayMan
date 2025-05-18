@@ -17,7 +17,7 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
 // Route cho trang chủ
 app.get('/', (req, res) => {
-  res.redirect('/admin');
+  res.redirect('/client');
 }); 
   
 // Route cho client
@@ -92,5 +92,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server đang chạy tại http://192.168.0.144:${PORT}`);
+  console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });
