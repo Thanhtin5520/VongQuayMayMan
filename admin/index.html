@@ -8,9 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <a href="#" class="akw-logo">AKW</a>
+  <header class="akw-header">
+    <img src="https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/image/W-LOGO-AKW-FULL-WHITE.png" alt="AKW Logo" class="akw-logo-img">
+  </header>
+  <h1 class="main-title">Admin - Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
   <div class="container">
-    <h1>Admin - Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
     <div id="wheel">
       <h2>Vòng quay số</h2>
       <canvas id="wheelCanvas" width="500" height="500"></canvas>
@@ -27,20 +29,30 @@
     </div>
     <div id="playerList">
       <h2>Danh sách người chơi</h2>
-      <table id="playersTable">
-        <thead>
-          <tr>
-            <th>Tên</th>
-            <th>Số</th>
-          </tr>
-        </thead>
-        <tbody id="players"></tbody>
-      </table>
+      <div class="scroll-table">
+        <table id="playersTable">
+          <thead>
+            <tr>
+              <th>Số</th>
+              <th>Tên</th>
+              <th>Kết quả</th>
+            </tr>
+          </thead>
+          <tbody id="players"></tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div id="winnerPopup" class="winner-popup" style="display:none">
     <div class="winner-content">
       <span id="winnerText"></span>
+    </div>
+  </div>
+  <div id="resultPopup" class="result-popup">
+    <div class="result-content">
+      <h3>Kết Quả</h3>
+      <p id="resultMessage"></p>
+      <button id="closeResult">Đóng</button>
     </div>
   </div>
   <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>

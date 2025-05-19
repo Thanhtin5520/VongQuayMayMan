@@ -31,8 +31,17 @@ app.get('/admin', (req, res) => {
 });
 
 // Lưu trữ dữ liệu tạm thời
-let players = [];
-let usedNumbers = new Set();
+let players = [
+  { name: "Nguyễn Văn A", number: 1 },
+  { name: "Trần Thị B", number: 2 },
+  { name: "Lê Văn C", number: 3 },
+  { name: "Phạm Thị D", number: 4 },
+  { name: "Hoàng Văn E", number: 5 },
+  { name: "Đỗ Thị F", number: 6 },
+  { name: "Vũ Văn G", number: 7 },
+  { name: "Đặng Thị H", number: 8 }
+];
+let usedNumbers = new Set(players.map(p => p.number));
 
 // API đăng ký người chơi
 app.post('/register', (req, res) => {

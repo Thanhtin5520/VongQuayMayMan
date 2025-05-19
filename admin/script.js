@@ -14,6 +14,9 @@ const spinAudio = document.getElementById('spinAudio');
 const doneAudio = document.getElementById('doneAudio');
 const winnerPopup = document.getElementById('winnerPopup');
 const winnerText = document.getElementById('winnerText');
+const resultPopup = document.getElementById('resultPopup');
+const resultMessage = document.getElementById('resultMessage');
+const closeResult = document.getElementById('closeResult');
 
 let players = [];
 let isSpinning = false;
@@ -43,12 +46,18 @@ function updatePlayerList() {
   playersTbody.innerHTML = '';
   players.forEach(player => {
     const tr = document.createElement('tr');
-    const tdName = document.createElement('td');
     const tdNumber = document.createElement('td');
-    tdName.textContent = player.name;
+    const tdName = document.createElement('td');
+    const tdResult = document.createElement('td');
     tdNumber.textContent = player.number;
-    tr.appendChild(tdName);
+    tdNumber.className = 'player-number';
+    tdName.textContent = player.name;
+    tdName.className = 'player-name';
+    tdResult.className = 'player-result';
+    tdResult.textContent = '';
     tr.appendChild(tdNumber);
+    tr.appendChild(tdName);
+    tr.appendChild(tdResult);
     playersTbody.appendChild(tr);
   });
 }
@@ -61,8 +70,13 @@ function drawWheel() {
   const spinCircleRatio = 0.98;
   const minSize = Math.min(wheelCanvas.width, wheelCanvas.height);
   const radius = (minSize * 0.5) * spinCircleRatio - 2;
-  // Luôn vẽ đủ 8 sector
-  const n = 8;
+  // 2 màu dễ nhìn: cyan neon dịu và xám xanh đậm
+  const color1a = '#00eaff'; // cyan neon
+  const color1b = '#18dcff'; // cyan dịu
+  const color2a = '#232946'; // xám xanh đậm
+  const color2b = '#22223b'; // xám xanh đậm hơn
+  // Số sector động theo số lượng người chơi, tối thiểu 8 sector nếu chưa có ai
+  const n = players.length > 0 ? players.length : 8;
   ctx.save();
   ctx.translate(centerX, centerY);
   ctx.rotate(currentRotation);
@@ -71,31 +85,38 @@ function drawWheel() {
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.arc(0, 0, radius, i * sliceAngle, (i + 1) * sliceAngle);
+    const startAngle = i * sliceAngle;
+    const endAngle = (i + 1) * sliceAngle;
+    ctx.arc(0, 0, radius, startAngle, endAngle);
     ctx.closePath();
-    // Sector chẵn: gradient đỏ đậm, sector lẻ: đen
+    // Xen kẽ 2 màu dịu mắt
     if (i % 2 === 0) {
+      // Cyan neon dịu
       const grad = ctx.createLinearGradient(0, -radius, 0, radius);
-      grad.addColorStop(0, '#b71c1c');
-      grad.addColorStop(1, '#ff1744');
+      grad.addColorStop(0, color1a);
+      grad.addColorStop(1, color1b);
       ctx.fillStyle = grad;
     } else {
-      ctx.fillStyle = '#181828';
+      // Xám xanh đậm
+      const grad = ctx.createLinearGradient(-radius, 0, radius, 0);
+      grad.addColorStop(0, color2a);
+      grad.addColorStop(1, color2b);
+      ctx.fillStyle = grad;
     }
     ctx.globalAlpha = 1;
     ctx.fill();
-    // Vẽ tên player hoặc "Trống"
+    // Số vàng neon, font Orbitron, hiệu ứng glow vừa phải
     ctx.save();
     ctx.rotate(i * sliceAngle + sliceAngle / 2);
     ctx.textAlign = "center";
-    ctx.font = "bold 22px 'Orbitron', Arial, sans-serif";
-    ctx.shadowColor = "#fff";
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = (i % 2 === 0) ? '#fff' : '#ffd700';
+    ctx.font = "bold 44px 'Orbitron', Arial, sans-serif";
+    ctx.fillStyle = '#ffe259';
+    ctx.shadowColor = '#ffe259';
+    ctx.shadowBlur = 10;
     if (players[i]) {
-      ctx.fillText(`${players[i].name} (${players[i].number})`, radius * 0.65, 8);
+      ctx.fillText(`${players[i].number}`, radius * 0.65, 20);
     } else {
-      ctx.fillText('Trống', radius * 0.65, 8);
+      ctx.fillText('?', radius * 0.65, 20);
     }
     ctx.restore();
     ctx.restore();
@@ -225,17 +246,17 @@ function stop() {
         doneAudio.play();
       }
       // Tính sector tại vị trí mũi tên (12h)
-      const n = players.length;
+      const n = players.length > 0 ? players.length : 8;
       let normalized = (3 * Math.PI / 2 - currentRotation) % (2 * Math.PI);
       if (normalized < 0) normalized += 2 * Math.PI;
       const sectorSize = 2 * Math.PI / n;
       const winnerIndex = Math.floor(normalized / sectorSize) % n;
       const winner = players[winnerIndex];
-      // Hiển thị popup bounce người trúng thưởng
-      if (winnerPopup && winnerText) {
-        winnerText.textContent = `Người trúng thưởng: ${winner.name} - Số: ${winner.number}`;
-        winnerPopup.style.display = 'flex';
-        setTimeout(() => { winnerPopup.style.display = 'none'; }, 5000);
+      // Hiển thị popup hiệu ứng số trước, sau đó type tên
+      if (winner) {
+        showResultPopupWithTypeEffect(winner.number, winner.name);
+      } else {
+        showResultPopup('Chưa có người chơi nào!');
       }
       // Ẩn thông báo cũ bên dưới
       resultDiv.textContent = '';
@@ -290,12 +311,76 @@ function showSuccessMessage(message) {
     messageDiv.textContent = message;
     messageDiv.classList.add('show');
     
+    // Hiển thị popup kết quả
+    if (message.includes('Đã dừng quay')) {
+      resultMessage.textContent = message;
+      resultPopup.classList.add('show');
+    }
+    
     // Ẩn hiệu ứng sau 2 giây
     setTimeout(() => {
       successEffect.classList.remove('active');
       messageDiv.classList.remove('show');
     }, 2000);
   }, 1500);
+}
+
+// Xử lý đóng popup kết quả
+closeResult.addEventListener('click', () => {
+  resultPopup.classList.remove('show');
+});
+
+function showResultPopupWithTypeEffect(number, name) {
+  resultMessage.innerHTML = `<div class='result-message-custom'><span class='popup-number'>${number}</span></div>`;
+  resultPopup.classList.add('show');
+  // Hiệu ứng nhấp nháy dòng trúng thưởng trong bảng
+  blinkWinnerRow(number);
+  // Hiệu ứng nhấp nháy bảng
+  const table = document.getElementById('playersTable');
+  if (table) {
+    table.classList.add('blink-table');
+    setTimeout(() => {
+      table.classList.remove('blink-table');
+    }, 2000);
+  }
+  let i = 0;
+  function typeEffect() {
+    if (i <= name.length) {
+      resultMessage.innerHTML = `<div class='result-message-custom'><span class='popup-number'>${number}</span><span class='popup-name'>${name.slice(0, i)}</span></div>`;
+      i++;
+      setTimeout(typeEffect, 60);
+    }
+  }
+  setTimeout(typeEffect, 700); // delay 0.7s cho bất ngờ
+}
+
+function blinkWinnerRow(number) {
+  // Tìm tất cả các dòng trong bảng
+  const rows = document.querySelectorAll('#playersTable tbody tr');
+  let foundRow = null;
+  rows.forEach(row => {
+    const numberCell = row.children[1];
+    if (numberCell && numberCell.textContent == number) {
+      foundRow = row;
+      row.classList.add('winner-blink');
+      setTimeout(() => {
+        row.classList.remove('winner-blink');
+      }, 2400); // 0.4s * 6 lần nhấp nháy
+    }
+  });
+  // Nếu tìm thấy dòng, scroll để dòng đó vào giữa bảng
+  if (foundRow) {
+    const table = document.getElementById('playersTable');
+    const tableRect = table.getBoundingClientRect();
+    const rowRect = foundRow.getBoundingClientRect();
+    // Kiểm tra nếu dòng nằm ngoài vùng nhìn thấy
+    if (rowRect.top < tableRect.top || rowRect.bottom > tableRect.bottom) {
+      // Scroll để dòng vào giữa bảng
+      const scrollTop = table.scrollTop;
+      const offset = rowRect.top - tableRect.top;
+      table.scrollTop = scrollTop + offset - table.clientHeight / 2 + foundRow.clientHeight / 2;
+    }
+  }
 }
 
 // Khởi tạo
