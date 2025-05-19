@@ -5,31 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
   <a href="#" class="akw-logo">AKW</a>
   <div class="container">
     <h1>Admin - Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
-    <div id="playerList">
-      <h2>Danh sách người chơi</h2>
-      <ul id="players"></ul>
-    </div>
     <div id="wheel">
       <h2>Vòng quay số</h2>
-      <canvas id="wheelCanvas" width="400" height="400"></canvas>
+      <canvas id="wheelCanvas" width="500" height="500"></canvas>
       <div id="controls">
         <button id="spin">Quay</button>
         <button id="stop">Dừng</button>
         <button id="reset">Quay lại</button>
       </div>
+      <div id="result"></div>
+      <div id="successEffect" class="success-effect">
+        <div class="spinner"></div>
+      </div>
+      <div id="message"></div>
     </div>
-    <div id="result"></div>
-    <div id="successEffect" class="success-effect">
-      <div class="spinner"></div>
-      <div class="checkmark">✓</div>
+    <div id="playerList">
+      <h2>Danh sách người chơi</h2>
+      <table id="playersTable">
+        <thead>
+          <tr>
+            <th>Tên</th>
+            <th>Số</th>
+          </tr>
+        </thead>
+        <tbody id="players"></tbody>
+      </table>
     </div>
-    <div id="message"></div>
   </div>
+  <div id="winnerPopup" class="winner-popup" style="display:none">
+    <div class="winner-content">
+      <span id="winnerText"></span>
+    </div>
+  </div>
+  <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>
+  <audio id="doneAudio" src="./Sound/done.mp3" preload="auto"></audio>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>

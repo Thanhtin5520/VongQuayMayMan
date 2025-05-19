@@ -15,20 +15,20 @@
       <img src="https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/image/H-LOGO-AKW-FULL-WHITE.png" alt="Anh Khuê Watch" height="60">
     </div>
     <div class="content">
-      <h1>
+    <h1>
         Vòng Quay Con Số May Mắn
-        <div class="gshock-display">
-          <div class="gshock-label">G-SHOCK</div>
-          <div class="gshock-time">
-            <span id="gshockTimeHeader">00:00</span>
-            <span class="gshock-seconds" id="gshockSeconds">00</span>
-          </div>
+      <div class="gshock-display">
+        <div class="gshock-label">G-SHOCK</div>
+        <div class="gshock-time">
+          <span id="gshockTimeHeader">00:00</span>
+          <span class="gshock-seconds" id="gshockSeconds">00</span>
         </div>
-      </h1>
-      
-      <form id="registerForm">
-        <input type="text" id="name" placeholder="Nhập tên của bạn" required>
-        <div class="sky-background">
+      </div>
+    </h1>
+    
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Nhập tên của bạn" required>
+      <div class="sky-background">
           <div id="numberGrid" class="number-grid">
             <button class="number-btn"><span class="lcd">23</span></button>
             <button class="number-btn"><span class="lcd">02</span></button>
@@ -47,15 +47,22 @@
           <div class="airplane airplane6">ICOINIC</div>
           <div class="airplane airplane7">ICOINIC</div>
           <div class="airplane airplane8">ICOINIC</div>
-        </div>
-        <input type="hidden" id="number" name="number" required>
-        <button type="submit">Tham Gia</button>
-      </form>
-      <div id="message"></div>
-      <div id="overlay" class="overlay"></div>
-      <div id="successEffect" class="success-effect">
-        <div id="lottie-success" style="width:120px;height:120px;margin:auto"></div>
-        <div id="successText" class="success-text">Đăng ký thành công!</div>
+      </div>
+      <input type="hidden" id="number" name="number" required>
+      <button type="submit">Tham Gia</button>
+    </form>
+    <div id="luckyNumberBox" style="display:none; margin-top:32px; text-align:center;">
+      <div style="font-size:1.5em; font-weight:bold; color:#00ff99; text-shadow:0 0 8px #00ff99, 0 0 16px #003300; margin-bottom:18px;">Con số may mắn của bạn</div>
+      <div class="lucky-gshock">
+        <img src="image/matsormbgden.png" alt="Mặt đồng hồ" class="lucky-gshock-img">
+        <span id="luckyNumberDisplay" class="lucky-gshock-number">00</span>
+      </div>
+    </div>
+    <div id="message"></div>
+    <div id="overlay" class="overlay"></div>
+    <div id="successEffect" class="success-effect">
+      <div id="lottie-success" style="width:120px;height:120px;margin:auto"></div>
+      <div id="successText" class="success-text">Đăng ký thành công!</div>
       </div>
     </div>
   </div>

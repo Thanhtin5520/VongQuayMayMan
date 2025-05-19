@@ -501,4 +501,72 @@ button:hover {
 
 .logo-akhue img {
   filter: drop-shadow(0 2px 8px rgba(79,140,255,0.12));
+}
+
+/* Lucky Number Box */
+#luckyNumberBox {
+  display: none;
+  margin-top: 32px;
+  text-align: center;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+  padding: 32px 12px 28px 12px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  border: 3px solid #ff2222;
+  box-shadow: 0 0 16px 2px #ff2222, 0 0 32px 4px #ff222288, 0 4px 32px rgba(0,0,0,0.18);
+  animation: borderGlowPulseRed 1.2s infinite alternate;
+}
+@keyframes borderGlowPulseRed {
+  from { box-shadow: 0 0 8px 1px #ff2222, 0 0 16px 2px #ff222288, 0 4px 32px rgba(0,0,0,0.18); }
+  to   { box-shadow: 0 0 24px 4px #ff2222, 0 0 48px 8px #ff222288, 0 4px 32px rgba(0,0,0,0.18); }
+}
+#luckyNumberBox::before { display: none !important; }
+.lucky-gshock {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  max-width: 90vw;
+}
+.lucky-gshock-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.lucky-gshock-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Digital', 'Orbitron', monospace;
+  font-size: 4.2em;
+  color: #ff2222;
+  text-shadow: none;
+  font-weight: bold;
+  letter-spacing: 2px;
+  pointer-events: none;
+  user-select: none;
+}
+@media (max-width: 600px) {
+  .lucky-gshock {
+    width: 120px;
+    height: 120px;
+  }
+  .lucky-gshock-number {
+    font-size: 2.2em;
+  }
+  #luckyNumberBox {
+    padding: 18px 2vw 16px 2vw;
+    max-width: 98vw;
+  }
+}
+
+#luckyNumberBox > div:first-child {
+  color: #ff2222 !important;
+  text-shadow: none !important;
 } 

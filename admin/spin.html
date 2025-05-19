@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Vòng Quay May Mắn</title>
+  <style>
+    body {
+      background: #f22;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    canvas {
+      background: #d00;
+      border-radius: 50%;
+      box-shadow: 0 0 30px rgba(0,0,0,0.4);
+    }
+
+    #spin {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 18px;
+      background: gold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .pointer {
+      width: 0; height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 40px solid #ffc107;
+      position: absolute;
+      top: 20px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="wheel">
+    <h2>Vòng quay số</h2>
+    <div class="pointer"></div>
+    <canvas id="wheelCanvas" width="400" height="400"></canvas>
+  </div>
+  <button id="spin">Quay!</button>
+  <script>
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spin");
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = 220;
+
+    const segments = 20;
+    const angle = 2 * Math.PI / segments;
+    const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
+                    "#FF9F40", "#FFCD56", "#33CC33", "#FF5733", "#C70039"];
+
+    let options = [];
+    for (let i = 1; i <= segments; i++) options.push("Giải " + i);
+
+    let currentAngle = 0;
+    let isSpinning = false;
+    let speed = 0;
+
+    function drawWheel() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < segments; i++) {
+        const start = i * angle + currentAngle;
+        const end = start + angle;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, start, end);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(start + angle / 2);
+        ctx.fillStyle = "#fff";
+        ctx.font = "16px sans-serif";
+        ctx.fillText(options[i], radius / 1.5, 0);
+        ctx.restore();
+      }
+
+      // Vẽ tâm
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+      ctx.fillStyle = "#FFD700";
+      ctx.fill();
+    }
+
+    function animate() {
+      if (!isSpinning) return;
+      currentAngle += speed;
+      speed *= 0.98;
+      if (speed < 0.002) {
+        isSpinning = false;
+        const selected = Math.floor((segments - (currentAngle % (2 * Math.PI)) / angle) % segments);
+        alert("🎉 Kết quả: " + options[selected]);
+      }
+      drawWheel();
+      requestAnimationFrame(animate);
+    }
+
+    spinBtn.addEventListener("click", () => {
+      if (!isSpinning) {
+        speed = 0.3 + Math.random() * 0.3;
+        isSpinning = true;
+        animate();
+      }
+    });
+
+    drawWheel();
+  </script>
+</body>
+</html>

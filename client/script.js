@@ -253,6 +253,10 @@ form.addEventListener('submit', async (e) => {
       form.reset();
       selectedNumber = null;
       fetchTakenNumbers();
+      // Ẩn form, hiện luckyNumberBox
+      form.style.display = 'none';
+      document.getElementById('luckyNumberBox').style.display = 'block';
+      document.getElementById('luckyNumberDisplay').textContent = number.toString().padStart(2, '0');
     } else {
       messageDiv.textContent = data.error || 'Lỗi đăng ký';
       messageDiv.classList.add('show');
@@ -264,6 +268,12 @@ form.addEventListener('submit', async (e) => {
     messageDiv.classList.add('show');
     setTimeout(() => messageDiv.classList.remove('show'), 3000);
   }
+});
+
+// Khi load lại trang hoặc đăng ký lại, ẩn luckyNumberBox, hiện lại form
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('luckyNumberBox').style.display = 'none';
+  form.style.display = 'flex';
 });
 
 // Lắng nghe khi có người mới đăng ký để cập nhật số đã chọn
