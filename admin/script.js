@@ -28,42 +28,7 @@ let decelerating = false;
 let spinAudioLooping = false;
 let canStop = false;
 
-// Lấy danh sách người chơi từ server
-async function fetchPlayers() {
-  try {
-    const response = await fetch('https://vongquaymayman-production.up.railway.app/players');
-    players = await response.json();
-    updatePlayerList();
-    drawWheel();
-  } catch (error) {
-    console.error('Lỗi lấy danh sách người chơi:', error);
-  }
-}
-
-// Cập nhật danh sách người chơi trên giao diện
-function updatePlayerList() {
-  const playersTbody = document.getElementById('players');
-  playersTbody.innerHTML = '';
-  if (players.length === 0) return; // Không hiển thị dòng nào nếu chưa có người chơi
-  players.forEach(player => {
-    const tr = document.createElement('tr');
-    const tdNumber = document.createElement('td');
-    const tdName = document.createElement('td');
-    const tdResult = document.createElement('td');
-    tdNumber.textContent = player.number;
-    tdNumber.className = 'player-number';
-    tdName.textContent = player.name;
-    tdName.className = 'player-name';
-    tdResult.className = 'player-result';
-    tdResult.textContent = '';
-    tr.appendChild(tdNumber);
-    tr.appendChild(tdName);
-    tr.appendChild(tdResult);
-    playersTbody.appendChild(tr);
-  });
-}
-
-// Vẽ vòng quay số
+// Mảng màu neon cho sector (đặt trong hàm để luôn cập nhật đúng)
 function drawWheel() {
   ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
   const centerX = wheelCanvas.width / 2;
@@ -71,6 +36,20 @@ function drawWheel() {
   const spinCircleRatio = 0.98;
   const minSize = Math.min(wheelCanvas.width, wheelCanvas.height);
   const radius = (minSize * 0.5) * spinCircleRatio - 2;
+  const sectorColors = [
+    '#00eaff', // cyan
+    '#ffe259', // vàng neon
+    '#ff5e62', // cam neon
+    '#a259ff', // tím neon
+    '#43ff64', // xanh lá neon
+    '#ff1744', // đỏ neon
+    '#18dcff', // xanh dương neon
+    '#fd5fff', // hồng neon
+    '#fffbe7', // trắng vàng
+    '#1a237e', // xanh navy đậm
+    '#232946', // xám xanh đậm
+    '#22223b'  // xám xanh đậm hơn
+  ];
   // Nếu chưa có người chơi, luôn vẽ 8 sector, số là ?
   const n = players.length > 0 ? players.length : 8;
   ctx.save();
@@ -85,28 +64,30 @@ function drawWheel() {
     const endAngle = (i + 1) * sliceAngle;
     ctx.arc(0, 0, radius, startAngle, endAngle);
     ctx.closePath();
-    // Xen kẽ 2 màu dịu mắt
-    if (i % 2 === 0) {
-      const grad = ctx.createLinearGradient(0, -radius, 0, radius);
-      grad.addColorStop(0, '#00eaff');
-      grad.addColorStop(1, '#18dcff');
-      ctx.fillStyle = grad;
-    } else {
-      const grad = ctx.createLinearGradient(-radius, 0, radius, 0);
-      grad.addColorStop(0, '#232946');
-      grad.addColorStop(1, '#22223b');
-      ctx.fillStyle = grad;
-    }
+    // Mỗi sector một màu
+    const color = sectorColors[i % sectorColors.length];
+    ctx.fillStyle = color;
     ctx.globalAlpha = 1;
     ctx.fill();
-    // Số vàng neon, font Orbitron, hiệu ứng glow vừa phải
+    // Số nổi bật trên nền sector
     ctx.save();
     ctx.rotate(i * sliceAngle + sliceAngle / 2);
     ctx.textAlign = "center";
     ctx.font = "bold 44px 'Orbitron', Arial, sans-serif";
-    ctx.fillStyle = '#ffe259';
-    ctx.shadowColor = '#ffe259';
-    ctx.shadowBlur = 10;
+    // Chọn màu số nổi bật
+    let textColor = '#fff';
+    let shadowColor = '#fff';
+    // Nếu màu nền sáng thì dùng đen, nếu nền tối thì dùng trắng hoặc vàng neon
+    if (["#ffe259", "#fffbe7", "#fd5fff", "#ff5e62", "#ff1744", "#43ff64"].includes(color)) {
+      textColor = '#181828';
+      shadowColor = '#fffbe7';
+    } else if (["#00eaff", "#18dcff", "#a259ff", "#1a237e", "#232946", "#22223b"].includes(color)) {
+      textColor = '#ffe259';
+      shadowColor = '#ffe259';
+    }
+    ctx.fillStyle = textColor;
+    ctx.shadowColor = shadowColor;
+    ctx.shadowBlur = 14;
     if (players[i]) {
       ctx.fillText(`${players[i].number}`, radius * 0.65, 20);
     } else {
@@ -166,6 +147,41 @@ function drawWheel() {
   ctx.shadowBlur = arrowGlow;
   ctx.fill();
   ctx.restore();
+}
+
+// Lấy danh sách người chơi từ server
+async function fetchPlayers() {
+  try {
+    const response = await fetch('https://vongquaymayman-production.up.railway.app/players');
+    players = await response.json();
+    updatePlayerList();
+    drawWheel();
+  } catch (error) {
+    console.error('Lỗi lấy danh sách người chơi:', error);
+  }
+}
+
+// Cập nhật danh sách người chơi trên giao diện
+function updatePlayerList() {
+  const playersTbody = document.getElementById('players');
+  playersTbody.innerHTML = '';
+  if (players.length === 0) return; // Không hiển thị dòng nào nếu chưa có người chơi
+  players.forEach(player => {
+    const tr = document.createElement('tr');
+    const tdNumber = document.createElement('td');
+    const tdName = document.createElement('td');
+    const tdResult = document.createElement('td');
+    tdNumber.textContent = player.number;
+    tdNumber.className = 'player-number';
+    tdName.textContent = player.name;
+    tdName.className = 'player-name';
+    tdResult.className = 'player-result';
+    tdResult.textContent = '';
+    tr.appendChild(tdNumber);
+    tr.appendChild(tdName);
+    tr.appendChild(tdResult);
+    playersTbody.appendChild(tr);
+  });
 }
 
 // Quay vòng quay
