@@ -319,29 +319,17 @@ button:hover, button:focus {
 }
 
 /* Custom scroll bar */
-.scroll-table::-webkit-scrollbar {
-  width: 12px;
-  background: transparent;
-}
-.scroll-table::-webkit-scrollbar-track {
+#playersTable::-webkit-scrollbar {
+  width: 10px;
   background: #181828;
   border-radius: 8px;
 }
-.scroll-table::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #00eaff 60%, #18dcff 100%);
+#playersTable::-webkit-scrollbar-thumb {
+  background: #00eaff;
   border-radius: 8px;
-  box-shadow: 0 0 8px #00eaff99;
-  border: 2px solid #181828;
 }
-.scroll-table::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #18dcff 0%, #00eaff 100%);
-  box-shadow: 0 0 16px #00eaff;
-}
-
-/* Firefox */
-.scroll-table {
-  scrollbar-width: thin;
-  scrollbar-color: #00eaff #181828;
+#playersTable::-webkit-scrollbar-thumb:hover {
+  background: #18dcff;
 }
 
 .winner-popup {

@@ -44,6 +44,7 @@ async function fetchPlayers() {
 function updatePlayerList() {
   const playersTbody = document.getElementById('players');
   playersTbody.innerHTML = '';
+  if (players.length === 0) return; // Không hiển thị dòng nào nếu chưa có người chơi
   players.forEach(player => {
     const tr = document.createElement('tr');
     const tdNumber = document.createElement('td');
@@ -70,12 +71,7 @@ function drawWheel() {
   const spinCircleRatio = 0.98;
   const minSize = Math.min(wheelCanvas.width, wheelCanvas.height);
   const radius = (minSize * 0.5) * spinCircleRatio - 2;
-  // 2 màu dễ nhìn: cyan neon dịu và xám xanh đậm
-  const color1a = '#00eaff'; // cyan neon
-  const color1b = '#18dcff'; // cyan dịu
-  const color2a = '#232946'; // xám xanh đậm
-  const color2b = '#22223b'; // xám xanh đậm hơn
-  // Số sector động theo số lượng người chơi, tối thiểu 8 sector nếu chưa có ai
+  // Nếu chưa có người chơi, luôn vẽ 8 sector, số là ?
   const n = players.length > 0 ? players.length : 8;
   ctx.save();
   ctx.translate(centerX, centerY);
@@ -91,16 +87,14 @@ function drawWheel() {
     ctx.closePath();
     // Xen kẽ 2 màu dịu mắt
     if (i % 2 === 0) {
-      // Cyan neon dịu
       const grad = ctx.createLinearGradient(0, -radius, 0, radius);
-      grad.addColorStop(0, color1a);
-      grad.addColorStop(1, color1b);
+      grad.addColorStop(0, '#00eaff');
+      grad.addColorStop(1, '#18dcff');
       ctx.fillStyle = grad;
     } else {
-      // Xám xanh đậm
       const grad = ctx.createLinearGradient(-radius, 0, radius, 0);
-      grad.addColorStop(0, color2a);
-      grad.addColorStop(1, color2b);
+      grad.addColorStop(0, '#232946');
+      grad.addColorStop(1, '#22223b');
       ctx.fillStyle = grad;
     }
     ctx.globalAlpha = 1;
@@ -177,6 +171,10 @@ function drawWheel() {
 // Quay vòng quay
 function spin() {
   if (isSpinning) return;
+  if (players.length < 4) {
+    showErrorMessage('Cần tối thiểu 4 người chơi mới được quay!');
+    return;
+  }
   // Xóa dữ liệu JSON localStorage và sessionStorage khi quay
   localStorage.clear();
   sessionStorage.clear();
@@ -381,6 +379,16 @@ function blinkWinnerRow(number) {
       table.scrollTop = scrollTop + offset - table.clientHeight / 2 + foundRow.clientHeight / 2;
     }
   }
+}
+
+function showErrorMessage(message) {
+  messageDiv.textContent = message;
+  messageDiv.classList.add('show');
+  messageDiv.style.color = '#ff1744';
+  setTimeout(() => {
+    messageDiv.classList.remove('show');
+    messageDiv.style.color = '';
+  }, 2000);
 }
 
 // Khởi tạo

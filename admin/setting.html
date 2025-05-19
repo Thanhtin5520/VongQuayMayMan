@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý người tham gia - AKW</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    .setting-container { max-width: 700px; margin: 40px auto; background: rgba(24,24,40,0.98); border-radius: 18px; box-shadow: 0 0 32px #00eaff55, 0 0 0 4px #00eaff33; padding: 32px 24px; }
+    .setting-title { text-align: center; color: #00eaff; font-family: 'Orbitron', Arial, sans-serif; font-size: 2em; margin-bottom: 24px; text-shadow: 0 0 18px #00eaff, 0 0 2px #fff; }
+    .setting-form { display: flex; gap: 16px; margin-bottom: 24px; justify-content: center; }
+    .setting-form input { padding: 10px 16px; border-radius: 8px; border: 2px solid #00eaff; background: #181828; color: #00eaff; font-family: 'Orbitron', monospace; font-size: 1em; outline: none; }
+    .setting-form button { padding: 10px 24px; border-radius: 8px; border: 2px solid #00eaff; background: linear-gradient(135deg, #00eaff 0%, #181828 100%); color: #fff; font-family: 'Orbitron', monospace; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .setting-form button:hover { background: #00eaff; color: #181828; }
+    .setting-table { width: 100%; border-collapse: collapse; background: #10101a; border-radius: 12px; overflow: hidden; box-shadow: 0 0 16px #00eaff55; }
+    .setting-table th, .setting-table td { padding: 10px 12px; text-align: center; font-family: 'Orbitron', monospace; color: #00eaff; border-bottom: 1px solid #00eaff22; }
+    .setting-table th { background: linear-gradient(90deg, #00eaff 60%, #1a237e 100%); color: #181828; text-shadow: 0 0 8px #fff, 0 0 2px #00eaff; }
+    .setting-table tr:last-child td { border-bottom: none; }
+    .setting-table td .edit-btn, .setting-table td .delete-btn { border: none; background: none; color: #00eaff; font-size: 1.1em; cursor: pointer; margin: 0 4px; transition: color 0.2s; }
+    .setting-table td .edit-btn:hover { color: #ffe259; }
+    .setting-table td .delete-btn:hover { color: #ff1744; }
+    .setting-table td input { width: 80px; padding: 4px 8px; border-radius: 6px; border: 1.5px solid #00eaff; background: #232946; color: #00eaff; font-family: 'Orbitron', monospace; }
+  </style>
+</head>
+<body>
+  <div class="setting-container">
+    <div class="setting-title">Quản lý người tham gia</div>
+    <form class="setting-form" id="addForm">
+      <input type="text" id="addName" placeholder="Tên người chơi" required>
+      <input type="number" id="addNumber" placeholder="Số" min="1" required>
+      <button type="submit">Thêm</button>
+    </form>
+    <table class="setting-table" id="settingTable">
+      <thead>
+        <tr>
+          <th>Số</th>
+          <th>Tên</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="settingTbody"></tbody>
+    </table>
+  </div>
+  <script>
+    const API = 'https://vongquaymayman-production.up.railway.app';
+    const tbody = document.getElementById('settingTbody');
+    const addForm = document.getElementById('addForm');
+    const addName = document.getElementById('addName');
+    const addNumber = document.getElementById('addNumber');
+    let editingNumber = null;
+
+    async function fetchPlayers() {
+      const res = await fetch(`${API}/players`);
+      const data = await res.json();
+      renderTable(data);
+    }
+
+    function renderTable(players) {
+      tbody.innerHTML = '';
+      players.forEach(player => {
+        const tr = document.createElement('tr');
+        if (editingNumber === player.number) {
+          tr.innerHTML = `
+            <td><input type="number" value="${player.number}" min="1" class="edit-number"></td>
+            <td><input type="text" value="${player.name}" class="edit-name"></td>
+            <td>
+              <button class="edit-btn save">Lưu</button>
+              <button class="delete-btn cancel">Hủy</button>
+            </td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td>${player.number}</td>
+            <td>${player.name}</td>
+            <td>
+              <button class="edit-btn">Sửa</button>
+              <button class="delete-btn">Xóa</button>
+            </td>
+          `;
+        }
+        tbody.appendChild(tr);
+        // Sửa
+        tr.querySelector('.edit-btn')?.addEventListener('click', () => {
+          editingNumber = player.number;
+          fetchPlayers();
+        });
+        // Xóa
+        tr.querySelector('.delete-btn')?.addEventListener('click', async () => {
+          if (editingNumber === player.number) {
+            editingNumber = null;
+            fetchPlayers();
+            return;
+          }
+          if (confirm('Bạn chắc chắn muốn xóa?')) {
+            await fetch(`${API}/admin/remove/${player.number}`, { method: 'DELETE' });
+            fetchPlayers();
+          }
+        });
+        // Lưu
+        tr.querySelector('.save')?.addEventListener('click', async () => {
+          const newNumber = tr.querySelector('.edit-number').value;
+          const newName = tr.querySelector('.edit-name').value;
+          if (!newName || !newNumber) return alert('Không được để trống!');
+          await fetch(`${API}/admin/remove/${player.number}`, { method: 'DELETE' });
+          await fetch(`${API}/admin/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName, number: Number(newNumber) })
+          });
+          editingNumber = null;
+          fetchPlayers();
+        });
+        // Hủy
+        tr.querySelector('.cancel')?.addEventListener('click', () => {
+          editingNumber = null;
+          fetchPlayers();
+        });
+      });
+    }
+
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = addName.value.trim();
+      const number = addNumber.value.trim();
+      if (!name || !number) return alert('Không được để trống!');
+      await fetch(`${API}/admin/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, number: Number(number) })
+      });
+      addName.value = '';
+      addNumber.value = '';
+      fetchPlayers();
+    });
+
+    fetchPlayers();
+  </script>
+</body>
+</html>
