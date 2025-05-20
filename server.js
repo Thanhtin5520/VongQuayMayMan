@@ -134,10 +134,16 @@ io.on('connection', (socket) => {
   // Gửi trạng thái lock khi client mới kết nối
   if (isPlayersLocked) {
     socket.emit('playersLocked');
+  } else {
+    socket.emit('playersUnlocked');
   }
   socket.on('lockPlayers', () => {
     isPlayersLocked = true;
     io.emit('playersLocked');
+  });
+  socket.on('unlockPlayers', () => {
+    isPlayersLocked = false;
+    io.emit('playersUnlocked');
   });
   socket.on('disconnect', () => {
     console.log('Client ngắt kết nối');

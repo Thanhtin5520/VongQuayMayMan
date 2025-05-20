@@ -21,6 +21,30 @@
     .setting-table td .edit-btn:hover { color: #ffe259; }
     .setting-table td .delete-btn:hover { color: #ff1744; }
     .setting-table td input { width: 80px; padding: 4px 8px; border-radius: 6px; border: 1.5px solid #00eaff; background: #232946; color: #00eaff; font-family: 'Orbitron', monospace; }
+    .prize-arrow-selector {
+      position: absolute;
+      right: -38px;
+      left: auto;
+      font-size: 2.4em;
+      color: #ffe259;
+      top: 0;
+      transition: top 0.25s cubic-bezier(.4,2,.6,1);
+      pointer-events: none;
+      filter: drop-shadow(0 0 10px #ffe259cc);
+      z-index: 2;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .prize-arrow-selector svg {
+      display: block;
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 0 8px #ffe259cc);
+    }
+    .prize-table-wrap { position: relative; }
   </style>
 </head>
 <body>
@@ -47,15 +71,20 @@
       </div>
       <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
         <div class="setting-title">Bảng Giải Thưởng</div>
-        <table class="setting-table" id="prizeTable">
-          <thead>
-            <tr>
-              <th>Giải</th>
-              <th>Ảnh</th>
-            </tr>
-          </thead>
-          <tbody id="prizeTbody"></tbody>
-        </table>
+        <div class="prize-table-wrap">
+          <span id="prizeArrow" class="prize-arrow-selector">
+            <svg viewBox="0 0 32 32"><polygon points="0,16 32,8 32,24" fill="#ffe259"/></svg>
+          </span>
+          <table class="setting-table" id="prizeTable">
+            <thead>
+              <tr>
+                <th>Giải</th>
+                <th>Ảnh</th>
+              </tr>
+            </thead>
+            <tbody id="prizeTbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
     <div class="setting-bottom" style="max-width:1100px;margin:48px auto 0 auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px;">
@@ -228,28 +257,66 @@
       { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' },
       { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
     ];
-    prizeTbody.innerHTML = prizes.map(prize => `
-      <tr>
-        <td>${prize.name}</td>
-        <td><img src="${prize.img}" style="height:40px"></td>
-      </tr>
-    `).join('');
+    let selectedPrizeRow = 4; // Mặc định là dòng cuối (giải Ba)
+    function renderPrizeTable() {
+      prizeTbody.innerHTML = '';
+      const prizeTable = document.getElementById('prizeTable');
+      const prizeArrow = document.getElementById('prizeArrow');
+      prizes.forEach((prize, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${prize.name}</td>
+          <td><img src="${prize.img}" style="height:40px"></td>
+        `;
+        tr.style.cursor = 'pointer';
+        tr.onclick = () => {
+          selectedPrizeRow = idx;
+          renderPrizeTable();
+        };
+        prizeTbody.appendChild(tr);
+      });
+      // Đặt vị trí selector triangle bên phải dòng
+      const rows = prizeTable.querySelectorAll('tbody tr');
+      if (rows[selectedPrizeRow]) {
+        const row = rows[selectedPrizeRow];
+        const offset = row.offsetTop + row.offsetHeight/2 - 18;
+        prizeArrow.style.top = offset + 'px';
+        prizeArrow.style.display = '';
+      } else {
+        prizeArrow.style.display = 'none';
+      }
+    }
+    renderPrizeTable();
 
     // --- Chốt danh sách người chơi ---
     let isLocked = false;
     const lockBtn = document.getElementById('lockPlayersBtn');
     lockBtn.onclick = () => {
-      if (confirm('Bạn chắc chắn muốn chốt danh sách? Sau khi chốt sẽ không thể đăng ký thêm!')) {
-        socket.emit('lockPlayers');
+      if (!isLocked) {
+        if (confirm('Bạn chắc chắn muốn chốt danh sách? Sau khi chốt sẽ không thể đăng ký thêm!')) {
+          socket.emit('lockPlayers');
+        }
+      } else {
+        if (confirm('Bạn muốn mở lại danh sách để cho phép đăng ký?')) {
+          socket.emit('unlockPlayers');
+        }
       }
     };
     socket.on('playersLocked', () => {
       isLocked = true;
-      lockBtn.disabled = true;
+      lockBtn.disabled = false;
       lockBtn.innerText = 'Đã chốt DS';
       addName.disabled = true;
       addNumber.disabled = true;
       document.querySelector('#addForm button[type="submit"]').disabled = true;
+    });
+    socket.on('playersUnlocked', () => {
+      isLocked = false;
+      lockBtn.disabled = false;
+      lockBtn.innerText = 'Chốt DS';
+      addName.disabled = false;
+      addNumber.disabled = false;
+      document.querySelector('#addForm button[type="submit"]').disabled = false;
     });
   </script>
 </body>

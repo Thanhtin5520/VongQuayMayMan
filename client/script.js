@@ -291,6 +291,61 @@ socket.on('playerRemoved', () => {
   fetchTakenNumbers();
 });
 
+// Popup decor đẹp khi đã chốt danh sách
+function showLockedPopup() {
+  let modal = document.getElementById('lockedModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'lockedModal';
+    modal.innerHTML = `
+      <div class="locked-modal-content">
+        <div class="locked-modal-title">Đã chốt danh sách</div>
+        <div class="locked-modal-msg">Không thể đăng ký thêm!</div>
+        <button class="locked-modal-close">Đóng</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('.locked-modal-close').onclick = () => {
+      modal.style.display = 'none';
+    };
+  }
+  modal.style.display = 'flex';
+  setTimeout(() => { modal.style.display = 'none'; }, 2500);
+}
+
+// Thêm CSS cho popup decor
+if (!document.getElementById('lockedModalStyle')) {
+  const style = document.createElement('style');
+  style.id = 'lockedModalStyle';
+  style.innerHTML = `
+    #lockedModal {
+      position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.18); display: none; align-items: center; justify-content: center;
+    }
+    .locked-modal-content {
+      background: #181828; border-radius: 18px; box-shadow: 0 0 32px #ffe259cc, 0 0 0 4px #ffe25955;
+      padding: 32px 36px; min-width: 320px; text-align: center; position: relative;
+      border: 2.5px solid #ffe259; animation: lockedPopIn 0.25s cubic-bezier(.4,2,.6,1);
+    }
+    .locked-modal-title {
+      color: #ffe259; font-size: 2em; font-family: 'Orbitron', Arial, sans-serif;
+      margin-bottom: 12px; text-shadow: 0 0 18px #ffe259, 0 0 2px #fff;
+    }
+    .locked-modal-msg {
+      color: #fff; font-size: 1.2em; margin-bottom: 18px;
+    }
+    .locked-modal-close {
+      background: linear-gradient(90deg,#ffe259 60%,#ffed85 100%); color: #181828;
+      border: none; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold;
+      font-size: 1em; padding: 10px 32px; cursor: pointer; box-shadow: 0 0 8px #ffe25999;
+      transition: background 0.2s;
+    }
+    .locked-modal-close:hover { background: #ffe259; color: #000; }
+    @keyframes lockedPopIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+}
+
 // Lắng nghe sự kiện chốt danh sách từ server
 socket.on('playersLocked', () => {
   // Nếu có form đăng ký, disable toàn bộ input, button
@@ -302,4 +357,47 @@ socket.on('playersLocked', () => {
   if (typeof messageDiv !== 'undefined') {
     messageDiv.innerHTML = '<span style="color:#ff1744">Đã chốt danh sách, không thể đăng ký thêm!</span>';
   }
+  // Hiện popup khi bấm vào bất kỳ số, input, button
+  setTimeout(() => {
+    const form = document.getElementById('registerForm');
+    if (form) {
+      form.querySelectorAll('input, button').forEach(e => {
+        e.onclick = (ev) => {
+          ev.preventDefault();
+          showLockedPopup();
+        };
+      });
+    }
+    const numberBtns = document.querySelectorAll('.number-btn');
+    numberBtns.forEach(btn => {
+      btn.onclick = (ev) => {
+        ev.preventDefault();
+        showLockedPopup();
+      };
+    });
+  }, 300);
+});
+
+// Khi mở lại danh sách, enable lại form
+socket.on('playersUnlocked', () => {
+  const form = document.getElementById('registerForm');
+  if (form) {
+    form.querySelectorAll('input, button').forEach(e => e.disabled = false);
+  }
+  if (typeof messageDiv !== 'undefined') {
+    messageDiv.innerHTML = '';
+  }
+  // Gỡ sự kiện onclick popup
+  setTimeout(() => {
+    const form = document.getElementById('registerForm');
+    if (form) {
+      form.querySelectorAll('input, button').forEach(e => {
+        e.onclick = null;
+      });
+    }
+    const numberBtns = document.querySelectorAll('.number-btn');
+    numberBtns.forEach(btn => {
+      btn.onclick = null;
+    });
+  }, 300);
 }); 
