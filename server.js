@@ -154,3 +154,31 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });
+
+function showLockedPopup() {
+  console.log('showLockedPopup called');
+  let modal = document.getElementById('lockedModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'lockedModal';
+    modal.innerHTML = `
+      <div class="locked-modal-content">
+        <div class="locked-modal-title">Đã chốt danh sách</div>
+        <div class="locked-modal-msg">Không thể đăng ký thêm!</div>
+        <button class="locked-modal-close">Đóng</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('.locked-modal-close').onclick = () => {
+      modal.style.display = 'none';
+    };
+  }
+  modal.style.display = 'flex';
+  setTimeout(() => { modal.style.display = 'none'; }, 2500);
+}
+
+if (form) {
+  form.querySelectorAll('input, button').forEach(e => {
+    e.addEventListener('click', showLockedPopup);
+  });
+}
