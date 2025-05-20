@@ -7,11 +7,11 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
-    .setting-container { max-width: 700px; margin: 40px auto; background: rgba(24,24,40,0.98); border-radius: 18px; box-shadow: 0 0 32px #00eaff55, 0 0 0 4px #00eaff33; padding: 32px 24px; }
+    .setting-container { max-width:1300px;margin:40px auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px; }
     .setting-title { text-align: center; color: #00eaff; font-family: 'Orbitron', Arial, sans-serif; font-size: 2em; margin-bottom: 24px; text-shadow: 0 0 18px #00eaff, 0 0 2px #fff; }
-    .setting-form { display: flex; gap: 16px; margin-bottom: 24px; justify-content: center; }
-    .setting-form input { padding: 10px 16px; border-radius: 8px; border: 2px solid #00eaff; background: #181828; color: #00eaff; font-family: 'Orbitron', monospace; font-size: 1em; outline: none; }
-    .setting-form button { padding: 10px 24px; border-radius: 8px; border: 2px solid #00eaff; background: linear-gradient(135deg, #00eaff 0%, #181828 100%); color: #fff; font-family: 'Orbitron', monospace; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .setting-form { display: flex; gap: 16px; margin-bottom: 24px; justify-content: center; width: 100%; box-sizing: border-box; }
+    .setting-form input { flex: 1 1 0; min-width: 0; padding: 10px 16px; border-radius: 8px; border: 2px solid #00eaff; background: #181828; color: #00eaff; font-family: 'Orbitron', monospace; font-size: 1em; outline: none; box-sizing: border-box; }
+    .setting-form button { flex: 0 0 auto; padding: 10px 24px; border-radius: 8px; border: 2px solid #00eaff; background: linear-gradient(135deg, #00eaff 0%, #181828 100%); color: #fff; font-family: 'Orbitron', monospace; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
     .setting-form button:hover { background: #00eaff; color: #181828; }
     .setting-table { width: 100%; border-collapse: collapse; background: #10101a; border-radius: 12px; overflow: hidden; box-shadow: 0 0 16px #00eaff55; }
     .setting-table th, .setting-table td { padding: 10px 12px; text-align: center; font-family: 'Orbitron', monospace; color: #00eaff; border-bottom: 1px solid #00eaff22; }
@@ -24,36 +24,54 @@
   </style>
 </head>
 <body>
-  <div class="setting-container">
-    <div class="setting-title">Quản lý người tham gia</div>
-    <form class="setting-form" id="addForm">
-      <input type="text" id="addName" placeholder="Tên người chơi" required>
-      <input type="number" id="addNumber" placeholder="Số" min="1" required>
-      <button type="submit">Thêm</button>
-    </form>
-    <table class="setting-table" id="settingTable">
-      <thead>
-        <tr>
-          <th>Số</th>
-          <th>Tên</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody id="settingTbody"></tbody>
-    </table>
-    <div class="setting-title" style="margin-top:36px;">Lịch sử kết quả quay số</div>
-    <button id="clearHistoryBtn" style="margin-bottom:12px;float:right;background:#ff1744;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:'Orbitron';font-weight:bold;cursor:pointer;box-shadow:0 0 8px #ff1744;">Xóa tất cả lịch sử</button>
-    <table class="setting-table" id="historyTable">
-      <thead>
-        <tr>
-          <th>Số</th>
-          <th>Tên</th>
-          <th>Thời gian</th>
-          <th>Xóa</th>
-        </tr>
-      </thead>
-      <tbody id="historyTbody"></tbody>
-    </table>
+  <div class="setting-container" style="max-width:1300px;margin:40px auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px;">
+    <div class="setting-top" style="display:flex;gap:32px;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;">
+      <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
+        <div class="setting-title">Quản lý người tham gia</div>
+        <form class="setting-form" id="addForm">
+          <input type="text" id="addName" placeholder="Tên người chơi" required>
+          <input type="number" id="addNumber" placeholder="Số" min="1" required>
+          <button type="submit">Thêm</button>
+        </form>
+        <table class="setting-table" id="settingTable">
+          <thead>
+            <tr>
+              <th>Số</th>
+              <th>Tên</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="settingTbody"></tbody>
+        </table>
+      </div>
+      <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
+        <div class="setting-title">Bảng Giải Thưởng</div>
+        <table class="setting-table" id="prizeTable">
+          <thead>
+            <tr>
+              <th>Giải</th>
+              <th>Ảnh</th>
+            </tr>
+          </thead>
+          <tbody id="prizeTbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="setting-bottom" style="max-width:1100px;margin:48px auto 0 auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px;">
+      <div class="setting-title">Lịch sử kết quả quay số</div>
+      <button id="clearHistoryBtn" style="margin-bottom:12px;float:right;background:#ff1744;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:'Orbitron';font-weight:bold;cursor:pointer;box-shadow:0 0 8px #ff1744;">Xóa tất cả lịch sử</button>
+      <table class="setting-table" id="historyTable">
+        <thead>
+          <tr>
+            <th>Số</th>
+            <th>Tên</th>
+            <th>Thời gian</th>
+            <th>Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="historyTbody"></tbody>
+      </table>
+    </div>
   </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
@@ -199,6 +217,22 @@
     // Gọi khi load trang
     fetchPlayers();
     fetchHistory();
+
+    // Render bảng giải thưởng tĩnh
+    const prizeTbody = document.getElementById('prizeTbody');
+    const prizes = [
+      { name: 'Giải Nhất', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/dho.png' },
+      { name: 'Giải Nhì', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/viet.png' },
+      { name: 'Giải Nhì', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/viet.png' },
+      { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' },
+      { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
+    ];
+    prizeTbody.innerHTML = prizes.map(prize => `
+      <tr>
+        <td>${prize.name}</td>
+        <td><img src="${prize.img}" style="height:40px"></td>
+      </tr>
+    `).join('');
   </script>
 </body>
 </html>
