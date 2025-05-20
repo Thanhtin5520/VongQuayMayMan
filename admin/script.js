@@ -268,6 +268,16 @@ function stop() {
       const winner = players[winnerIndex];
       // Hiển thị popup hiệu ứng số trước, sau đó type tên
       if (winner) {
+        // Gửi kết quả lên server để lưu lịch sử
+        fetch('https://vongquaymayman-production.up.railway.app/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            number: winner.number,
+            name: winner.name,
+            time: new Date().toLocaleString('vi-VN')
+          })
+        });
         showResultPopupWithTypeEffect(winner.number, winner.name);
       } else {
         showResultPopup('Chưa có người chơi nào!');

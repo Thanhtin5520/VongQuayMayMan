@@ -41,20 +41,82 @@
       </thead>
       <tbody id="settingTbody"></tbody>
     </table>
+    <div class="setting-title" style="margin-top:36px;">Lịch sử kết quả quay số</div>
+    <button id="clearHistoryBtn" style="margin-bottom:12px;float:right;background:#ff1744;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:'Orbitron';font-weight:bold;cursor:pointer;box-shadow:0 0 8px #ff1744;">Xóa tất cả lịch sử</button>
+    <table class="setting-table" id="historyTable">
+      <thead>
+        <tr>
+          <th>Số</th>
+          <th>Tên</th>
+          <th>Thời gian</th>
+          <th>Xóa</th>
+        </tr>
+      </thead>
+      <tbody id="historyTbody"></tbody>
+    </table>
   </div>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
     const API = 'https://vongquaymayman-production.up.railway.app';
+    const socket = io(API);
     const tbody = document.getElementById('settingTbody');
     const addForm = document.getElementById('addForm');
     const addName = document.getElementById('addName');
     const addNumber = document.getElementById('addNumber');
     let editingNumber = null;
 
+    // Lịch sử kết quả quay số (lấy từ server, realtime)
+    async function fetchHistory() {
+      const res = await fetch(`${API}/history`);
+      const history = await res.json();
+      renderHistory(history);
+    }
+    function renderHistory(history) {
+      const htbody = document.getElementById('historyTbody');
+      htbody.innerHTML = '';
+      history.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.number}</td>
+          <td>${item.name}</td>
+          <td>${item.time}</td>
+          <td><button class="delete-btn" data-idx="${idx}">Xóa</button></td>
+        `;
+        htbody.appendChild(tr);
+      });
+      // Xóa từng dòng
+      htbody.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const idx = +btn.dataset.idx;
+          await fetch(`${API}/history/${idx}`, { method: 'DELETE' });
+          fetchHistory();
+          socket.emit('historyChanged');
+        };
+      });
+    }
+    document.getElementById('clearHistoryBtn').onclick = async () => {
+      if (confirm('Bạn chắc chắn muốn xóa toàn bộ lịch sử?')) {
+        await fetch(`${API}/history`, { method: 'DELETE' });
+        fetchHistory();
+        socket.emit('historyChanged');
+      }
+    };
+
+    // Lắng nghe realtime socket.io cho lịch sử
+    socket.on('historyChanged', fetchHistory);
+
+    // Khi có kết quả mới từ trang admin, cũng tự động cập nhật (nếu server phát sự kiện)
+    // (Nếu muốn chắc chắn, có thể phát sự kiện từ server khi POST /history)
+
     async function fetchPlayers() {
       const res = await fetch(`${API}/players`);
       const data = await res.json();
       renderTable(data);
     }
+
+    // Lắng nghe realtime socket.io
+    socket.on('newPlayer', fetchPlayers);
+    socket.on('playerRemoved', fetchPlayers);
 
     function renderTable(players) {
       tbody.innerHTML = '';
@@ -134,7 +196,9 @@
       fetchPlayers();
     });
 
+    // Gọi khi load trang
     fetchPlayers();
+    fetchHistory();
   </script>
 </body>
 </html>

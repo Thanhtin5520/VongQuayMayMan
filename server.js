@@ -39,6 +39,9 @@ app.get('/setting', (req, res) => {
 let players = [];
 let usedNumbers = new Set();
 
+// Lưu trữ lịch sử quay số
+let spinHistory = [];
+
 // API đăng ký người chơi
 app.post('/register', (req, res) => {
   const { name, number } = req.body;
@@ -84,6 +87,38 @@ app.delete('/admin/remove/:number', (req, res) => {
   players.splice(index, 1);
   usedNumbers.delete(number);
   io.emit('playerRemoved', number);
+  res.json({ success: true });
+});
+
+// API lấy lịch sử
+app.get('/history', (req, res) => {
+  res.json(spinHistory);
+});
+
+// API thêm lịch sử
+app.post('/history', (req, res) => {
+  const { number, name, time } = req.body;
+  spinHistory.push({ number, name, time });
+  io.emit('historyChanged');
+  res.json({ success: true });
+});
+
+// API xóa 1 dòng lịch sử
+app.delete('/history/:index', (req, res) => {
+  const idx = parseInt(req.params.index);
+  if (idx >= 0 && idx < spinHistory.length) {
+    spinHistory.splice(idx, 1);
+    io.emit('historyChanged');
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Không tìm thấy dòng lịch sử' });
+  }
+});
+
+// API xóa toàn bộ lịch sử
+app.delete('/history', (req, res) => {
+  spinHistory = [];
+  io.emit('historyChanged');
   res.json({ success: true });
 });
 
