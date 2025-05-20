@@ -42,8 +42,14 @@ let usedNumbers = new Set();
 // Lưu trữ lịch sử quay số
 let spinHistory = [];
 
+// --- Trạng thái chốt danh sách ---
+let isPlayersLocked = false;
+
 // API đăng ký người chơi
 app.post('/register', (req, res) => {
+  if (isPlayersLocked) {
+    return res.status(403).json({ error: 'Đã chốt danh sách, không thể đăng ký thêm!' });
+  }
   const { name, number } = req.body;
   if (!name || !number) {
     return res.status(400).json({ error: 'Vui lòng nhập tên và số' });
@@ -125,6 +131,14 @@ app.delete('/history', (req, res) => {
 // Socket.io kết nối
 io.on('connection', (socket) => {
   console.log('Client kết nối');
+  // Gửi trạng thái lock khi client mới kết nối
+  if (isPlayersLocked) {
+    socket.emit('playersLocked');
+  }
+  socket.on('lockPlayers', () => {
+    isPlayersLocked = true;
+    io.emit('playersLocked');
+  });
   socket.on('disconnect', () => {
     console.log('Client ngắt kết nối');
   });

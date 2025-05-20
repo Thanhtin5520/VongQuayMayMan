@@ -15,6 +15,7 @@ let lottieInstance = null;
 
 let selectedNumber = null;
 let takenNumbers = [];
+let isLocked = false;
 
 // Cập nhật thời gian cho đồng hồ G-Shock
 function updateGShockTime() {
@@ -183,9 +184,14 @@ function renderNumberGrid() {
     numSpan.textContent = i.toString().padStart(2, '0');
     btn.appendChild(numSpan);
     
-    if (takenNumbers.includes(i)) {
-      btn.classList.add('taken');
+    if (isLocked) {
+      btn.classList.add('locked');
       btn.disabled = true;
+    } else {
+      if (takenNumbers.includes(i)) {
+        btn.classList.add('taken');
+        btn.disabled = true;
+      }
     }
     
     if (selectedNumber === i) {
@@ -194,6 +200,7 @@ function renderNumberGrid() {
     
     btn.addEventListener('click', () => {
       if (btn.classList.contains('taken')) return;
+      if (isLocked) return;
       
       // Bỏ chọn số trước đó nếu có
       const prevSelected = document.querySelector('.number-btn.selected');
@@ -282,4 +289,17 @@ socket.on('newPlayer', () => {
 });
 socket.on('playerRemoved', () => {
   fetchTakenNumbers();
+});
+
+// Lắng nghe sự kiện chốt danh sách từ server
+socket.on('playersLocked', () => {
+  // Nếu có form đăng ký, disable toàn bộ input, button
+  const form = document.getElementById('registerForm');
+  if (form) {
+    form.querySelectorAll('input, button').forEach(e => e.disabled = true);
+  }
+  // Hiển thị thông báo
+  if (typeof messageDiv !== 'undefined') {
+    messageDiv.innerHTML = '<span style="color:#ff1744">Đã chốt danh sách, không thể đăng ký thêm!</span>';
+  }
 }); 
