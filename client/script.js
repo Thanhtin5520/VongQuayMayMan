@@ -187,6 +187,7 @@ function renderNumberGrid() {
     if (isLocked) {
       btn.classList.add('locked');
       btn.disabled = true;
+      btn.addEventListener('click', showLockedPopup);
     } else {
       if (takenNumbers.includes(i)) {
         btn.classList.add('taken');
@@ -362,23 +363,17 @@ socket.on('playersLocked', () => {
     const form = document.getElementById('registerForm');
     if (form) {
       form.querySelectorAll('input, button').forEach(e => {
-        e.onclick = (ev) => {
-          ev.preventDefault();
-          showLockedPopup();
-        };
+        e.addEventListener('click', showLockedPopup);
       });
     }
     const numberBtns = document.querySelectorAll('.number-btn');
     numberBtns.forEach(btn => {
-      btn.onclick = (ev) => {
-        ev.preventDefault();
-        showLockedPopup();
-      };
+      btn.addEventListener('click', showLockedPopup);
     });
   }, 300);
 });
 
-// Khi mở lại danh sách, enable lại form
+// Khi mở lại danh sách, enable lại form và gỡ sự kiện popup
 socket.on('playersUnlocked', () => {
   const form = document.getElementById('registerForm');
   if (form) {
@@ -387,17 +382,17 @@ socket.on('playersUnlocked', () => {
   if (typeof messageDiv !== 'undefined') {
     messageDiv.innerHTML = '';
   }
-  // Gỡ sự kiện onclick popup
+  // Gỡ sự kiện popup
   setTimeout(() => {
     const form = document.getElementById('registerForm');
     if (form) {
       form.querySelectorAll('input, button').forEach(e => {
-        e.onclick = null;
+        e.removeEventListener('click', showLockedPopup);
       });
     }
     const numberBtns = document.querySelectorAll('.number-btn');
     numberBtns.forEach(btn => {
-      btn.onclick = null;
+      btn.removeEventListener('click', showLockedPopup);
     });
   }, 300);
 }); 
