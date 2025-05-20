@@ -32,6 +32,7 @@
           <input type="text" id="addName" placeholder="Tên người chơi" required>
           <input type="number" id="addNumber" placeholder="Số" min="1" required>
           <button type="submit">Thêm</button>
+          <button type="button" id="lockPlayersBtn" style="background:#ffe259;color:#181828;margin-left:8px;">Chốt DS</button>
         </form>
         <table class="setting-table" id="settingTable">
           <thead>
@@ -233,6 +234,23 @@
         <td><img src="${prize.img}" style="height:40px"></td>
       </tr>
     `).join('');
+
+    // --- Chốt danh sách người chơi ---
+    let isLocked = false;
+    const lockBtn = document.getElementById('lockPlayersBtn');
+    lockBtn.onclick = () => {
+      if (confirm('Bạn chắc chắn muốn chốt danh sách? Sau khi chốt sẽ không thể đăng ký thêm!')) {
+        socket.emit('lockPlayers');
+      }
+    };
+    socket.on('playersLocked', () => {
+      isLocked = true;
+      lockBtn.disabled = true;
+      lockBtn.innerText = 'Đã chốt DS';
+      addName.disabled = true;
+      addNumber.disabled = true;
+      document.querySelector('#addForm button[type="submit"]').disabled = true;
+    });
   </script>
 </body>
 </html>
