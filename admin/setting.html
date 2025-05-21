@@ -159,7 +159,9 @@
     async function fetchPlayers() {
       const res = await fetch(`${API}/players`);
       const data = await res.json();
+      autoSelectPrizeRow(data);
       renderTable(data);
+      renderPrizeTable(data);
     }
 
     // Lắng nghe realtime socket.io
@@ -258,7 +260,27 @@
       { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
     ];
     let selectedPrizeRow = 4; // Mặc định là dòng cuối (giải Ba)
-    function renderPrizeTable() {
+    const prizeOrder = [3, 3, 1, 1, 0]; // Thứ tự: Ba, Ba, Nhì, Nhì, Nhất
+    function autoSelectPrizeRow(players) {
+      // Đếm số người đã trúng từng giải
+      const count = { 'Giải Nhất': 0, 'Giải Nhì': 0, 'Giải Ba': 0 };
+      players.forEach(p => {
+        if (p.prizeResult) count[p.prizeResult.name] = (count[p.prizeResult.name] || 0) + 1;
+      });
+      // Xác định giải tiếp theo dựa vào prizeOrder và số lượng đã trúng
+      let turn = 0;
+      for (let i = 0; i < prizeOrder.length; i++) {
+        const prizeName = prizes[prizeOrder[i]].name;
+        if ((prizeName === 'Giải Nhất' && count['Giải Nhất'] < 1) ||
+            (prizeName === 'Giải Nhì' && count['Giải Nhì'] < 2) ||
+            (prizeName === 'Giải Ba' && count['Giải Ba'] < 2)) {
+          turn = i;
+          break;
+        }
+      }
+      selectedPrizeRow = prizeOrder[turn];
+    }
+    function renderPrizeTable(players) {
       prizeTbody.innerHTML = '';
       const prizeTable = document.getElementById('prizeTable');
       const prizeArrow = document.getElementById('prizeArrow');
@@ -271,7 +293,7 @@
         tr.style.cursor = 'pointer';
         tr.onclick = () => {
           selectedPrizeRow = idx;
-          renderPrizeTable();
+          renderPrizeTable(players);
         };
         prizeTbody.appendChild(tr);
       });
@@ -286,7 +308,6 @@
         prizeArrow.style.display = 'none';
       }
     }
-    renderPrizeTable();
 
     // --- Chốt danh sách người chơi ---
     let isLocked = false;

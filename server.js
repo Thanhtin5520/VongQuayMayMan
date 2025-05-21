@@ -129,7 +129,7 @@ app.delete('/history/:index', (req, res) => {
   }
 });  
 
-// API xóa toàn bộ lịch sử
+// API xóa     toàn bộ lịch sử
 app.delete('/history', (req, res) => {
   spinHistory = [];
   io.emit('historyChanged');
