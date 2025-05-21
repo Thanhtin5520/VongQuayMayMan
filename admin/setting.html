@@ -259,7 +259,7 @@
       { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' },
       { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
     ];
-    let selectedPrizeRow = 4; // Mặc định là dòng cuối (giải Ba)
+    let selectedPrizeRow = 3; // Mặc định là giải Ba
     const prizeOrder = [3, 3, 1, 1, 0]; // Thứ tự: Ba, Ba, Nhì, Nhì, Nhất
     function autoSelectPrizeRow(players) {
       // Đếm số người đã trúng từng giải
@@ -267,46 +267,57 @@
       players.forEach(p => {
         if (p.prizeResult) count[p.prizeResult.name] = (count[p.prizeResult.name] || 0) + 1;
       });
-      // Xác định giải tiếp theo dựa vào prizeOrder và số lượng đã trúng
-      let turn = 0;
-      for (let i = 0; i < prizeOrder.length; i++) {
-        const prizeName = prizes[prizeOrder[i]].name;
-        if ((prizeName === 'Giải Nhất' && count['Giải Nhất'] < 1) ||
-            (prizeName === 'Giải Nhì' && count['Giải Nhì'] < 2) ||
-            (prizeName === 'Giải Ba' && count['Giải Ba'] < 2)) {
-          turn = i;
-          break;
-        }
+      
+      // Tự động di chuyển con trỏ theo thứ tự giải
+      if (count['Giải Ba'] < 2) {
+        selectedPrizeRow = 3; // Giải Ba
+      } else if (count['Giải Nhì'] < 2) {
+        selectedPrizeRow = 1; // Giải Nhì
+      } else if (count['Giải Nhất'] < 1) {
+        selectedPrizeRow = 0; // Giải Nhất
+      } else {
+        selectedPrizeRow = 3; // Mặc định về giải Ba
       }
-      selectedPrizeRow = prizeOrder[turn];
+      
+      // Emit sự kiện để các client khác cập nhật
+      socket.emit('prizeSelected', selectedPrizeRow);
     }
     function renderPrizeTable(players) {
       prizeTbody.innerHTML = '';
       const prizeTable = document.getElementById('prizeTable');
       const prizeArrow = document.getElementById('prizeArrow');
+      
       prizes.forEach((prize, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${prize.name}</td>
           <td><img src="${prize.img}" style="height:40px"></td>
         `;
+        
+        // Thêm class active cho dòng được chọn
+        if (idx === selectedPrizeRow) {
+          tr.classList.add('active');
+          tr.style.background = 'rgba(255, 226, 89, 0.1)';
+          tr.style.boxShadow = '0 0 12px rgba(255, 226, 89, 0.3)';
+        }
+        
         tr.style.cursor = 'pointer';
         tr.onclick = () => {
+          // Cho phép chọn giải bất kỳ lúc nào
+          socket.emit('prizeSelected', idx);
           selectedPrizeRow = idx;
-          socket.emit('prizeSelected', selectedPrizeRow);
           renderPrizeTable(players);
         };
         prizeTbody.appendChild(tr);
       });
-      // Đặt vị trí selector triangle bên phải dòng
+      
+      // Cập nhật vị trí con trỏ vàng
       const rows = prizeTable.querySelectorAll('tbody tr');
       if (rows[selectedPrizeRow]) {
         const row = rows[selectedPrizeRow];
         const offset = row.offsetTop + row.offsetHeight/2 - 18;
         prizeArrow.style.top = offset + 'px';
         prizeArrow.style.display = '';
-      } else {
-        prizeArrow.style.display = 'none';
       }
     }
 
@@ -339,6 +350,60 @@
       addName.disabled = false;
       addNumber.disabled = false;
       document.querySelector('#addForm button[type="submit"]').disabled = false;
+    });
+
+    // Trong hàm stop() của script.js, thêm emit sự kiện playerWon
+    if (winner) {
+      const prizeIdx = getCurrentPrizeIndex();
+      const prize = PRIZES[prizeIdx];
+      
+      // Tìm index thực trong players
+      const realIndex = players.findIndex(p => p.number == winner.number);
+      if (realIndex !== -1) {
+        players[realIndex].prizeResult = prize;
+      }
+      
+      updatePlayerList();
+      
+      // Emit sự kiện playerWon
+      socket.emit('playerWon', {
+        number: winner.number,
+        name: winner.name,
+        prize: prize.name
+      });
+
+      // Các xử lý khác...
+      fetch('https://vongquaymayman-production.up.railway.app/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          number: winner.number,
+          name: winner.name,
+          prize: prize.name,
+          prizeImg: prize.img,
+          time: new Date().toLocaleString('vi-VN')
+        })
+      });
+      
+      showResultPopupWithTypeEffect(winner.number, winner.name);
+      prizeTurn++;
+      
+      fetch('https://vongquaymayman-production.up.railway.app/players/updateResult', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number: winner.number, result: prize.name })
+      });
+    }
+
+    // Thêm lắng nghe sự kiện prizeSelected từ server
+    socket.on('prizeSelected', (newSelectedRow) => {
+      selectedPrizeRow = newSelectedRow;
+      renderPrizeTable(players);
+    });
+
+    // Gọi autoSelectPrizeRow khi có người trúng giải
+    socket.on('playerWon', (data) => {
+      autoSelectPrizeRow(players);
     });
   </script>
 </body>
