@@ -190,19 +190,12 @@ function updatePlayerList() {
   if (players.length === 0) return;
 
   // Gom nhóm người trúng giải theo giải
-  const winners = players.filter(p => p.prizeResult);
+  const winnersNhat = players.filter(p => p.prizeResult && p.prizeResult.name === 'Giải Nhất');
+  const winnersNhi = players.filter(p => p.prizeResult && p.prizeResult.name === 'Giải Nhì');
+  const winnersBa = players.filter(p => p.prizeResult && p.prizeResult.name === 'Giải Ba');
   const nonWinners = players.filter(p => !p.prizeResult);
-  // Nếu đã đủ 5 người trúng giải, sắp xếp lại: Nhất -> Nhì -> Ba
-  let sortedWinners = winners;
-  if (winners.length >= 5) {
-    sortedWinners = [
-      ...winners.filter(p => p.prizeResult.name === 'Giải Nhất'),
-      ...winners.filter(p => p.prizeResult.name === 'Giải Nhì'),
-      ...winners.filter(p => p.prizeResult.name === 'Giải Ba')
-    ];
-  }
-  // Hiển thị người trúng giải trước, chưa trúng giải sau
-  const displayList = [...sortedWinners, ...nonWinners];
+  // Sắp xếp: Giải Nhất -> Giải Nhì -> Giải Ba -> chưa trúng
+  const displayList = [...winnersNhat, ...winnersNhi, ...winnersBa, ...nonWinners];
   displayList.forEach(player => {
     const tr = document.createElement('tr');
     const tdNumber = document.createElement('td');

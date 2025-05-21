@@ -113,13 +113,21 @@ app.post('/history', (req, res) => {
 app.delete('/history/:index', (req, res) => {
   const idx = parseInt(req.params.index);
   if (idx >= 0 && idx < spinHistory.length) {
-    spinHistory.splice(idx, 1);
+    // Lấy số của player vừa xóa lịch sử
+    const removed = spinHistory.splice(idx, 1)[0];
+    // Xóa trường prizeResult của player tương ứng
+    if (removed && removed.number) {
+      const player = players.find(p => p.number == removed.number);
+      if (player) {
+        delete player.prizeResult;
+      }
+    }
     io.emit('historyChanged');
     res.json({ success: true });
   } else {
     res.status(404).json({ error: 'Không tìm thấy dòng lịch sử' });
   }
-});
+});  
 
 // API xóa toàn bộ lịch sử
 app.delete('/history', (req, res) => {
