@@ -310,7 +310,6 @@
         tr.onclick = () => {
           socket.emit('prizeSelected', idx);
           selectedPrizeRow = idx;
-          isManualPrizeSelect = true;
           renderPrizeTable(players);
         };
         prizeTbody.appendChild(tr);
