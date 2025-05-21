@@ -329,9 +329,13 @@ function stop() {
             time: new Date().toLocaleString('vi-VN')
           })
         });
-        removeWinnerFromPlayers(winner.number);
         showResultPopupWithTypeEffect(winner.number, winner.name);
         prizeTurn++;
+        fetch('https://vongquaymayman-production.up.railway.app/players/updateResult', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ number: winner.number, result: prize.name })
+        });
       } else {
         showResultPopup('Chưa có người chơi nào!');
       }
@@ -492,13 +496,6 @@ function showErrorMessage(message) {
     messageDiv.classList.remove('show');
     messageDiv.style.color = '';
   }, 2000);
-}
-
-// Khi có người trúng, loại khỏi mảng players (không cho quay lại)
-function removeWinnerFromPlayers(number) {
-  players = players.filter(p => p.number != number);
-  updatePlayerList();
-  drawWheel();
 }
 
 // Lắng nghe websocket khi xóa lịch sử để thêm lại người chơi vào vòng quay
