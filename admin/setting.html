@@ -28,9 +28,9 @@
       font-size: 2.4em;
       color: #ffe259;
       top: 0;
-      transition: top 0.25s cubic-bezier(.4,2,.6,1);
+      transition: top 0.4s cubic-bezier(.4,2,.6,1), filter 0.2s;
       pointer-events: none;
-      filter: drop-shadow(0 0 10px #ffe259cc);
+      filter: drop-shadow(0 0 16px #ffe259cc) brightness(1.2);
       z-index: 2;
       width: 36px;
       height: 36px;
@@ -45,6 +45,14 @@
       filter: drop-shadow(0 0 8px #ffe259cc);
     }
     .prize-table-wrap { position: relative; }
+    .row-blink {
+      animation: blinkRow 1.2s;
+    }
+    @keyframes blinkRow {
+      0% { background: #ffe25944; }
+      50% { background: #fffbe7; }
+      100% { background: rgba(255, 226, 89, 0.1);}
+    }
   </style>
 </head>
 <body>
@@ -259,27 +267,23 @@
       { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' },
       { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
     ];
-    let selectedPrizeRow = 3; // Mặc định là giải Ba
-    const prizeOrder = [3, 3, 1, 1, 0]; // Thứ tự: Ba, Ba, Nhì, Nhì, Nhất
+    // Thứ tự: Giải Ba cuối (4), Giải Ba trên (3), Giải Nhì cuối (2), Giải Nhì trên (1), Giải Nhất (0)
+    const prizeOrder = [4, 3, 2, 1, 0];
+    let selectedPrizeRow = 4; // Mặc định là Giải Ba cuối
+    
     function autoSelectPrizeRow(players) {
       // Đếm số người đã trúng từng giải
       const count = { 'Giải Nhất': 0, 'Giải Nhì': 0, 'Giải Ba': 0 };
       players.forEach(p => {
         if (p.prizeResult) count[p.prizeResult.name] = (count[p.prizeResult.name] || 0) + 1;
       });
-      
-      // Tự động di chuyển con trỏ theo thứ tự giải
-      if (count['Giải Ba'] < 2) {
-        selectedPrizeRow = 3; // Giải Ba
-      } else if (count['Giải Nhì'] < 2) {
-        selectedPrizeRow = 1; // Giải Nhì
-      } else if (count['Giải Nhất'] < 1) {
-        selectedPrizeRow = 0; // Giải Nhất
+      // Tổng số giải đã trao
+      const totalWon = count['Giải Nhất'] + count['Giải Nhì'] + count['Giải Ba'];
+      if (totalWon < prizeOrder.length) {
+        selectedPrizeRow = prizeOrder[totalWon];
       } else {
-        selectedPrizeRow = 3; // Mặc định về giải Ba
+        selectedPrizeRow = 4; // Sau khi hết giải, mặc định về Giải Ba cuối
       }
-      
-      // Emit sự kiện để các client khác cập nhật
       socket.emit('prizeSelected', selectedPrizeRow);
     }
     function renderPrizeTable(players) {
@@ -303,7 +307,6 @@
         
         tr.style.cursor = 'pointer';
         tr.onclick = () => {
-          // Cho phép chọn giải bất kỳ lúc nào
           socket.emit('prizeSelected', idx);
           selectedPrizeRow = idx;
           renderPrizeTable(players);
@@ -405,6 +408,18 @@
     socket.on('playerWon', (data) => {
       autoSelectPrizeRow(players);
     });
+
+    function getCurrentPrizeIndex() {
+      return selectedPrizeRow;
+    }
+
+    function highlightPrizeRow(idx) {
+      const rows = document.querySelectorAll('#prizeTable tbody tr');
+      if (rows[idx]) {
+        rows[idx].classList.add('row-blink');
+        setTimeout(() => rows[idx].classList.remove('row-blink'), 1200);
+      }
+    }
   </script>
 </body>
 </html>
