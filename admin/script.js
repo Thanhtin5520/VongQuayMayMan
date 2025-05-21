@@ -28,6 +28,27 @@ let decelerating = false;
 let spinAudioLooping = false;
 let canStop = false;
 
+// --- GIẢI THƯỞNG ---
+const PRIZES = [
+  { name: 'Giải Nhất', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/dho.png' },
+  { name: 'Giải Nhì', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/viet.png' },
+  { name: 'Giải Nhì', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/viet.png' },
+  { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' },
+  { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
+];
+// Mặc định chọn giải Ba đầu tiên
+let selectedPrizeRow = 3;
+
+// Quản lý thứ tự giải thưởng quay
+let prizeOrder = [3, 3, 1, 1, 0]; // index trong PRIZES: 3-Giải Ba, 1-Giải Nhì, 0-Giải Nhất
+let prizeTurn = 0;
+
+function getCurrentPrizeIndex() {
+  // Nếu còn trong 5 lần đầu thì lấy theo prizeOrder, hết thì luôn là giải Ba
+  if (prizeTurn < prizeOrder.length) return prizeOrder[prizeTurn];
+  return 3; // Giải Ba
+}
+
 // Mảng màu neon cho sector (đặt trong hàm để luôn cập nhật đúng)
 function drawWheel() {
   ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
@@ -50,8 +71,10 @@ function drawWheel() {
     '#232946', // xám xanh đậm
     '#22223b'  // xám xanh đậm hơn
   ];
+  // Lấy danh sách người chơi chưa trúng giải
+  const activePlayers = players.filter(p => !p.prizeResult);
   // Nếu chưa có người chơi, luôn vẽ 8 sector, số là ?
-  const n = players.length > 0 ? players.length : 8;
+  const n = activePlayers.length > 0 ? activePlayers.length : 8;
   ctx.save();
   ctx.translate(centerX, centerY);
   ctx.rotate(currentRotation);
@@ -73,11 +96,10 @@ function drawWheel() {
     ctx.save();
     ctx.rotate(i * sliceAngle + sliceAngle / 2);
     ctx.textAlign = "center";
-    ctx.font = "bold 44px 'Orbitron', Arial, sans-serif";
+    ctx.font = "bold 60px 'Orbitron', Arial, sans-serif";
     // Chọn màu số nổi bật
     let textColor = '#fff';
     let shadowColor = '#fff';
-    // Nếu màu nền sáng thì dùng đen, nếu nền tối thì dùng trắng hoặc vàng neon
     if (["#ffe259", "#fffbe7", "#fd5fff", "#ff5e62", "#ff1744", "#43ff64"].includes(color)) {
       textColor = '#181828';
       shadowColor = '#fffbe7';
@@ -87,11 +109,11 @@ function drawWheel() {
     }
     ctx.fillStyle = textColor;
     ctx.shadowColor = shadowColor;
-    ctx.shadowBlur = 14;
-    if (players[i]) {
-      ctx.fillText(`${players[i].number}`, radius * 0.65, 20);
+    ctx.shadowBlur = 18;
+    if (activePlayers[i]) {
+      ctx.fillText(`${activePlayers[i].number}`, radius * 0.7, 28);
     } else {
-      ctx.fillText('?', radius * 0.65, 20);
+      ctx.fillText('?', radius * 0.7, 28);
     }
     ctx.restore();
     ctx.restore();
@@ -114,13 +136,13 @@ function drawWheel() {
   ctx.stroke();
   ctx.restore();
   // Hiệu ứng động cho tâm vòng quay
-  let centerGlow = 18;
+  let centerGlow = 28;
   if (isSpinning) {
-    centerGlow = 28 + 32 * Math.abs(Math.sin(spinEffectFrame / 5));
+    centerGlow = 38 + 40 * Math.abs(Math.sin(spinEffectFrame / 5));
   }
   ctx.save();
   ctx.beginPath();
-  ctx.arc(0, 0, 16, 0, 2 * Math.PI);
+  ctx.arc(0, 0, 24, 0, 2 * Math.PI);
   ctx.fillStyle = "#ffd700";
   ctx.shadowColor = "#fffde7";
   ctx.shadowBlur = centerGlow;
@@ -128,16 +150,16 @@ function drawWheel() {
   ctx.restore();
   ctx.restore();
   // Hiệu ứng động cho mũi tên
-  let arrowGlow = 28;
+  let arrowGlow = 38;
   if (isSpinning) {
-    arrowGlow = 38 + 32 * Math.abs(Math.cos(spinEffectFrame / 4));
+    arrowGlow = 48 + 40 * Math.abs(Math.cos(spinEffectFrame / 4));
   }
   ctx.save();
   ctx.translate(centerX, centerY);
   ctx.rotate(0); // hướng lên trên (12h)
   ctx.beginPath();
-  const arrowLen = radius * 0.35;
-  const arrowWidth = 32;
+  const arrowLen = radius * 0.42;
+  const arrowWidth = 44;
   ctx.moveTo(0, -arrowLen); // đỉnh nhọn ngoài cùng
   ctx.lineTo(-arrowWidth / 2, 0); // góc trái ở tâm
   ctx.lineTo(arrowWidth / 2, 0);  // góc phải ở tâm
@@ -165,8 +187,23 @@ async function fetchPlayers() {
 function updatePlayerList() {
   const playersTbody = document.getElementById('players');
   playersTbody.innerHTML = '';
-  if (players.length === 0) return; // Không hiển thị dòng nào nếu chưa có người chơi
-  players.forEach(player => {
+  if (players.length === 0) return;
+
+  // Gom nhóm người trúng giải theo giải
+  const winners = players.filter(p => p.prizeResult);
+  const nonWinners = players.filter(p => !p.prizeResult);
+  // Nếu đã đủ 5 người trúng giải, sắp xếp lại: Nhất -> Nhì -> Ba
+  let sortedWinners = winners;
+  if (winners.length >= 5) {
+    sortedWinners = [
+      ...winners.filter(p => p.prizeResult.name === 'Giải Nhất'),
+      ...winners.filter(p => p.prizeResult.name === 'Giải Nhì'),
+      ...winners.filter(p => p.prizeResult.name === 'Giải Ba')
+    ];
+  }
+  // Hiển thị người trúng giải trước, chưa trúng giải sau
+  const displayList = [...sortedWinners, ...nonWinners];
+  displayList.forEach(player => {
     const tr = document.createElement('tr');
     const tdNumber = document.createElement('td');
     const tdName = document.createElement('td');
@@ -176,7 +213,11 @@ function updatePlayerList() {
     tdName.textContent = player.name;
     tdName.className = 'player-name';
     tdResult.className = 'player-result';
-    tdResult.textContent = '';
+    if (player.prizeResult) {
+      tdResult.innerHTML = `<span class='prize-glow'>${player.prizeResult.name}</span>`;
+    } else {
+      tdResult.textContent = '';
+    }
     tr.appendChild(tdNumber);
     tr.appendChild(tdName);
     tr.appendChild(tdResult);
@@ -260,25 +301,37 @@ function stop() {
         doneAudio.play();
       }
       // Tính sector tại vị trí mũi tên (12h)
-      const n = players.length > 0 ? players.length : 8;
+      const activePlayers = players.filter(p => !p.prizeResult);
+      const n = activePlayers.length > 0 ? activePlayers.length : 8;
       let normalized = (3 * Math.PI / 2 - currentRotation) % (2 * Math.PI);
       if (normalized < 0) normalized += 2 * Math.PI;
       const sectorSize = 2 * Math.PI / n;
       const winnerIndex = Math.floor(normalized / sectorSize) % n;
-      const winner = players[winnerIndex];
+      const winner = activePlayers[winnerIndex];
       // Hiển thị popup hiệu ứng số trước, sau đó type tên
       if (winner) {
-        // Gửi kết quả lên server để lưu lịch sử
+        const prizeIdx = getCurrentPrizeIndex();
+        const prize = PRIZES[prizeIdx];
+        // Tìm index thực trong players
+        const realIndex = players.findIndex(p => p.number == winner.number);
+        if (realIndex !== -1) {
+          players[realIndex].prizeResult = prize;
+        }
+        updatePlayerList();
         fetch('https://vongquaymayman-production.up.railway.app/history', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             number: winner.number,
             name: winner.name,
+            prize: prize.name,
+            prizeImg: prize.img,
             time: new Date().toLocaleString('vi-VN')
           })
         });
+        removeWinnerFromPlayers(winner.number);
         showResultPopupWithTypeEffect(winner.number, winner.name);
+        prizeTurn++;
       } else {
         showResultPopup('Chưa có người chơi nào!');
       }
@@ -349,28 +402,52 @@ function showSuccessMessage(message) {
   }, 1500);
 }
 
-// Xử lý đóng popup kết quả
+// Đóng popup với hiệu ứng và cập nhật giải thưởng vào bảng
 closeResult.addEventListener('click', () => {
   resultPopup.classList.remove('show');
+  resultPopup.classList.add('hide');
+  setTimeout(() => {
+    resultPopup.style.display = 'none';
+    resultPopup.classList.remove('hide');
+  }, 400);
+  // Sau khi đóng popup, thêm text giải thưởng vào dòng người trúng
+  if (lastWinnerNumber && lastWinnerPrize) {
+    const rows = document.querySelectorAll('#playersTable tbody tr');
+    rows.forEach(row => {
+      const numberCell = row.children[0];
+      const resultCell = row.children[2];
+      if (numberCell && numberCell.textContent == lastWinnerNumber) {
+        resultCell.innerHTML = `<span class='prize-glow'>${lastWinnerPrize}</span>`;
+      }
+    });
+    lastWinnerNumber = null;
+    lastWinnerPrize = null;
+  }
 });
 
+// Lưu lại số và giải thưởng khi quay xong
+let lastWinnerNumber = null;
+let lastWinnerPrize = null;
+
 function showResultPopupWithTypeEffect(number, name) {
-  resultMessage.innerHTML = `<div class='result-message-custom'><span class='popup-number'>${number}</span></div>`;
+  const prizeIdx = getCurrentPrizeIndex();
+  const prize = PRIZES[prizeIdx];
+  lastWinnerNumber = number;
+  lastWinnerPrize = prize.name;
+  resultPopup.style.display = 'flex';
   resultPopup.classList.add('show');
-  // Hiệu ứng nhấp nháy dòng trúng thưởng trong bảng
-  blinkWinnerRow(number);
-  // Hiệu ứng nhấp nháy bảng
-  const table = document.getElementById('playersTable');
-  if (table) {
-    table.classList.add('blink-table');
-    setTimeout(() => {
-      table.classList.remove('blink-table');
-    }, 2000);
-  }
+  // Hiệu ứng hiện số trước, sau đó type tên, giải và hình ảnh
+  let html = `<div class='result-message-custom'><span class='popup-number'>${number}</span></div>`;
+  resultMessage.innerHTML = html;
   let i = 0;
   function typeEffect() {
     if (i <= name.length) {
-      resultMessage.innerHTML = `<div class='result-message-custom'><span class='popup-number'>${number}</span><span class='popup-name'>${name.slice(0, i)}</span></div>`;
+      let nameHtml = `<span class='popup-name'>${name.slice(0, i)}</span>`;
+      let prizeHtml = '';
+      if (i === name.length) {
+        prizeHtml = `<div class='popup-prize'><span class='popup-prize-label'>${prize.name}</span><span class='popup-prize-img'><img src='${prize.img}' alt='${prize.name}'></span></div>`;
+      }
+      resultMessage.innerHTML = `<div class='result-message-custom'><span class='popup-number'>${number}</span>${nameHtml}</div>${prizeHtml}`;
       i++;
       setTimeout(typeEffect, 60);
     }
@@ -417,6 +494,20 @@ function showErrorMessage(message) {
   }, 2000);
 }
 
+// Khi có người trúng, loại khỏi mảng players (không cho quay lại)
+function removeWinnerFromPlayers(number) {
+  players = players.filter(p => p.number != number);
+  updatePlayerList();
+  drawWheel();
+}
+
+// Lắng nghe websocket khi xóa lịch sử để thêm lại người chơi vào vòng quay
+socket.on('historyChanged', async () => {
+  // Lấy lại danh sách người chơi từ server (server đã reset trạng thái)
+  await fetchPlayers();
+  drawWheel();
+});
+
 // Khởi tạo
 fetchPlayers();
 drawWheel();
@@ -424,4 +515,26 @@ drawWheel();
 // Gắn sự kiện cho các nút
 spinButton.addEventListener('click', spin);
 stopButton.addEventListener('click', stop);
-resetButton.addEventListener('click', reset); 
+resetButton.addEventListener('click', reset);
+
+// Khi load trang, luôn ẩn popup kết quả hoàn toàn
+window.addEventListener('DOMContentLoaded', () => {
+  resultPopup.classList.remove('show');
+  resultPopup.style.display = 'none';
+});
+
+// Khi showResultPopupWithTypeEffect hoặc showResultPopup, chuyển lại display:flex
+function showResultPopup(message) {
+  resultPopup.style.display = 'flex';
+  resultMessage.textContent = message;
+  resultPopup.classList.add('show');
+  // Hiển thị thông báo
+  messageDiv.textContent = message;
+  messageDiv.classList.add('show');
+  messageDiv.style.color = '';
+  // Ẩn thông báo sau 2 giây
+  setTimeout(() => {
+    resultPopup.classList.remove('show');
+    messageDiv.classList.remove('show');
+  }, 2000);
+} 
