@@ -128,6 +128,19 @@ app.delete('/history', (req, res) => {
   res.json({ success: true });
 });
 
+// API cập nhật kết quả giải thưởng cho player
+app.post('/players/updateResult', (req, res) => {
+  const { number, result } = req.body;
+  const player = players.find(p => p.number == number);
+  if (player) {
+    player.prizeResult = { name: result }; // Lưu lại giải thưởng
+    io.emit('playersChanged');
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Không tìm thấy người chơi' });
+  }
+});
+
 // Socket.io kết nối
 io.on('connection', (socket) => {
   console.log('Client kết nối');
