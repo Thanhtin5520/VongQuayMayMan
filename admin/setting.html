@@ -356,63 +356,15 @@
       document.querySelector('#addForm button[type="submit"]').disabled = false;
     });
 
-    // Trong hàm stop() của script.js, thêm emit sự kiện playerWon
-    if (winner) {
-      const prizeIdx = getCurrentPrizeIndex();
-      const prize = PRIZES[prizeIdx];
-      
-      // Tìm index thực trong players
-      const realIndex = players.findIndex(p => p.number == winner.number);
-      if (realIndex !== -1) {
-        players[realIndex].prizeResult = prize;
-      }
-      
-      updatePlayerList();
-      
-      // Emit sự kiện playerWon
-      socket.emit('playerWon', {
-        number: winner.number,
-        name: winner.name,
-        prize: prize.name
-      });
-
-      // Các xử lý khác...
-      fetch('https://vongquaymayman-production.up.railway.app/history', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          number: winner.number,
-          name: winner.name,
-          prize: prize.name,
-          prizeImg: prize.img,
-          time: new Date().toLocaleString('vi-VN')
-        })
-      });
-      
-      showResultPopupWithTypeEffect(winner.number, winner.name);
-      prizeTurn++;
-      
-      fetch('https://vongquaymayman-production.up.railway.app/players/updateResult', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number: winner.number, result: prize.name })
-      });
-
-      isManualPrizeSelect = false; // Reset lại cờ, cho phép auto nhảy ở lượt sau nếu không có thao tác thủ công
-    }
-
     // Thêm lắng nghe sự kiện prizeSelected từ server
     socket.on('prizeSelected', (newSelectedRow) => {
       selectedPrizeRow = newSelectedRow;
-      isManualPrizeSelect = true;
       renderPrizeTable(players);
     });
 
     // Gọi autoSelectPrizeRow khi có người trúng giải
     socket.on('playerWon', (data) => {
-      if (!isManualPrizeSelect) {
-        autoSelectPrizeRow(players);
-      }
+      autoSelectPrizeRow(players);
     });
 
     function getCurrentPrizeIndex() {
