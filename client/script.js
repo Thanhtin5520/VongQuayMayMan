@@ -7,6 +7,7 @@ const successEffect = document.getElementById('successEffect');
 const overlay = document.getElementById('overlay');
 const gshockTimeHeader = document.getElementById('gshockTimeHeader');
 const gshockSeconds = document.getElementById('gshockSeconds');
+const dealerSelect = document.getElementById('dealerSelect');
 
 // Lottie animation
 const lottieContainer = document.getElementById('lottie-success');
@@ -16,6 +17,8 @@ let lottieInstance = null;
 let selectedNumber = null;
 let takenNumbers = [];
 let isLocked = false;
+let dealers = [];
+let players = [];
 
 // Cập nhật thời gian cho đồng hồ G-Shock
 function updateGShockTime() {
@@ -135,11 +138,59 @@ function showSuccessMessage(message) {
   }, 3500);
 }
 
-// Lấy danh sách người chơi để biết số đã chọn
-async function fetchTakenNumbers() {
+// Lấy danh sách đại lý realtime (tạm thời fetch từ setting nếu chưa có API/socket)
+async function fetchDealers() {
+  try {
+    // Tạm lấy từ setting (cần backend hỗ trợ API /dealers hoặc socket)
+    const res = await fetch('https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/dealers.json');
+    dealers = await res.json();
+    renderDealerSelect();
+  } catch (e) {
+    // Nếu không có file json thì hardcode
+    dealers = [
+      { code: 'CWS068', name: 'ĐỒNG HỒ HẢI TRIỀU' },
+      { code: 'CWS303', name: 'CÔNG TY TNHH TASMEDIA' },
+      { code: 'CWS378', name: 'HỘ KINH DOANH WATCHSTORE.VN' },
+      { code: 'CWS047', name: 'ĐỒNG HỒ -MK MINH' },
+      { code: 'CWS128', name: 'ĐỒNG HỒ ĐẶNG PHƯỚC QUÂN' },
+      { code: 'CWS333', name: 'CTY TNHH XNK & PP SKTIME' },
+      { code: 'CWS278', name: 'CTY TNHH XNK PP TRẦN ĐỨC' },
+      { code: 'CWS077', name: 'ĐỒNG HỒ ĐẠI LỘC' },
+      { code: 'CWS052', name: 'ĐỒNG HỒ SK TIME' },
+      { code: 'CWS407', name: 'CÔNG TY TNHH MERCURY NETWORK' },
+      { code: 'CWS097', name: 'ĐỒNG HỒ HƯNG THỊNH' },
+      { code: 'CWS369', name: 'HỘ KINH DOANH CAT WATCH' },
+      { code: 'CWS350', name: 'CTY CP TMẠI VÀ XNK TÂN HOÀNG HÀ' },
+      { code: 'CWS076', name: 'SHOPDONGHO.COM' },
+      { code: 'CWS043', name: 'SHOP ĐỒNG HỒ 24H' },
+      { code: 'CWS351', name: 'CTY TNHH ĐẦU TƯ GD QUỲNH PHÁT' },
+      { code: 'CWS140', name: 'ĐỒNG HỒ HỒNG ANH' },
+      { code: 'CWS057', name: 'CÔNG TY ĐỒNG VIỆT' },
+      { code: 'CWS408', name: 'HỘ KINH DOANH ĐỨC DŨNG' },
+      { code: 'CWS430', name: 'HKD BI WATCH' },
+      { code: 'CWS107', name: 'ĐỒNG HỒ VIỆT THẮNG' },
+      { code: 'CWS030', name: 'ĐỒNG HỒ CHÍ' },
+      { code: 'CWS271', name: 'ĐẶNG TUẤN KHANH' },
+      { code: 'CWS014', name: 'ĐỒNG HỒ ORI' },
+      { code: 'CWS212', name: 'CTY CP XUẤT NHẬP KHẨU HIỂN LONG' },
+      { code: 'CWS354', name: 'HKD WATCHSTORE TRẦN ĐẠI NGHĨA' }
+    ];
+    renderDealerSelect();
+  }
+}
+
+function renderDealerSelect() {
+  dealerSelect.innerHTML = '<option value="">Chọn đại lý tham gia...</option>';
+  dealers.forEach(dl => {
+    dealerSelect.innerHTML += `<option value="${dl.code}">${dl.code} - ${dl.name}</option>`;
+  });
+}
+
+// Lấy danh sách người chơi để biết đại lý nào đã chọn số
+async function fetchPlayersFull() {
   try {
     const response = await fetch('https://vongquaymayman-production.up.railway.app/players');
-    const players = await response.json();
+    players = await response.json();
     takenNumbers = players.map(p => parseInt(p.number));
     renderNumberGrid();
   } catch (error) {
@@ -231,45 +282,117 @@ function playSelectSound() {
   audio.play();
 }
 
-// Đảm bảo fetchTakenNumbers() luôn được gọi khi load trang
-fetchTakenNumbers();
+// Gọi khi load trang
+fetchDealers();
+fetchPlayersFull();
+
+// Popup báo lỗi đại lý đã chọn số
+function showDealerTakenPopup(dealerName, number) {
+  let modal = document.getElementById('dealerTakenModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'dealerTakenModal';
+    modal.innerHTML = `
+      <div class="dealer-modal-content">
+        <div class="dealer-modal-title">Đã đăng ký!</div>
+        <div class="dealer-modal-msg">Quý ĐL <span style='color:#00eaff'>"${dealerName}"</span> đã chọn con số may mắn <span style='color:#ffe259;font-size:1.3em'>"${number}"</span> nhé.</div>
+        <button class="dealer-modal-close">Đóng</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('.dealer-modal-close').onclick = () => {
+      modal.style.display = 'none';
+      dealerSelect.focus();
+    };
+  } else {
+    modal.querySelector('.dealer-modal-msg').innerHTML = `Quý ĐL <span style='color:#00eaff'>"${dealerName}"</span> đã chọn con số may mắn <span style='color:#ffe259;font-size:1.3em'>"${number}"</span> nhé.`;
+  }
+  modal.style.display = 'flex';
+  setTimeout(() => { modal.style.display = 'none'; }, 3500);
+}
+
+// Thêm CSS cho popup đại lý đã chọn số
+if (!document.getElementById('dealerTakenModalStyle')) {
+  const style = document.createElement('style');
+  style.id = 'dealerTakenModalStyle';
+  style.innerHTML = `
+    #dealerTakenModal {
+      position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.18); display: none; align-items: center; justify-content: center;
+    }
+    .dealer-modal-content {
+      background: #181828; border-radius: 18px; box-shadow: 0 0 32px #00eaffcc, 0 0 0 4px #00eaff55;
+      padding: 32px 36px; min-width: 320px; text-align: center; position: relative;
+      border: 2.5px solid #00eaff; animation: lockedPopIn 0.25s cubic-bezier(.4,2,.6,1);
+    }
+    .dealer-modal-title {
+      color: #00eaff; font-size: 2em; font-family: 'Orbitron', Arial, sans-serif;
+      margin-bottom: 12px; text-shadow: 0 0 18px #00eaff, 0 0 2px #fff;
+    }
+    .dealer-modal-msg {
+      color: #fff; font-size: 1.2em; margin-bottom: 18px;
+    }
+    .dealer-modal-close {
+      background: linear-gradient(90deg,#00eaff 60%,#ffe259 100%); color: #181828;
+      border: none; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold;
+      font-size: 1em; padding: 10px 32px; cursor: pointer; box-shadow: 0 0 8px #00eaff99;
+      transition: background 0.2s;
+    }
+    .dealer-modal-close:hover { background: #00eaff; color: #000; }
+    @keyframes lockedPopIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+}
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const name = document.getElementById('name').value;
+  const dealerCode = dealerSelect.value;
+  const dealerObj = dealers.find(dl => dl.code === dealerCode);
   const number = parseInt(numberInput.value);
-  
+  if (!dealerCode) {
+    messageDiv.textContent = 'Vui lòng chọn đại lý!';
+    messageDiv.classList.add('show');
+    setTimeout(() => messageDiv.classList.remove('show'), 3000);
+    dealerSelect.focus();
+    return;
+  }
   if (!number) {
     messageDiv.textContent = 'Vui lòng chọn số!';
     messageDiv.classList.add('show');
     setTimeout(() => messageDiv.classList.remove('show'), 3000);
+    // Focus vào số đầu tiên chưa bị chọn
+    const firstBtn = document.querySelector('.number-btn:not(.taken)');
+    if (firstBtn) firstBtn.focus();
     return;
   }
-  
+  // Kiểm tra đại lý đã chọn số chưa
+  const existed = players.find(p => p.name === dealerObj.name || p.name === dealerObj.code || p.name === (dealerObj.code + ' - ' + dealerObj.name));
+  if (existed) {
+    showDealerTakenPopup(dealerObj.name, existed.number);
+    return;
+  }
   try {
     const response = await fetch('https://vongquaymayman-production.up.railway.app/register', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, number }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: dealerObj.name, number })
     });
     const data = await response.json();
-    
     if (data.success) {
       showSuccessMessage('Đăng ký thành công!');
       form.reset();
       selectedNumber = null;
-      fetchTakenNumbers();
+      fetchPlayersFull();
       // Ẩn form, hiện luckyNumberBox
       form.style.display = 'none';
       document.getElementById('luckyNumberBox').style.display = 'block';
       document.getElementById('luckyNumberDisplay').textContent = number.toString().padStart(2, '0');
+      dealerSelect.disabled = true;
     } else {
       messageDiv.textContent = data.error || 'Lỗi đăng ký';
       messageDiv.classList.add('show');
       setTimeout(() => messageDiv.classList.remove('show'), 3000);
-      fetchTakenNumbers();
+      fetchPlayersFull();
     }
   } catch (error) {
     messageDiv.textContent = 'Lỗi kết nối server';
@@ -286,10 +409,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Lắng nghe khi có người mới đăng ký để cập nhật số đã chọn
 socket.on('newPlayer', () => {
-  fetchTakenNumbers();
+  fetchPlayersFull();
 });
 socket.on('playerRemoved', () => {
-  fetchTakenNumbers();
+  fetchPlayersFull();
 });
 
 // Popup decor đẹp khi đã chốt danh sách
@@ -395,4 +518,57 @@ socket.on('playersUnlocked', () => {
       btn.removeEventListener('click', showLockedPopup);
     });
   }, 300);
-}); 
+});
+
+// Focus tự động: chọn đại lý xong sẽ focus vào số, chọn số xong sẽ focus vào nút Tham Gia
+if (dealerSelect) {
+  dealerSelect.addEventListener('change', () => {
+    // Focus vào số đầu tiên chưa bị chọn
+    setTimeout(() => {
+      const firstBtn = document.querySelector('.number-btn:not(.taken)');
+      if (firstBtn) firstBtn.focus();
+    }, 100);
+  });
+}
+
+// Khi chọn số xong, focus vào nút Tham Gia
+function focusJoinBtn() {
+  setTimeout(() => {
+    const joinBtn = form.querySelector('button[type="submit"]');
+    if (joinBtn) joinBtn.focus();
+  }, 100);
+}
+
+// Gắn lại sự kiện cho các nút số mỗi lần render
+function addNumberEffects() {
+  const buttons = document.querySelectorAll('.number-btn:not(.taken)');
+  buttons.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      if (!btn.classList.contains('selected')) {
+        btn.style.transform = 'translateY(-2px)';
+      }
+    });
+    btn.addEventListener('mouseleave', () => {
+      if (!btn.classList.contains('selected')) {
+        btn.style.transform = '';
+      }
+    });
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('taken')) return;
+      if (isLocked) return;
+      // Bỏ chọn số trước đó nếu có
+      const prevSelected = document.querySelector('.number-btn.selected');
+      if (prevSelected) {
+        prevSelected.classList.remove('selected');
+      }
+      // Hiệu ứng chọn số
+      selectedNumber = parseInt(btn.dataset.number);
+      numberInput.value = selectedNumber;
+      btn.classList.add('selected');
+      // Thêm hiệu ứng âm thanh khi chọn số
+      playSelectSound();
+      // Focus vào nút Tham Gia
+      focusJoinBtn();
+    });
+  });
+} 

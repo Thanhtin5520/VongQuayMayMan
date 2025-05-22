@@ -7,9 +7,11 @@
   <link rel="stylesheet" href="/admin/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
-    .setting-container { max-width:1300px;margin:40px auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px; }
+    .setting-container { max-width:1400px;margin:40px auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px; }
     .setting-title { text-align: center; color: #00eaff; font-family: 'Orbitron', Arial, sans-serif; font-size: 2em; margin-bottom: 24px; text-shadow: 0 0 18px #00eaff, 0 0 2px #fff; }
-    .setting-form { display: flex; gap: 16px; margin-bottom: 24px; justify-content: center; width: 100%; box-sizing: border-box; }
+    .setting-row-top { display: flex; gap: 32px; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+    .setting-box { flex: 1 1 0; min-width: 320px; max-width: 33%; background:rgba(24,24,40,0.98); border-radius:18px; box-shadow:0 0 16px #00eaff55; padding:24px 16px; margin-bottom:0; display: flex; flex-direction: column; }
+    .setting-form { display: flex; gap: 12px; margin-bottom: 18px; justify-content: center; width: 100%; box-sizing: border-box; }
     .setting-form input { flex: 1 1 0; min-width: 0; padding: 10px 16px; border-radius: 8px; border: 2px solid #00eaff; background: #181828; color: #00eaff; font-family: 'Orbitron', monospace; font-size: 1em; outline: none; box-sizing: border-box; }
     .setting-form button { flex: 0 0 auto; padding: 10px 24px; border-radius: 8px; border: 2px solid #00eaff; background: linear-gradient(135deg, #00eaff 0%, #181828 100%); color: #fff; font-family: 'Orbitron', monospace; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
     .setting-form button:hover { background: #00eaff; color: #181828; }
@@ -21,44 +23,59 @@
     .setting-table td .edit-btn:hover { color: #ffe259; }
     .setting-table td .delete-btn:hover { color: #ff1744; }
     .setting-table td input { width: 80px; padding: 4px 8px; border-radius: 6px; border: 1.5px solid #00eaff; background: #232946; color: #00eaff; font-family: 'Orbitron', monospace; }
-    .prize-arrow-selector {
-      position: absolute;
-      right: -38px;
-      left: auto;
-      font-size: 2.4em;
-      color: #ffe259;
-      top: 0;
-      transition: top 0.4s cubic-bezier(.4,2,.6,1), filter 0.2s;
-      pointer-events: none;
-      filter: drop-shadow(0 0 16px #ffe259cc) brightness(1.2);
-      z-index: 2;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }        
-    .prize-arrow-selector svg { 
-      display: block;
-      width: 32px;
-      height: 32px;
-      filter: drop-shadow(0 0 8px #ffe259cc);
-    }
+    .prize-arrow-selector { position: absolute; right: -38px; left: auto; font-size: 2.4em; color: #ffe259; top: 0; transition: top 0.4s cubic-bezier(.4,2,.6,1), filter 0.2s; pointer-events: none; filter: drop-shadow(0 0 16px #ffe259cc) brightness(1.2); z-index: 2; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+    .prize-arrow-selector svg { display: block; width: 32px; height: 32px; filter: drop-shadow(0 0 8px #ffe259cc); }
     .prize-table-wrap { position: relative; }
-    .row-blink {
-      animation: blinkRow 1.2s;
+    .row-blink { animation: blinkRow 1.2s; }
+    @keyframes blinkRow { 0% { background: #ffe25944; } 50% { background: #fffbe7; } 100% { background: rgba(255, 226, 89, 0.1);} }
+    .setting-bottom { max-width:1100px;margin:0 auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px; }
+    @media (max-width: 1200px) {
+      .setting-row-top { flex-direction: column; gap: 24px; }
+      .setting-box { max-width: 100%; }
     }
-    @keyframes blinkRow {
-      0% { background: #ffe25944; }
-      50% { background: #fffbe7; }
-      100% { background: rgba(255, 226, 89, 0.1);}
+    .setting-box.dealer-box {
+      max-width: 33%;
+    }
+    #dealerTable {
+      font-size: 0.82em;
+    }
+    #dealerTable thead th, #dealerTable td {
+      padding: 5px 6px;
+      height: 28px;
+    }
+    #dealerTbody {
+      display: block;
+      max-height: 320px;
+      min-height: 280px;
+      overflow-y: auto;
+      width: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: #00eaff #232946;
+    }
+    #dealerTbody::-webkit-scrollbar {
+      width: 8px;
+      background: #232946;
+      border-radius: 8px;
+    }
+    #dealerTbody::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #00eaff 40%, #181828 100%);
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00eaff99;
+    }
+    #dealerTbody::-webkit-scrollbar-thumb:hover {
+      background: #00eaff;
+    }
+    #dealerTable thead, #dealerTable tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
     }
   </style>
 </head>
 <body>
-  <div class="setting-container" style="max-width:1300px;margin:40px auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px;">
-    <div class="setting-top" style="display:flex;gap:32px;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;">
-      <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
+  <div class="setting-container">
+    <div class="setting-row-top">
+      <div class="setting-box">
         <div class="setting-title">Quản lý người tham gia</div>
         <form class="setting-form" id="addForm">
           <input type="text" id="addName" placeholder="Tên người chơi" required>
@@ -77,7 +94,25 @@
           <tbody id="settingTbody"></tbody>
         </table>
       </div>
-      <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
+      <div class="setting-box dealer-box">
+        <div class="setting-title">Danh sách ĐL tham gia</div>
+        <form class="setting-form" id="addDealerForm">
+          <input type="text" id="addDealerCode" placeholder="Mã ĐL" required>
+          <input type="text" id="addDealerName" placeholder="Tên ĐL" required>
+          <button type="submit">Thêm</button>
+        </form>
+        <table class="setting-table" id="dealerTable">
+          <thead>
+            <tr>
+              <th>Mã ĐL</th>
+              <th>Tên ĐL</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="dealerTbody"></tbody>
+        </table>
+      </div>
+      <div class="setting-box">
         <div class="setting-title">Bảng Giải Thưởng</div>
         <div class="prize-table-wrap">
           <button id="toggleManualPrize" class="manual-btn" style="margin-bottom:10px;background:#00eaff;color:#181828;font-weight:bold;padding:8px 18px;border-radius:8px;border:none;box-shadow:0 0 8px #00eaff;">Bật chỉnh tay</button>
@@ -96,7 +131,7 @@
         </div>
       </div>
     </div>
-    <div class="setting-bottom" style="max-width:1100px;margin:48px auto 0 auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px;">
+    <div class="setting-bottom">
       <div class="setting-title">Lịch sử kết quả quay số</div>
       <button id="clearHistoryBtn" style="margin-bottom:12px;float:right;background:#ff1744;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:'Orbitron';font-weight:bold;cursor:pointer;box-shadow:0 0 8px #ff1744;">Xóa tất cả lịch sử</button>
       <table class="setting-table" id="historyTable">
@@ -118,12 +153,45 @@
     const API = 'https://vongquaymayman-production.up.railway.app';
     const socket = io(API);
     const tbody = document.getElementById('settingTbody');
+    const dealerTbody = document.getElementById('dealerTbody');
     const addForm = document.getElementById('addForm');
+    const addDealerForm = document.getElementById('addDealerForm');
     const addName = document.getElementById('addName');
     const addNumber = document.getElementById('addNumber');
+    const addDealerCode = document.getElementById('addDealerCode');
+    const addDealerName = document.getElementById('addDealerName');
     let editingNumber = null;
+    let editingDealerCode = null;
     let isManualPrizeSelect = false;
     let players = [];
+    let dealers = [
+      { code: 'CWS068', name: 'ĐỒNG HỒ HẢI TRIỀU' },
+      { code: 'CWS303', name: 'CÔNG TY TNHH TASMEDIA' },
+      { code: 'CWS378', name: 'HỘ KINH DOANH WATCHSTORE.VN' },
+      { code: 'CWS047', name: 'ĐỒNG HỒ -MK MINH' },
+      { code: 'CWS128', name: 'ĐỒNG HỒ ĐẶNG PHƯỚC QUÂN' },
+      { code: 'CWS333', name: 'CTY TNHH XNK & PP SKTIME' },
+      { code: 'CWS278', name: 'CTY TNHH XNK PP TRẦN ĐỨC' },
+      { code: 'CWS077', name: 'ĐỒNG HỒ ĐẠI LỘC' },
+      { code: 'CWS052', name: 'ĐỒNG HỒ SK TIME' },
+      { code: 'CWS407', name: 'CÔNG TY TNHH MERCURY NETWORK' },
+      { code: 'CWS097', name: 'ĐỒNG HỒ HƯNG THỊNH' },
+      { code: 'CWS369', name: 'HỘ KINH DOANH CAT WATCH' },
+      { code: 'CWS350', name: 'CTY CP TMẠI VÀ XNK TÂN HOÀNG HÀ' },
+      { code: 'CWS076', name: 'SHOPDONGHO.COM' },
+      { code: 'CWS043', name: 'SHOP ĐỒNG HỒ 24H' },
+      { code: 'CWS351', name: 'CTY TNHH ĐẦU TƯ GD QUỲNH PHÁT' },
+      { code: 'CWS140', name: 'ĐỒNG HỒ HỒNG ANH' },
+      { code: 'CWS057', name: 'CÔNG TY ĐỒNG VIỆT' },
+      { code: 'CWS408', name: 'HỘ KINH DOANH ĐỨC DŨNG' },
+      { code: 'CWS430', name: 'HKD BI WATCH' },
+      { code: 'CWS107', name: 'ĐỒNG HỒ VIỆT THẮNG' },
+      { code: 'CWS030', name: 'ĐỒNG HỒ CHÍ' },
+      { code: 'CWS271', name: 'ĐẶNG TUẤN KHANH' },
+      { code: 'CWS014', name: 'ĐỒNG HỒ ORI' },
+      { code: 'CWS212', name: 'CTY CP XUẤT NHẬP KHẨU HIỂN LONG' },
+      { code: 'CWS354', name: 'HKD WATCHSTORE TRẦN ĐẠI NGHĨA' }
+    ];
 
     // Lịch sử kết quả quay số (lấy từ server, realtime)
     async function fetchHistory() {
@@ -459,6 +527,79 @@
       toggleManualPrizeBtn.innerText = manual ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';
       renderPrizeTable(players);
     });
+
+    // Render bảng ĐL
+    function renderDealerTable() {
+      dealerTbody.innerHTML = '';
+      dealers.forEach(dealer => {
+        const tr = document.createElement('tr');
+        if (editingDealerCode === dealer.code) {
+          tr.innerHTML = `
+            <td><input type="text" value="${dealer.code}" class="edit-code"></td>
+            <td><input type="text" value="${dealer.name}" class="edit-name"></td>
+            <td>
+              <button class="edit-btn save">Lưu</button>
+              <button class="delete-btn cancel">Hủy</button>
+            </td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td>${dealer.code}</td>
+            <td>${dealer.name}</td>
+            <td>
+              <button class="edit-btn">Sửa</button>
+              <button class="delete-btn">Xóa</button>
+            </td>
+          `;
+        }
+        dealerTbody.appendChild(tr);
+
+        // Sửa
+        tr.querySelector('.edit-btn')?.addEventListener('click', () => {
+          if (editingDealerCode === dealer.code) {
+            const newCode = tr.querySelector('.edit-code').value;
+            const newName = tr.querySelector('.edit-name').value;
+            if (!newCode || !newName) return alert('Không được để trống!');
+            dealer.code = newCode;
+            dealer.name = newName;
+            editingDealerCode = null;
+            renderDealerTable();
+          } else {
+            editingDealerCode = dealer.code;
+            renderDealerTable();
+          }
+        });
+
+        // Xóa
+        tr.querySelector('.delete-btn')?.addEventListener('click', () => {
+          if (editingDealerCode === dealer.code) {
+            editingDealerCode = null;
+            renderDealerTable();
+            return;
+          }
+          if (confirm('Bạn chắc chắn muốn xóa?')) {
+            dealers = dealers.filter(d => d.code !== dealer.code);
+            renderDealerTable();
+          }
+        });
+      });
+    }
+
+    // Thêm ĐL mới
+    addDealerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = addDealerCode.value.trim();
+      const name = addDealerName.value.trim();
+      if (!code || !name) return alert('Không được để trống!');
+      if (dealers.some(d => d.code === code)) return alert('Mã ĐL đã tồn tại!');
+      dealers.push({ code, name });
+      addDealerCode.value = '';
+      addDealerName.value = '';
+      renderDealerTable();
+    });
+
+    // Render bảng ĐL khi load trang
+    renderDealerTable();
   </script>
 </body>
 </html>
