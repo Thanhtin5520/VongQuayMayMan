@@ -29,6 +29,7 @@ let spinAudioLooping = false;
 let canStop = false;
 let isManualPrize = false;
 let prizeTurn = 0;
+let isManualPrizeSelect = false;
 
 // --- GIẢI THƯỞNG ---
 const PRIZES = [
@@ -306,7 +307,7 @@ function stop() {
       const winner = activePlayers[winnerIndex];
       // Hiển thị popup hiệu ứng số trước, sau đó type tên
       if (winner) {
-        const prizeIdx = getCurrentPrizeIndex();
+        const prizeIdx = getPrizeIndexForSpin();
         const prize = PRIZES[prizeIdx];
         // Tìm index thực trong players
         const realIndex = players.findIndex(p => p.number == winner.number);
@@ -409,6 +410,23 @@ socket.on('playersChanged', async () => {
   await fetchPlayers();
   drawWheel();
 });
+
+// Lắng nghe sự kiện prizeSelected từ setting, chỉ cập nhật nếu đang chỉnh tay
+socket.on('prizeSelected', (idx) => {
+  if (isManualPrizeSelect) {
+    selectedPrizeRow = idx;
+  }
+});
+
+// Lắng nghe trạng thái bật/tắt chỉnh tay từ setting
+socket.on('toggleManualPrize', (manual) => {
+  isManualPrizeSelect = manual;
+});
+
+// Khi quay số, lấy giải theo trạng thái chỉnh tay
+function getPrizeIndexForSpin() {
+  return isManualPrizeSelect ? selectedPrizeRow : getCurrentPrizeIndex();
+}
 
 // Hàm hiển thị thông báo thành công
 function showSuccessMessage(message) {
