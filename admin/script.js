@@ -43,6 +43,9 @@ let selectedPrizeRow = 3;
 let prizeOrder = [3, 3, 1, 1, 0]; // index trong PRIZES: 3-Giải Ba, 1-Giải Nhì, 0-Giải Nhất
 let prizeTurn = 0;
 
+// Lưu lại lịch sử người trúng để có thể quay lại
+let winnerHistory = [];
+
 function getCurrentPrizeIndex() {
   // Nếu còn trong 5 lần đầu thì lấy theo prizeOrder, hết thì luôn là giải Ba
   if (prizeTurn < prizeOrder.length) return prizeOrder[prizeTurn];
@@ -323,6 +326,8 @@ function stop() {
           })
         });
         showResultPopupWithTypeEffect(winner.number, winner.name);
+        // Lưu lại lịch sử người trúng để có thể quay lại
+        winnerHistory.push({ number: winner.number, prize: prize.name });
         prizeTurn++;
         fetch('https://vongquaymayman-production.up.railway.app/players/updateResult', {
           method: 'POST',
@@ -352,10 +357,39 @@ function stop() {
 
 // Quay lại lượt trước
 function reset() {
-  currentRotation = 0;
-  drawWheel();
-  resultDiv.textContent = '';
-  showSuccessMessage('Đã reset vòng quay!');
+  // Nếu có lịch sử người trúng thì quay lại
+  if (winnerHistory.length > 0) {
+    const last = winnerHistory.pop();
+    // Xóa prizeResult của player vừa trúng
+    const player = players.find(p => p.number == last.number);
+    if (player) {
+      delete player.prizeResult;
+    }
+    // Gọi API xóa prizeResult trên server
+    fetch('https://vongquaymayman-production.up.railway.app/players/updateResult', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ number: last.number, result: null })
+    });
+    // Xóa lịch sử quay số cuối cùng trên server
+    fetch('https://vongquaymayman-production.up.railway.app/history', {
+      method: 'DELETE',
+    });
+    // Giảm prizeTurn về trước đó
+    if (prizeTurn > 0) prizeTurn--;
+    updatePlayerList();
+    drawWheel();
+    resultDiv.textContent = '';
+    showSuccessMessage('Đã quay lại lượt trước!');
+    // Emit lại con trỏ vàng đúng giải hiện tại
+    socket.emit('prizeSelected', getCurrentPrizeIndex());
+  } else {
+    // Nếu không có lịch sử thì chỉ reset vòng quay
+    currentRotation = 0;
+    drawWheel();
+    resultDiv.textContent = '';
+    showSuccessMessage('Đã reset vòng quay!');
+  }
 }
 
 // Kết nối Socket.io
@@ -507,7 +541,50 @@ drawWheel();
 // Gắn sự kiện cho các nút
 spinButton.addEventListener('click', spin);
 stopButton.addEventListener('click', stop);
-resetButton.addEventListener('click', reset);
+resetButton.addEventListener('click', () => {
+  reset();
+  triggerButtonHover(resetButton);
+});
+
+// Hiệu ứng hover cho nút khi dùng phím tắt
+function triggerButtonHover(btn) {
+  btn.classList.add('hover');
+  setTimeout(() => btn.classList.remove('hover'), 200);
+}
+
+// Kiểm tra popup có đang mở không
+function isPopupOpen() {
+  return resultPopup.classList.contains('show');
+}
+
+// Thêm phím tắt PgUp để quay, PgDown để dừng
+window.addEventListener('keydown', (e) => {
+  if (isPopupOpen()) return; // Nếu popup đang mở, không cho thao tác
+  if (e.code === 'PageUp') {
+    spin();
+    triggerButtonHover(spinButton);
+    e.preventDefault();
+  }
+  if (e.code === 'PageDown') {
+    stop();
+    triggerButtonHover(stopButton);
+    e.preventDefault();
+  }
+});
+
+// Khi popup hiện lên, disable các nút
+const popupObserver = new MutationObserver(() => {
+  if (isPopupOpen()) {
+    spinButton.disabled = true;
+    stopButton.disabled = true;
+    resetButton.disabled = true;
+  } else {
+    spinButton.disabled = false;
+    stopButton.disabled = false;
+    resetButton.disabled = false;
+  }
+});
+popupObserver.observe(resultPopup, { attributes: true, attributeFilter: ['class'] });
 
 // Khi load trang, luôn ẩn popup kết quả hoàn toàn
 window.addEventListener('DOMContentLoaded', () => {

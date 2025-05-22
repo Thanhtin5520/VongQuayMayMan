@@ -136,7 +136,7 @@ h1, h2 {
   margin-top: 10px;
 }
 
-button {
+.button, button, .setting-form button {
   padding: 16px 38px;
   background: linear-gradient(135deg, #10101a 80%, #1a237e 100%);
   color: #00eaff;
@@ -153,12 +153,15 @@ button {
   outline: none;
 }
 
-button:hover, button:focus {
-  background: linear-gradient(135deg, #00eaff 0%, #1a237e 100%);
-  color: #fff;
-  box-shadow: 0 0 32px #00eaff, 0 0 0 4px #00eaff;
-  border: 2.5px solid #fff;
-  transform: scale(1.07);
+.button.hover, button.hover, .setting-form button.hover,
+.button:active, button:active, .setting-form button:active {
+  background: #00eaff !important;
+  color: #181828 !important;
+  box-shadow: 0 0 24px 4px #00eaffcc, 0 0 8px #fffbe7;
+  transform: scale(1.08);
+  border-color: #00eaff;
+  outline: none;
+  z-index: 2;
 }
 
 #result {

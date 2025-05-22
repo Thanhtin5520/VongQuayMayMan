@@ -139,7 +139,10 @@
           <td>${item.name}</td>
           <td>${item.prize || ''}</td>
           <td>${item.time}</td>
-          <td><button class="delete-btn" data-idx="${idx}">Xóa</button></td>
+          <td>
+            <button class="delete-btn" data-idx="${idx}">Xóa</button>
+            <button class="edit-btn" data-idx="${idx}">Sửa</button>
+          </td>
         `;
         htbody.appendChild(tr);
       });
@@ -150,6 +153,27 @@
           await fetch(`${API}/history/${idx}`, { method: 'DELETE' });
           fetchHistory();
           socket.emit('historyChanged');
+        };
+      });
+      // Sửa từng dòng
+      htbody.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const idx = +btn.dataset.idx;
+          const tr = btn.closest('tr');
+          const number = tr.children[0].textContent;
+          const name = tr.children[1].textContent;
+          const prize = tr.children[2].textContent;
+          const time = tr.children[3].textContent;
+          const newName = prompt('Sửa tên:', name);
+          if (newName !== null && newName.trim() !== '' && newName !== name) {
+            await fetch(`${API}/history/${idx}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ number, name: newName, prize, time })
+            });
+            fetchHistory();
+            socket.emit('historyChanged');
+          }
         };
       });
     }
