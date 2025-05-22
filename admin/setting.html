@@ -207,7 +207,17 @@
     // Lắng nghe realtime socket.io cho lịch sử
     socket.on('historyChanged', () => {
       fetchHistory();
-      fetchPlayers(); // Đảm bảo con trỏ vàng cập nhật đúng giải tiếp theo
+      if (!isManualPrizeSelect) fetchPlayers();
+      else {
+        // Nếu đang chỉnh tay, chỉ fetch lại bảng và không autoSelectPrizeRow
+        const fetchPlayersNoAuto = async () => {
+          const res = await fetch(`${API}/players`);
+          players = await res.json();
+          renderTable(players);
+          renderPrizeTable(players);
+        };
+        fetchPlayersNoAuto();
+      }
     });
 
     // Khi có kết quả mới từ trang admin, cũng tự động cập nhật (nếu server phát sự kiện)
@@ -216,7 +226,9 @@
     async function fetchPlayers() {
       const res = await fetch(`${API}/players`);
       players = await res.json();
-      autoSelectPrizeRow(players);
+      if (!isManualPrizeSelect) {
+        autoSelectPrizeRow(players);
+      }
       renderTable(players);
       renderPrizeTable(players);
     }
@@ -406,9 +418,11 @@
 
     // Thêm lắng nghe sự kiện prizeSelected từ server
     socket.on('prizeSelected', (idx) => {
-      selectedPrizeRow = idx;
-      fetchPlayers(); // Fetch lại danh sách để đảm bảo đồng bộ
-      renderPrizeTable(players);
+      if (!isManualPrizeSelect) {
+        selectedPrizeRow = idx;
+        fetchPlayers();
+        renderPrizeTable(players);
+      }
     });
 
     // Gọi autoSelectPrizeRow khi có người trúng giải
