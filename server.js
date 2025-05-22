@@ -206,6 +206,8 @@ io.on('connection', (socket) => {
   } else {
     socket.emit('playersUnlocked');
   }
+
+  // Xử lý chốt/mở danh sách
   socket.on('lockPlayers', () => {
     isPlayersLocked = true;
     io.emit('playersLocked');
@@ -214,6 +216,15 @@ io.on('connection', (socket) => {
     isPlayersLocked = false;
     io.emit('playersUnlocked');
   });
+
+  // Xử lý đồng bộ giải thưởng và chỉnh tay
+  socket.on('prizeSelected', (idx) => {
+    socket.broadcast.emit('prizeSelected', idx);
+  });
+  socket.on('toggleManualPrize', (manual) => {
+    socket.broadcast.emit('toggleManualPrize', manual);
+  });
+
   socket.on('disconnect', () => {
     console.log('Client ngắt kết nối');
   });

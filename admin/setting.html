@@ -84,13 +84,6 @@
           <span id="prizeArrow" class="prize-arrow-selector">
             <svg viewBox="0 0 32 32"><polygon points="0,16 32,8 32,24" fill="#ffe259"/></svg>
           </span>
-          <select id="prizeSelect">
-            <option value="0">Giải Nhất</option>
-            <option value="1">Giải Nhì (trên)</option>
-            <option value="2">Giải Nhì (dưới)</option>
-            <option value="3">Giải Ba (trên)</option>
-            <option value="4">Giải Ba (dưới)</option>
-          </select>
           <table class="setting-table" id="prizeTable">
             <thead>
               <tr>
@@ -130,6 +123,7 @@
     const addNumber = document.getElementById('addNumber');
     let editingNumber = null;
     let isManualPrizeSelect = false;
+    let players = [];
 
     // Lịch sử kết quả quay số (lấy từ server, realtime)
     async function fetchHistory() {
@@ -221,10 +215,10 @@
 
     async function fetchPlayers() {
       const res = await fetch(`${API}/players`);
-      const data = await res.json();
-      autoSelectPrizeRow(data);
-      renderTable(data);
-      renderPrizeTable(data);
+      players = await res.json();
+      autoSelectPrizeRow(players);
+      renderTable(players);
+      renderPrizeTable(players);
     }
 
     // Lắng nghe realtime socket.io
@@ -413,6 +407,7 @@
     // Thêm lắng nghe sự kiện prizeSelected từ server
     socket.on('prizeSelected', (idx) => {
       selectedPrizeRow = idx;
+      fetchPlayers(); // Fetch lại danh sách để đảm bảo đồng bộ
       renderPrizeTable(players);
     });
 
@@ -442,7 +437,6 @@
       renderPrizeTable(players);
     };
 
-    // Khi nhận toggleManualPrize từ socket
     socket.on('toggleManualPrize', (manual) => {
       isManualPrizeSelect = manual;
       toggleManualPrizeBtn.innerText = manual ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';

@@ -28,6 +28,7 @@ let decelerating = false;
 let spinAudioLooping = false;
 let canStop = false;
 let isManualPrize = false;
+let prizeTurn = 0;
 
 // --- GIẢI THƯỞNG ---
 const PRIZES = [
@@ -37,12 +38,10 @@ const PRIZES = [
   { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' },
   { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
 ];
-// Mặc định chọn giải Ba đầu tiên
-let selectedPrizeRow = 3;
 
-// Quản lý thứ tự giải thưởng quay
-let prizeOrder = [3, 3, 1, 1, 0]; // index trong PRIZES: 3-Giải Ba, 1-Giải Nhì, 0-Giải Nhất
-let prizeTurn = 0;
+// Thứ tự: Giải Ba cuối (4), Giải Ba trên (3), Giải Nhì cuối (2), Giải Nhì trên (1), Giải Nhất (0)
+const prizeOrder = [4, 3, 2, 1, 0];
+let selectedPrizeRow = 4; // Mặc định là Giải Ba cuối
 
 // Lưu lại lịch sử người trúng để có thể quay lại
 let winnerHistory = [];
@@ -441,29 +440,6 @@ function showSuccessMessage(message) {
   }, 1500);
 }
 
-// Đóng popup với hiệu ứng và cập nhật giải thưởng vào bảng
-closeResult.addEventListener('click', () => {
-  resultPopup.classList.remove('show');
-  resultPopup.classList.add('hide');
-  setTimeout(() => {
-    resultPopup.style.display = 'none';
-    resultPopup.classList.remove('hide');
-  }, 400);
-  // Sau khi đóng popup, thêm text giải thưởng vào dòng người trúng
-  if (lastWinnerNumber && lastWinnerPrize) {
-    const rows = document.querySelectorAll('#playersTable tbody tr');
-    rows.forEach(row => {
-      const numberCell = row.children[0];
-      const resultCell = row.children[2];
-      if (numberCell && numberCell.textContent == lastWinnerNumber) {
-        resultCell.innerHTML = `<span class='prize-glow'>${lastWinnerPrize}</span>`;
-      }
-    });
-    lastWinnerNumber = null;
-    lastWinnerPrize = null;
-  }
-});
-
 // Lưu lại số và giải thưởng khi quay xong
 let lastWinnerNumber = null;
 let lastWinnerPrize = null;
@@ -492,6 +468,46 @@ function showResultPopupWithTypeEffect(number, name) {
     }
   }
   setTimeout(typeEffect, 700); // delay 0.7s cho bất ngờ
+}
+
+function showResultPopup(message) {
+  resultPopup.style.display = 'flex';
+  resultMessage.textContent = message;
+  resultPopup.classList.add('show');
+  // Hiển thị thông báo
+  messageDiv.textContent = message;
+  messageDiv.classList.add('show');
+  messageDiv.style.color = '';
+  // Ẩn thông báo sau 2 giây
+  setTimeout(() => {
+    resultPopup.classList.remove('show');
+    messageDiv.classList.remove('show');
+  }, 2000);
+}
+
+// Đóng popup với hiệu ứng và cập nhật giải thưởng vào bảng
+if (closeResult) {
+  closeResult.addEventListener('click', () => {
+    resultPopup.classList.remove('show');
+    resultPopup.classList.add('hide');
+    setTimeout(() => {
+      resultPopup.style.display = 'none';
+      resultPopup.classList.remove('hide');
+    }, 400);
+    // Sau khi đóng popup, thêm text giải thưởng vào dòng người trúng
+    if (lastWinnerNumber && lastWinnerPrize) {
+      const rows = document.querySelectorAll('#playersTable tbody tr');
+      rows.forEach(row => {
+        const numberCell = row.children[0];
+        const resultCell = row.children[2];
+        if (numberCell && numberCell.textContent == lastWinnerNumber) {
+          resultCell.innerHTML = `<span class='prize-glow'>${lastWinnerPrize}</span>`;
+        }
+      });
+      lastWinnerNumber = null;
+      lastWinnerPrize = null;
+    }
+  });
 }
 
 function blinkWinnerRow(number) {
@@ -591,22 +607,6 @@ window.addEventListener('DOMContentLoaded', () => {
   resultPopup.style.display = 'none';
 });
 
-// Khi showResultPopupWithTypeEffect hoặc showResultPopup, chuyển lại display:flex
-function showResultPopup(message) {
-  resultPopup.style.display = 'flex';
-  resultMessage.textContent = message;
-  resultPopup.classList.add('show');
-  // Hiển thị thông báo
-  messageDiv.textContent = message;
-  messageDiv.classList.add('show');
-  messageDiv.style.color = '';
-  // Ẩn thông báo sau 2 giây
-  setTimeout(() => {
-    resultPopup.classList.remove('show');
-    messageDiv.classList.remove('show');
-  }, 2000);
-}
-
 // Hàm cho phép đổi giải thưởng quay hiện tại theo tên (dùng cho popup chỉnh giải)
 window.setPrizeByName = function(name) {
   // Map tên giải sang index trong PRIZES
@@ -629,69 +629,4 @@ window.setPrizeByIndex = function(idx) {
   const turnIdx = prizeOrder.findIndex(i => i === idx);
   if (turnIdx !== -1) prizeTurn = turnIdx;
   socket.emit('prizeSelected', idx);
-};
-
-// Xử lý nút toggle chỉnh tay
-const toggleManualBtn = document.getElementById('toggleManualPrize');
-if (toggleManualBtn) {
-  toggleManualBtn.onclick = function() {
-    isManualPrize = !isManualPrize;
-    this.textContent = isManualPrize ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';
-    renderPrizeTable(players);
-  };
-}
-
-// Sửa renderPrizeTable để hỗ trợ chỉnh tay
-function renderPrizeTable(players) {
-  prizeTbody.innerHTML = '';
-  const prizeTable = document.getElementById('prizeTable');
-  const prizeArrow = document.getElementById('prizeArrow');
-  prizes.forEach((prize, idx) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${prize.name}</td>
-      <td><img src="${prize.img}" style="height:40px"></td>
-    `;
-    if (idx === selectedPrizeRow) {
-      tr.classList.add('active');
-      tr.style.background = 'rgba(255, 226, 89, 0.1)';
-      tr.style.boxShadow = '0 0 12px rgba(255, 226, 89, 0.3)';
-    }
-    if (isManualPrize) {
-      tr.style.cursor = 'pointer';
-      tr.onclick = () => {
-        window.setPrizeByIndex(idx);
-        renderPrizeTable(players);
-      };
-    } else {
-      tr.onclick = null;
-      tr.style.cursor = '';
-    }
-    prizeTbody.appendChild(tr);
-  });
-  // Cập nhật vị trí con trỏ vàng
-  const rows = prizeTable.querySelectorAll('tbody tr');
-  if (rows[selectedPrizeRow]) {
-    const row = rows[selectedPrizeRow];
-    const offset = row.offsetTop + row.offsetHeight/2 - 18;
-    prizeArrow.style.top = offset + 'px';
-    prizeArrow.style.display = '';
-  }
-}
-
-// Khi quay xong, nếu không manual thì tự động nhảy giải tiếp theo
-function autoNextPrizeRow() {
-  if (!isManualPrize) {
-    const order = [4,3,2,1,0];
-    const currentIdx = order.indexOf(selectedPrizeRow);
-    if (currentIdx < order.length - 1) {
-      window.setPrizeByIndex(order[currentIdx+1]);
-    }
-  }
-}
-
-// Khi nhận prizeSelected từ socket
-socket.on('prizeSelected', (idx) => {
-  selectedPrizeRow = idx;
-  renderPrizeTable(players);
-}); 
+}; 

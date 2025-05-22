@@ -17,9 +17,6 @@
       <h2 style="font-family:'Orbitron',Arial,sans-serif;color:#00eaff;font-size:2.2em;letter-spacing:2px;text-shadow:0 0 12px #00eaff,0 0 2px #fff;margin-bottom:18px;text-align:center;display:flex;align-items:center;gap:10px;">
         Danh sách người chơi
       </h2>
-      <select id="prizeSelect" style="margin-bottom:12px;font-size:1.1em;padding:6px 18px;border-radius:8px;border:2px solid #00eaff;background:#181828;color:#00eaff;width:100%;max-width:320px;">
-        <!-- Option sẽ được render động bằng JS -->
-      </select>
       <table id="playersTable" style="width:100%;border-collapse:separate;border-spacing:0;margin:0 auto;background:transparent;border-radius:0;box-shadow:none;font-family:'Orbitron','Courier New',monospace;font-size:1.22em;color:#00eaff;transition:box-shadow 0.3s;table-layout:fixed;">
         <thead>
           <tr>
@@ -51,39 +48,6 @@
       <h3>Kết Quả</h3>
       <p id="resultMessage"></p>
       <button id="closeResult">Đóng</button>
-    </div>
-  </div>
-  <div id="prizeEditPopup" class="result-popup" style="display:none">
-    <div class="result-content" style="max-width:420px;">
-      <h3>Chọn giải thưởng quay hiện tại</h3>
-      <div id="prizeTablePopupWrap" style="margin:18px 0 24px 0;">
-        <table class="setting-table" id="prizeTablePopup">
-          <thead>
-            <tr><th>Giải</th><th>Ảnh</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <button id="savePrizeBtn" style="background:#00eaff;color:#181828;padding:8px 24px;border-radius:8px;border:none;font-size:1.1em;font-weight:bold;box-shadow:0 0 8px #00eaff;">Lưu</button>
-      <button id="closePrizePopup" style="margin-left:12px;background:#ff1744;color:#fff;padding:8px 24px;border-radius:8px;border:none;font-size:1.1em;font-weight:bold;box-shadow:0 0 8px #ff1744;">Đóng</button>
-    </div>
-  </div>
-  <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
-    <div class="setting-title">Bảng Giải Thưởng</div>
-    <div class="prize-table-wrap">
-      <button id="toggleManualPrize" class="manual-btn" style="margin-bottom:10px;background:#00eaff;color:#181828;font-weight:bold;padding:8px 18px;border-radius:8px;border:none;box-shadow:0 0 8px #00eaff;">Bật chỉnh tay</button>
-      <span id="prizeArrow" class="prize-arrow-selector">
-        <svg viewBox="0 0 32 32"><polygon points="0,16 32,8 32,24" fill="#ffe259"/></svg>
-      </span>
-      <table class="setting-table" id="prizeTable">
-        <thead>
-          <tr>
-            <th>Giải</th>
-            <th>Ảnh</th>
-          </tr>
-        </thead>
-        <tbody id="prizeTbody"></tbody>
-      </table>
     </div>
   </div>
   <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>
