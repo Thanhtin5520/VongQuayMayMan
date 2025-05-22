@@ -461,7 +461,7 @@ let lastWinnerNumber = null;
 let lastWinnerPrize = null;
 
 function showResultPopupWithTypeEffect(number, name) {
-  const prizeIdx = getCurrentPrizeIndex();
+  const prizeIdx = isManualPrizeSelect ? selectedPrizeRow : getCurrentPrizeIndex();
   const prize = PRIZES[prizeIdx];
   lastWinnerNumber = number;
   lastWinnerPrize = prize.name;
