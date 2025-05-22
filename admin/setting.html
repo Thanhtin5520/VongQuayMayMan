@@ -367,6 +367,7 @@
           tr.onclick = () => {
             selectedPrizeRow = idx;
             socket.emit('prizeSelected', idx);
+            console.log('Setting emit prizeSelected', idx);
             renderPrizeTable(players);
           };
         } else {

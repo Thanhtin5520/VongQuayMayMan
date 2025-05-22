@@ -414,12 +414,14 @@ socket.on('playersChanged', async () => {
 // Lắng nghe sự kiện bật/tắt chỉnh tay từ setting
 socket.on('toggleManualPrize', (manual) => {
   isManualPrizeSelect = manual;
+  console.log('Admin nhận toggleManualPrize:', manual);
 });
 
 // Lắng nghe sự kiện chọn giải từ setting, chỉ cập nhật nếu đang chỉnh tay
 socket.on('prizeSelected', (idx) => {
   if (isManualPrizeSelect) {
     selectedPrizeRow = idx;
+    console.log('Admin nhận prizeSelected:', idx);
   }
 });
 
