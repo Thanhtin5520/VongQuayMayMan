@@ -437,14 +437,17 @@
     const toggleManualPrizeBtn = document.getElementById('toggleManualPrize');
     toggleManualPrizeBtn.onclick = () => {
       isManualPrizeSelect = !isManualPrizeSelect;
-      if (isManualPrizeSelect) {
-        toggleManualPrizeBtn.innerText = 'Tắt chỉnh tay';
-        socket.emit('toggleManualPrize', true);
-      } else {
-        toggleManualPrizeBtn.innerText = 'Bật chỉnh tay';
-        socket.emit('toggleManualPrize', false);
-      }
+      toggleManualPrizeBtn.innerText = isManualPrizeSelect ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';
+      socket.emit('toggleManualPrize', isManualPrizeSelect);
+      renderPrizeTable(players);
     };
+
+    // Khi nhận toggleManualPrize từ socket
+    socket.on('toggleManualPrize', (manual) => {
+      isManualPrizeSelect = manual;
+      toggleManualPrizeBtn.innerText = manual ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';
+      renderPrizeTable(players);
+    });
   </script>
 </body>
 </html>
