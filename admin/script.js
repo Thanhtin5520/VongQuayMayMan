@@ -25,7 +25,7 @@ let spinInterval;
 let spinEffectFrame = 0;
 let spinSpeed = 0.1;
 let decelerating = false;
-let spinAudioLooping = false;
+let spinAudioLooping = false; 
 let canStop = false;
 let isManualPrize = false;
 let prizeTurn = 0;
@@ -336,7 +336,9 @@ function stop() {
           body: JSON.stringify({ number: winner.number, result: prize.name })
         });
         // Emit sự kiện đồng bộ con trỏ vàng
-        socket.emit('prizeSelected', prizeIdx);
+        if (!isManualPrizeSelect) {
+          socket.emit('prizeSelected', prizeIdx);
+        }
       } else {
         showResultPopup('Chưa có người chơi nào!');
       }
