@@ -604,4 +604,28 @@ function showResultPopup(message) {
     resultPopup.classList.remove('show');
     messageDiv.classList.remove('show');
   }, 2000);
-} 
+}
+
+// Hàm cho phép đổi giải thưởng quay hiện tại theo tên (dùng cho popup chỉnh giải)
+window.setPrizeByName = function(name) {
+  // Map tên giải sang index trong PRIZES
+  const idx = PRIZES.findIndex(p => p.name === name);
+  if (idx !== -1) {
+    // Cập nhật selectedPrizeRow và prizeTurn cho đúng giải
+    selectedPrizeRow = idx;
+    // prizeTurn sẽ là lượt đầu tiên của giải đó trong prizeOrder (nếu có)
+    const turnIdx = prizeOrder.findIndex(i => i === idx);
+    if (turnIdx !== -1) prizeTurn = turnIdx;
+    // Đồng bộ con trỏ vàng cho các client khác
+    socket.emit('prizeSelected', idx);
+  }
+};
+
+// Hàm cho phép đổi vị trí con trỏ vàng (giải thưởng) theo index dòng giải
+window.setPrizeByIndex = function(idx) {
+  selectedPrizeRow = idx;
+  // prizeTurn sẽ là lượt đầu tiên của giải đó trong prizeOrder (nếu có)
+  const turnIdx = prizeOrder.findIndex(i => i === idx);
+  if (turnIdx !== -1) prizeTurn = turnIdx;
+  socket.emit('prizeSelected', idx);
+}; 

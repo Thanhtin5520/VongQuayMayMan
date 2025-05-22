@@ -14,7 +14,10 @@
   <h1 class="main-title">Admin - Vòng Quay Con Số May Mắn <span class="akw-logo-small">AKW</span></h1>
   <div class="container" style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: row; gap: 40px; align-items: flex-start; justify-content: center;">
     <div id="playerList" style="flex:1 1 0;max-width:50%;background:linear-gradient(135deg,#181828 80%,#1a237e 100%);border-radius:18px;box-shadow:0 0 32px 0 #00eaff55,0 0 0 4px #00eaff33;padding:18px 18px 24px 18px;border:2.5px solid #00eaff;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;font-size:1.25em;">
-      <h2 style="font-family:'Orbitron',Arial,sans-serif;color:#00eaff;font-size:2.2em;letter-spacing:2px;text-shadow:0 0 12px #00eaff,0 0 2px #fff;margin-bottom:18px;text-align:center;">Danh sách người chơi</h2>
+      <h2 style="font-family:'Orbitron',Arial,sans-serif;color:#00eaff;font-size:2.2em;letter-spacing:2px;text-shadow:0 0 12px #00eaff,0 0 2px #fff;margin-bottom:18px;text-align:center;display:flex;align-items:center;gap:10px;">
+        Danh sách người chơi
+        <button id="editPrizeBtn" style="margin-left:8px;font-size:1.2em;padding:4px 14px;border-radius:50%;background:#00eaff;color:#181828;border:none;box-shadow:0 0 8px #00eaff;cursor:pointer;">+</button>
+      </h2>
       <table id="playersTable" style="width:100%;border-collapse:separate;border-spacing:0;margin:0 auto;background:transparent;border-radius:0;box-shadow:none;font-family:'Orbitron','Courier New',monospace;font-size:1.22em;color:#00eaff;transition:box-shadow 0.3s;table-layout:fixed;">
         <thead>
           <tr>
@@ -48,6 +51,20 @@
       <button id="closeResult">Đóng</button>
     </div>
   </div>
+  <div id="prizeEditPopup" class="result-popup" style="display:none">
+    <div class="result-content" style="max-width:400px;">
+      <h3>Chọn giải thưởng quay hiện tại</h3>
+      <div style="margin:18px 0;">
+        <label for="prizeSelect" style="color:#00eaff;font-size:1.1em;display:block;margin-bottom:8px;">Chọn đúng vị trí giải muốn quay tiếp theo:</label>
+        <select id="prizeSelect" style="font-size:1.2em;padding:8px 18px;border-radius:8px;border:2px solid #00eaff;background:#181828;color:#00eaff;width:100%;max-width:320px;">
+          <!-- Option sẽ được render động bằng JS -->
+        </select>
+        <div id="prizePreview" style="margin-top:18px;text-align:center;"></div>
+      </div>
+      <button id="savePrizeBtn" style="background:#00eaff;color:#181828;padding:8px 24px;border-radius:8px;border:none;font-size:1.1em;font-weight:bold;box-shadow:0 0 8px #00eaff;">Lưu</button>
+      <button id="closePrizePopup" style="margin-left:12px;background:#ff1744;color:#fff;padding:8px 24px;border-radius:8px;border:none;font-size:1.1em;font-weight:bold;box-shadow:0 0 8px #ff1744;">Đóng</button>
+    </div>
+  </div>
   <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>
   <audio id="doneAudio" src="./Sound/done.mp3" preload="auto"></audio>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -62,6 +79,52 @@
       resultPopup.classList.remove('show');
       resultPopup.style.display = 'none';
     });
+
+    const editPrizeBtn = document.getElementById('editPrizeBtn');
+    const prizeEditPopup = document.getElementById('prizeEditPopup');
+    const closePrizePopup = document.getElementById('closePrizePopup');
+    const savePrizeBtn = document.getElementById('savePrizeBtn');
+    const prizeSelect = document.getElementById('prizeSelect');
+    editPrizeBtn.onclick = () => {
+      // Render option động từ PRIZES
+      if (window.PRIZES) {
+        prizeSelect.innerHTML = '';
+        window.PRIZES.forEach((prize, idx) => {
+          const opt = document.createElement('option');
+          opt.value = idx;
+          opt.textContent = prize.name;
+          prizeSelect.appendChild(opt);
+        });
+        // Hiển thị preview hình ảnh giải đầu tiên
+        showPrizePreview(0);
+      }
+      prizeEditPopup.style.display = 'flex';
+      prizeEditPopup.classList.add('show');
+    };
+    // Hiển thị preview hình ảnh giải khi chọn
+    function showPrizePreview(idx) {
+      if (!window.PRIZES) return;
+      const prize = window.PRIZES[idx];
+      const preview = document.getElementById('prizePreview');
+      if (prize && prize.img) {
+        preview.innerHTML = `<img src="${prize.img}" alt="${prize.name}" style="height:70px;max-width:120px;display:block;margin:0 auto 8px auto;filter:drop-shadow(0 0 16px #ffe259cc);"><div style='color:#ffe259;font-weight:bold;font-size:1.1em;'>${prize.name}</div>`;
+      } else {
+        preview.innerHTML = `<div style='color:#ffe259;font-weight:bold;font-size:1.1em;'>${prize ? prize.name : ''}</div>`;
+      }
+    }
+    prizeSelect.onchange = function() {
+      showPrizePreview(this.value);
+    };
+    closePrizePopup.onclick = () => {
+      prizeEditPopup.classList.remove('show');
+      setTimeout(() => { prizeEditPopup.style.display = 'none'; }, 300);
+    };
+    savePrizeBtn.onclick = () => {
+      const idx = Number(prizeSelect.value);
+      window.setPrizeByIndex && window.setPrizeByIndex(idx);
+      prizeEditPopup.classList.remove('show');
+      setTimeout(() => { prizeEditPopup.style.display = 'none'; }, 300);
+    };
   </script>
 </body>
 </html> 
