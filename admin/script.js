@@ -329,6 +329,8 @@ function stop() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ number: winner.number, result: prize.name })
         });
+        // Emit sự kiện đồng bộ con trỏ vàng
+        socket.emit('prizeSelected', prizeIdx);
       } else {
         showResultPopup('Chưa có người chơi nào!');
       }
