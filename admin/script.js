@@ -448,12 +448,6 @@ function showSuccessMessage(message) {
     messageDiv.textContent = message;
     messageDiv.classList.add('show');
     
-    // Hiển thị popup kết quả
-    if (message.includes('Đã dừng quay')) {
-      resultMessage.textContent = message;
-      resultPopup.classList.add('show');
-    }
-    
     // Ẩn hiệu ứng sau 2 giây
     setTimeout(() => {
       successEffect.classList.remove('active');
@@ -490,6 +484,7 @@ function showResultPopupWithTypeEffect(number, name) {
     }
   }
   setTimeout(typeEffect, 700); // delay 0.7s cho bất ngờ
+  updatePlayerList();
 }
 
 function showResultPopup(message) {
@@ -651,4 +646,10 @@ window.setPrizeByIndex = function(idx) {
   const turnIdx = prizeOrder.findIndex(i => i === idx);
   if (turnIdx !== -1) prizeTurn = turnIdx;
   socket.emit('prizeSelected', idx);
-}; 
+};
+
+socket.on('historyChanged', async () => {
+  await fetchPlayers();
+  updatePlayerList();
+  drawWheel();
+}); 
