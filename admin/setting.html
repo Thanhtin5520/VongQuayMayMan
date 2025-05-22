@@ -361,7 +361,7 @@
     // Thêm lắng nghe sự kiện prizeSelected từ server
     socket.on('prizeSelected', (newSelectedRow) => {
       selectedPrizeRow = newSelectedRow;
-      renderPrizeTable(players);
+      fetchPlayers();
     });
 
     // Gọi autoSelectPrizeRow khi có người trúng giải
