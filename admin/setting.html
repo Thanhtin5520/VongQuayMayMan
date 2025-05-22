@@ -365,10 +365,12 @@
         if (isManualPrizeSelect) {
           tr.style.cursor = 'pointer';
           tr.onclick = () => {
-            selectedPrizeRow = idx;
-            socket.emit('prizeSelected', idx);
-            console.log('Setting emit prizeSelected', idx);
-            renderPrizeTable(players);
+            if (selectedPrizeRow !== idx) {
+              selectedPrizeRow = idx;
+              socket.emit('prizeSelected', idx);
+              console.log('Setting emit prizeSelected', idx);
+              renderPrizeTable(players);
+            }
           };
         } else {
           tr.onclick = null;
