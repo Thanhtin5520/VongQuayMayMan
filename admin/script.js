@@ -27,6 +27,7 @@ let spinSpeed = 0.1;
 let decelerating = false;
 let spinAudioLooping = false;
 let canStop = false;
+let isManualPrize = false;
 
 // --- GIẢI THƯỞNG ---
 const PRIZES = [
@@ -628,4 +629,69 @@ window.setPrizeByIndex = function(idx) {
   const turnIdx = prizeOrder.findIndex(i => i === idx);
   if (turnIdx !== -1) prizeTurn = turnIdx;
   socket.emit('prizeSelected', idx);
-}; 
+};
+
+// Xử lý nút toggle chỉnh tay
+const toggleManualBtn = document.getElementById('toggleManualPrize');
+if (toggleManualBtn) {
+  toggleManualBtn.onclick = function() {
+    isManualPrize = !isManualPrize;
+    this.textContent = isManualPrize ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';
+    renderPrizeTable(players);
+  };
+}
+
+// Sửa renderPrizeTable để hỗ trợ chỉnh tay
+function renderPrizeTable(players) {
+  prizeTbody.innerHTML = '';
+  const prizeTable = document.getElementById('prizeTable');
+  const prizeArrow = document.getElementById('prizeArrow');
+  prizes.forEach((prize, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${prize.name}</td>
+      <td><img src="${prize.img}" style="height:40px"></td>
+    `;
+    if (idx === selectedPrizeRow) {
+      tr.classList.add('active');
+      tr.style.background = 'rgba(255, 226, 89, 0.1)';
+      tr.style.boxShadow = '0 0 12px rgba(255, 226, 89, 0.3)';
+    }
+    if (isManualPrize) {
+      tr.style.cursor = 'pointer';
+      tr.onclick = () => {
+        window.setPrizeByIndex(idx);
+        renderPrizeTable(players);
+      };
+    } else {
+      tr.onclick = null;
+      tr.style.cursor = '';
+    }
+    prizeTbody.appendChild(tr);
+  });
+  // Cập nhật vị trí con trỏ vàng
+  const rows = prizeTable.querySelectorAll('tbody tr');
+  if (rows[selectedPrizeRow]) {
+    const row = rows[selectedPrizeRow];
+    const offset = row.offsetTop + row.offsetHeight/2 - 18;
+    prizeArrow.style.top = offset + 'px';
+    prizeArrow.style.display = '';
+  }
+}
+
+// Khi quay xong, nếu không manual thì tự động nhảy giải tiếp theo
+function autoNextPrizeRow() {
+  if (!isManualPrize) {
+    const order = [4,3,2,1,0];
+    const currentIdx = order.indexOf(selectedPrizeRow);
+    if (currentIdx < order.length - 1) {
+      window.setPrizeByIndex(order[currentIdx+1]);
+    }
+  }
+}
+
+// Khi nhận prizeSelected từ socket
+socket.on('prizeSelected', (idx) => {
+  selectedPrizeRow = idx;
+  renderPrizeTable(players);
+}); 

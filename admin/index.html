@@ -68,6 +68,24 @@
       <button id="closePrizePopup" style="margin-left:12px;background:#ff1744;color:#fff;padding:8px 24px;border-radius:8px;border:none;font-size:1.1em;font-weight:bold;box-shadow:0 0 8px #ff1744;">Đóng</button>
     </div>
   </div>
+  <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
+    <div class="setting-title">Bảng Giải Thưởng</div>
+    <div class="prize-table-wrap">
+      <button id="toggleManualPrize" class="manual-btn" style="margin-bottom:10px;background:#00eaff;color:#181828;font-weight:bold;padding:8px 18px;border-radius:8px;border:none;box-shadow:0 0 8px #00eaff;">Bật chỉnh tay</button>
+      <span id="prizeArrow" class="prize-arrow-selector">
+        <svg viewBox="0 0 32 32"><polygon points="0,16 32,8 32,24" fill="#ffe259"/></svg>
+      </span>
+      <table class="setting-table" id="prizeTable">
+        <thead>
+          <tr>
+            <th>Giải</th>
+            <th>Ảnh</th>
+          </tr>
+        </thead>
+        <tbody id="prizeTbody"></tbody>
+      </table>
+    </div>
+  </div>
   <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>
   <audio id="doneAudio" src="./Sound/done.mp3" preload="auto"></audio>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
