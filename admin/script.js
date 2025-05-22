@@ -307,7 +307,7 @@ function stop() {
       const winner = activePlayers[winnerIndex];
       // Hiển thị popup hiệu ứng số trước, sau đó type tên
       if (winner) {
-        const prizeIdx = getPrizeIndexForSpin();
+        const prizeIdx = isManualPrizeSelect ? selectedPrizeRow : getCurrentPrizeIndex();
         const prize = PRIZES[prizeIdx];
         // Tìm index thực trong players
         const realIndex = players.findIndex(p => p.number == winner.number);
