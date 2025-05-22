@@ -163,6 +163,15 @@ app.put('/history/:index', (req, res) => {
     if (prize !== undefined) spinHistory[idx].prize = prize;
     if (prizeImg !== undefined) spinHistory[idx].prizeImg = prizeImg;
     if (time !== undefined) spinHistory[idx].time = time;
+    // Nếu sửa tên hoặc số, cập nhật luôn trong players
+    if (number !== undefined || name !== undefined) {
+      const player = players.find(p => p.number == spinHistory[idx].number);
+      if (player) {
+        if (number !== undefined) player.number = number;
+        if (name !== undefined) player.name = name;
+      }
+      io.emit('playersChanged');
+    }
     io.emit('historyChanged');
     res.json({ success: true });
   } else {
