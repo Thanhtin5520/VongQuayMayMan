@@ -80,6 +80,7 @@
       <div class="setting-box" style="flex:1 1 0;min-width:400px;max-width:54%;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 16px #00eaff55;padding:24px 16px;margin-bottom:0;">
         <div class="setting-title">Bảng Giải Thưởng</div>
         <div class="prize-table-wrap">
+          <button id="toggleManualPrize" class="manual-btn" style="margin-bottom:10px;background:#00eaff;color:#181828;font-weight:bold;padding:8px 18px;border-radius:8px;border:none;box-shadow:0 0 8px #00eaff;">Bật chỉnh tay</button>
           <span id="prizeArrow" class="prize-arrow-selector">
             <svg viewBox="0 0 32 32"><polygon points="0,16 32,8 32,24" fill="#ffe259"/></svg>
           </span>
@@ -344,30 +345,30 @@
       prizeTbody.innerHTML = '';
       const prizeTable = document.getElementById('prizeTable');
       const prizeArrow = document.getElementById('prizeArrow');
-      
       prizes.forEach((prize, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${prize.name}</td>
           <td><img src="${prize.img}" style="height:40px"></td>
         `;
-        
-        // Thêm class active cho dòng được chọn
         if (idx === selectedPrizeRow) {
           tr.classList.add('active');
           tr.style.background = 'rgba(255, 226, 89, 0.1)';
           tr.style.boxShadow = '0 0 12px rgba(255, 226, 89, 0.3)';
         }
-        
-        tr.style.cursor = 'pointer';
-        tr.onclick = () => {
-          socket.emit('prizeSelected', idx);
-          selectedPrizeRow = idx;
-          renderPrizeTable(players);
-        };
+        if (isManualPrizeSelect) {
+          tr.style.cursor = 'pointer';
+          tr.onclick = () => {
+            selectedPrizeRow = idx;
+            socket.emit('prizeSelected', idx);
+            renderPrizeTable(players);
+          };
+        } else {
+          tr.onclick = null;
+          tr.style.cursor = '';
+        }
         prizeTbody.appendChild(tr);
       });
-      
       // Cập nhật vị trí con trỏ vàng
       const rows = prizeTable.querySelectorAll('tbody tr');
       if (rows[selectedPrizeRow]) {
@@ -410,9 +411,9 @@
     });
 
     // Thêm lắng nghe sự kiện prizeSelected từ server
-    socket.on('prizeSelected', (newSelectedRow) => {
-      selectedPrizeRow = newSelectedRow;
-      fetchPlayers();
+    socket.on('prizeSelected', (idx) => {
+      selectedPrizeRow = idx;
+      renderPrizeTable(players);
     });
 
     // Gọi autoSelectPrizeRow khi có người trúng giải
@@ -431,6 +432,19 @@
         setTimeout(() => rows[idx].classList.remove('row-blink'), 1200);
       }
     }
+
+    // Thêm sự kiện cho nút 'Bật/Tắt chỉnh tay'
+    const toggleManualPrizeBtn = document.getElementById('toggleManualPrize');
+    toggleManualPrizeBtn.onclick = () => {
+      isManualPrizeSelect = !isManualPrizeSelect;
+      if (isManualPrizeSelect) {
+        toggleManualPrizeBtn.innerText = 'Tắt chỉnh tay';
+        socket.emit('toggleManualPrize', true);
+      } else {
+        toggleManualPrizeBtn.innerText = 'Bật chỉnh tay';
+        socket.emit('toggleManualPrize', false);
+      }
+    };
   </script>
 </body>
 </html>
