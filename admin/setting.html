@@ -133,48 +133,65 @@
       const htbody = document.getElementById('historyTbody');
       htbody.innerHTML = '';
       history.forEach((item, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.number}</td>
-          <td>${item.name}</td>
-          <td>${item.prize || ''}</td>
-          <td>${item.time}</td>
-          <td>
-            <button class="delete-btn" data-idx="${idx}">Xóa</button>
-            <button class="edit-btn" data-idx="${idx}">Sửa</button>
-          </td>
-        `;
-        htbody.appendChild(tr);
-      });
-      // Xóa từng dòng
-      htbody.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.onclick = async () => {
-          const idx = +btn.dataset.idx;
-          await fetch(`${API}/history/${idx}`, { method: 'DELETE' });
-          fetchHistory();
-          socket.emit('historyChanged');
-        };
-      });
-      // Sửa từng dòng
-      htbody.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.onclick = async () => {
-          const idx = +btn.dataset.idx;
-          const tr = btn.closest('tr');
-          const number = tr.children[0].textContent;
-          const name = tr.children[1].textContent;
-          const prize = tr.children[2].textContent;
-          const time = tr.children[3].textContent;
-          const newName = prompt('Sửa tên:', name);
-          if (newName !== null && newName.trim() !== '' && newName !== name) {
+        // Kiểm tra có đang sửa dòng này không
+        if (window.editingHistoryIdx === idx) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><input type="number" value="${item.number}" min="1" class="edit-his-number"></td>
+            <td><input type="text" value="${item.name}" class="edit-his-name"></td>
+            <td><input type="text" value="${item.prize || ''}" class="edit-his-prize"></td>
+            <td><input type="text" value="${item.time}" class="edit-his-time"></td>
+            <td>
+              <button class="edit-btn save" data-idx="${idx}">Lưu</button>
+              <button class="delete-btn cancel" data-idx="${idx}">Hủy</button>
+            </td>
+          `;
+          htbody.appendChild(tr);
+          // Lưu
+          tr.querySelector('.save').onclick = async () => {
+            const newNumber = tr.querySelector('.edit-his-number').value;
+            const newName = tr.querySelector('.edit-his-name').value;
+            const newPrize = tr.querySelector('.edit-his-prize').value;
+            const newTime = tr.querySelector('.edit-his-time').value;
             await fetch(`${API}/history/${idx}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ number, name: newName, prize, time })
+              body: JSON.stringify({ number: newNumber, name: newName, prize: newPrize, time: newTime })
             });
+            window.editingHistoryIdx = null;
             fetchHistory();
             socket.emit('historyChanged');
-          }
-        };
+          };
+          // Hủy
+          tr.querySelector('.cancel').onclick = () => {
+            window.editingHistoryIdx = null;
+            fetchHistory();
+          };
+        } else {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.number}</td>
+            <td>${item.name}</td>
+            <td>${item.prize || ''}</td>
+            <td>${item.time}</td>
+            <td>
+              <button class="delete-btn" data-idx="${idx}">Xóa</button>
+              <button class="edit-btn" data-idx="${idx}">Sửa</button>
+            </td>
+          `;
+          htbody.appendChild(tr);
+          // Xóa
+          tr.querySelector('.delete-btn').onclick = async () => {
+            await fetch(`${API}/history/${idx}`, { method: 'DELETE' });
+            fetchHistory();
+            socket.emit('historyChanged');
+          };
+          // Sửa
+          tr.querySelector('.edit-btn').onclick = () => {
+            window.editingHistoryIdx = idx;
+            fetchHistory();
+          };
+        }
       });
     }
     document.getElementById('clearHistoryBtn').onclick = async () => {
