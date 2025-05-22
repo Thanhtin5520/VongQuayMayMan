@@ -158,20 +158,37 @@ app.put('/history/:index', (req, res) => {
   const idx = parseInt(req.params.index);
   if (idx >= 0 && idx < spinHistory.length) {
     const { number, name, prize, prizeImg, time } = req.body;
+    // Lưu lại số cũ để tìm player đúng
+    const oldNumber = spinHistory[idx].number;
     if (number !== undefined) spinHistory[idx].number = number;
     if (name !== undefined) spinHistory[idx].name = name;
     if (prize !== undefined) spinHistory[idx].prize = prize;
     if (prizeImg !== undefined) spinHistory[idx].prizeImg = prizeImg;
     if (time !== undefined) spinHistory[idx].time = time;
-    // Nếu sửa tên hoặc số, cập nhật luôn trong players
-    if (number !== undefined || name !== undefined) {
-      const player = players.find(p => p.number == spinHistory[idx].number);
-      if (player) {
-        if (number !== undefined) player.number = number;
-        if (name !== undefined) player.name = name;
+    // Đồng bộ với players
+    let player = players.find(p => p.number == oldNumber);
+    if (player) {
+      if (number !== undefined) player.number = number;
+      if (name !== undefined) player.name = name;
+      // Đồng bộ giải thưởng
+      if (prize !== undefined && prize !== '') {
+        player.prizeResult = { name: prize };
+      } else if (prize === '') {
+        delete player.prizeResult;
       }
-      io.emit('playersChanged');
+    } else if (number !== undefined) {
+      // Nếu không tìm thấy theo số cũ, thử tìm theo số mới (trường hợp đã đổi số trước đó)
+      player = players.find(p => p.number == number);
+      if (player) {
+        if (name !== undefined) player.name = name;
+        if (prize !== undefined && prize !== '') {
+          player.prizeResult = { name: prize };
+        } else if (prize === '') {
+          delete player.prizeResult;
+        }
+      }
     }
+    io.emit('playersChanged');
     io.emit('historyChanged');
     res.json({ success: true });
   } else {
