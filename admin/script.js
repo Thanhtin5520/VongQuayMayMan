@@ -411,16 +411,16 @@ socket.on('playersChanged', async () => {
   drawWheel();
 });
 
-// Lắng nghe sự kiện prizeSelected từ setting, chỉ cập nhật nếu đang chỉnh tay
+// Lắng nghe sự kiện bật/tắt chỉnh tay từ setting
+socket.on('toggleManualPrize', (manual) => {
+  isManualPrizeSelect = manual;
+});
+
+// Lắng nghe sự kiện chọn giải từ setting, chỉ cập nhật nếu đang chỉnh tay
 socket.on('prizeSelected', (idx) => {
   if (isManualPrizeSelect) {
     selectedPrizeRow = idx;
   }
-});
-
-// Lắng nghe trạng thái bật/tắt chỉnh tay từ setting
-socket.on('toggleManualPrize', (manual) => {
-  isManualPrizeSelect = manual;
 });
 
 // Khi quay số, lấy giải theo trạng thái chỉnh tay
