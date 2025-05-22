@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản lý người tham gia - AKW</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/admin/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
     .setting-container { max-width:1300px;margin:40px auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px; }
@@ -103,6 +103,7 @@
           <tr>
             <th>Số</th>
             <th>Tên</th>
+            <th>Kết quả</th>
             <th>Thời gian</th>
             <th>Xóa</th>
           </tr>
@@ -136,6 +137,7 @@
         tr.innerHTML = `
           <td>${item.number}</td>
           <td>${item.name}</td>
+          <td>${item.prize || ''}</td>
           <td>${item.time}</td>
           <td><button class="delete-btn" data-idx="${idx}">Xóa</button></td>
         `;
