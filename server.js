@@ -103,8 +103,8 @@ app.get('/history', (req, res) => {
 
 // API thêm lịch sử
 app.post('/history', (req, res) => {
-  const { number, name, time } = req.body;
-  spinHistory.push({ number, name, time });
+  const { number, name, prize, prizeImg, time } = req.body;
+  spinHistory.push({ number, name, prize, prizeImg, time });
   io.emit('historyChanged');
   res.json({ success: true });
 });
