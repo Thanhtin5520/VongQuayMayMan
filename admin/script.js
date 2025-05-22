@@ -25,7 +25,7 @@ let spinInterval;
 let spinEffectFrame = 0;
 let spinSpeed = 0.1;
 let decelerating = false;
-let spinAudioLooping = false; 
+let spinAudioLooping = false;   
 let canStop = false;
 let isManualPrize = false;
 let prizeTurn = 0;
