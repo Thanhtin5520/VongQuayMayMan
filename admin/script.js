@@ -31,7 +31,7 @@ let isManualPrize = false;
 let prizeTurn = 0;
 let isManualPrizeSelect = false;
 
-// --- GIẢI THƯỞNG ---
+// --- GIẢI THƯỞNG ---   
 const PRIZES = [
   { name: 'Giải Nhất', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/dho.png' },
   { name: 'Giải Nhì', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/viet.png' },
