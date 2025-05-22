@@ -405,6 +405,11 @@ socket.on('playerRemoved', (number) => {
   drawWheel();
 });
 
+socket.on('playersChanged', async () => {
+  await fetchPlayers();
+  drawWheel();
+});
+
 // Hàm hiển thị thông báo thành công
 function showSuccessMessage(message) {
   // Hiển thị hiệu ứng xoay vòng
@@ -526,13 +531,6 @@ function showErrorMessage(message) {
     messageDiv.style.color = '';
   }, 2000);
 }
-
-// Lắng nghe websocket khi xóa lịch sử để thêm lại người chơi vào vòng quay
-socket.on('historyChanged', async () => {
-  // Lấy lại danh sách người chơi từ server (server đã reset trạng thái)
-  await fetchPlayers();
-  drawWheel();
-});
 
 // Khởi tạo
 fetchPlayers();
