@@ -52,14 +52,15 @@
     </div>
   </div>
   <div id="prizeEditPopup" class="result-popup" style="display:none">
-    <div class="result-content" style="max-width:400px;">
+    <div class="result-content" style="max-width:420px;">
       <h3>Chọn giải thưởng quay hiện tại</h3>
-      <div style="margin:18px 0;">
-        <label for="prizeSelect" style="color:#00eaff;font-size:1.1em;display:block;margin-bottom:8px;">Chọn đúng vị trí giải muốn quay tiếp theo:</label>
-        <select id="prizeSelect" style="font-size:1.2em;padding:8px 18px;border-radius:8px;border:2px solid #00eaff;background:#181828;color:#00eaff;width:100%;max-width:320px;">
-          <!-- Option sẽ được render động bằng JS -->
-        </select>
-        <div id="prizePreview" style="margin-top:18px;text-align:center;"></div>
+      <div id="prizeTablePopupWrap" style="margin:18px 0 24px 0;">
+        <table class="setting-table" id="prizeTablePopup">
+          <thead>
+            <tr><th>Giải</th><th>Ảnh</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
       <button id="savePrizeBtn" style="background:#00eaff;color:#181828;padding:8px 24px;border-radius:8px;border:none;font-size:1.1em;font-weight:bold;box-shadow:0 0 8px #00eaff;">Lưu</button>
       <button id="closePrizePopup" style="margin-left:12px;background:#ff1744;color:#fff;padding:8px 24px;border-radius:8px;border:none;font-size:1.1em;font-weight:bold;box-shadow:0 0 8px #ff1744;">Đóng</button>
@@ -84,36 +85,39 @@
     const prizeEditPopup = document.getElementById('prizeEditPopup');
     const closePrizePopup = document.getElementById('closePrizePopup');
     const savePrizeBtn = document.getElementById('savePrizeBtn');
-    const prizeSelect = document.getElementById('prizeSelect');
     editPrizeBtn.onclick = () => {
-      // Render option động từ PRIZES
-      if (window.PRIZES) {
-        prizeSelect.innerHTML = '';
-        window.PRIZES.forEach((prize, idx) => {
-          const opt = document.createElement('option');
-          opt.value = idx;
-          opt.textContent = prize.name;
-          prizeSelect.appendChild(opt);
-        });
-        // Hiển thị preview hình ảnh giải đầu tiên
-        showPrizePreview(0);
-      }
+      renderPrizeTablePopup();
       prizeEditPopup.style.display = 'flex';
       prizeEditPopup.classList.add('show');
     };
-    // Hiển thị preview hình ảnh giải khi chọn
-    function showPrizePreview(idx) {
+    function renderPrizeTablePopup() {
+      const tbody = document.querySelector('#prizeTablePopup tbody');
+      tbody.innerHTML = '';
       if (!window.PRIZES) return;
-      const prize = window.PRIZES[idx];
-      const preview = document.getElementById('prizePreview');
-      if (prize && prize.img) {
-        preview.innerHTML = `<img src="${prize.img}" alt="${prize.name}" style="height:70px;max-width:120px;display:block;margin:0 auto 8px auto;filter:drop-shadow(0 0 16px #ffe259cc);"><div style='color:#ffe259;font-weight:bold;font-size:1.1em;'>${prize.name}</div>`;
-      } else {
-        preview.innerHTML = `<div style='color:#ffe259;font-weight:bold;font-size:1.1em;'>${prize ? prize.name : ''}</div>`;
-      }
+      window.PRIZES.forEach((prize, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${prize.name}</td><td><img src='${prize.img}' style='height:40px'></td>`;
+        tr.style.cursor = 'pointer';
+        if (idx === window.selectedPrizeRow) {
+          tr.classList.add('active');
+          tr.style.background = 'rgba(255, 226, 89, 0.1)';
+          tr.style.boxShadow = '0 0 12px rgba(255, 226, 89, 0.3)';
+        }
+        tr.onclick = () => {
+          window.setPrizeByIndex(idx);
+          renderPrizeTablePopup();
+        };
+        tbody.appendChild(tr);
+      });
     }
-    prizeSelect.onchange = function() {
-      showPrizePreview(this.value);
+    // Khi quay xong, tự động nhảy lên dòng tiếp theo theo rule mặc định
+    window.autoNextPrizeRow = function() {
+      // Rule: từ nhỏ đến lớn (Ba dưới -> Ba trên -> Nhì dưới -> Nhì trên -> Nhất)
+      const order = [4,3,2,1,0];
+      const currentIdx = order.indexOf(window.selectedPrizeRow);
+      if (currentIdx < order.length - 1) {
+        window.setPrizeByIndex(order[currentIdx+1]);
+      }
     };
     closePrizePopup.onclick = () => {
       prizeEditPopup.classList.remove('show');
