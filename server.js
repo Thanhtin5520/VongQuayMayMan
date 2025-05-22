@@ -120,6 +120,7 @@ app.delete('/history/:index', (req, res) => {
       const player = players.find(p => p.number == removed.number);
       if (player) {
         delete player.prizeResult;
+        io.emit('playersChanged');
       }
     }
     io.emit('historyChanged');
