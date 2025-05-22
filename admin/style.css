@@ -53,8 +53,8 @@ h1, h2 {
 #playerList {
   flex: 1 1 0;
   width: auto;
-  min-width: 420px;
-  max-width: 650px;
+  min-width: 520px;
+  max-width: 800px;
   margin-left: 0;
   text-align: left;
   background: linear-gradient(135deg, #181828 80%, #1a237e 100%);
@@ -68,7 +68,7 @@ h1, h2 {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  font-size: 1.25em;
+  font-size: 1.08em;
 }
 
 #playerList h2 {
@@ -251,7 +251,7 @@ h1, h2 {
   border-radius: 0;
   box-shadow: none;
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.22em;
+  font-size: 1.05em;
   color: #00eaff;
   transition: box-shadow 0.3s;
   table-layout: fixed;
@@ -266,8 +266,8 @@ h1, h2 {
   padding-right: 0;
 }
 #playersTable th:nth-child(2), #playersTable td.player-name {
-  width: 58%;
-  min-width: 80px;
+  width: 68%;
+  min-width: 180px;
   text-align: left;
   padding-left: 12px;
   padding-right: 8px;
@@ -294,7 +294,7 @@ h1, h2 {
   padding: 16px 20px;
   text-align: left;
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.22em;
+  font-size: 1em;
   letter-spacing: 1px;
 }
 
@@ -621,4 +621,69 @@ div[style*="max-width:340px"] table td {
   font-size: 1.1em;
   margin-left: 6px;
   vertical-align: middle;
+}
+
+#playersTable th:not(:last-child), #playersTable td:not(:last-child) {
+  border-right: 1.5px solid #00eaff33;
+}
+
+@media (max-width: 1100px) {
+  .container {
+    flex-direction: column;
+    gap: 32px;
+    padding: 24px 6px;
+    min-height: 0;
+    width: 99%;
+  }
+  #playerList, #wheel {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto 18px auto;
+  }
+  #playerList {
+    font-size: 0.98em;
+    padding: 10px 4px 14px 4px;
+  }
+  #wheel {
+    padding: 18px 4px 18px 4px;
+  }
+  .main-title, #playerList h2, #wheel h2 {
+    font-size: 1.5em !important;
+  }
+  .button, button, .setting-form button {
+    font-size: 1em;
+    padding: 10px 18px;
+  }
+  #playersTable th, #playersTable td {
+    font-size: 0.95em;
+    padding: 8px 6px;
+  }
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 8px 2px;
+    gap: 12px;
+  }
+  #playerList, #wheel {
+    font-size: 0.92em;
+    padding: 4px 2px 8px 2px;
+  }
+  .main-title, #playerList h2, #wheel h2 {
+    font-size: 1.1em !important;
+  }
+  .button, button, .setting-form button {
+    font-size: 0.92em;
+    padding: 7px 10px;
+  }
+  #playersTable th, #playersTable td {
+    font-size: 0.9em;
+    padding: 6px 2px;
+  }
+  #playersTable, #playersTable thead, #playersTable tbody {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
 } 

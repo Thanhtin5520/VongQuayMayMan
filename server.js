@@ -153,6 +153,23 @@ app.post('/players/updateResult', (req, res) => {
   }
 });
 
+// API sửa 1 dòng lịch sử
+app.put('/history/:index', (req, res) => {
+  const idx = parseInt(req.params.index);
+  if (idx >= 0 && idx < spinHistory.length) {
+    const { number, name, prize, prizeImg, time } = req.body;
+    if (number !== undefined) spinHistory[idx].number = number;
+    if (name !== undefined) spinHistory[idx].name = name;
+    if (prize !== undefined) spinHistory[idx].prize = prize;
+    if (prizeImg !== undefined) spinHistory[idx].prizeImg = prizeImg;
+    if (time !== undefined) spinHistory[idx].time = time;
+    io.emit('historyChanged');
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Không tìm thấy dòng lịch sử' });
+  }
+});
+
 // Socket.io kết nối
 io.on('connection', (socket) => {
   console.log('Client kết nối');
