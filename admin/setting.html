@@ -203,7 +203,10 @@
     };
 
     // Lắng nghe realtime socket.io cho lịch sử
-    socket.on('historyChanged', fetchHistory);
+    socket.on('historyChanged', () => {
+      fetchHistory();
+      fetchPlayers(); // Đảm bảo con trỏ vàng cập nhật đúng giải tiếp theo
+    });
 
     // Khi có kết quả mới từ trang admin, cũng tự động cập nhật (nếu server phát sự kiện)
     // (Nếu muốn chắc chắn, có thể phát sự kiện từ server khi POST /history)
