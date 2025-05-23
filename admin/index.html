@@ -82,40 +82,65 @@
       flex: 0 0 auto;
     }
     #playersTable {
-      flex: 1 1 0;
-      height: auto;
-      max-height: none;
-      overflow: hidden;
-      background: transparent;
-      margin: 0;
-      border: none;
-    }
-    #playersTable thead {
-      display: table;
-      width: 100%;
       table-layout: fixed;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
     }
-    #playersTable tbody {
-      display: block;
-      flex: 1 1 0;
-      height: 100%;
+    #playersTable th, #playersTable td {
+      border-right: 2px solid #00eaff;
+      box-sizing: border-box;
+    }
+    #playersTable th:last-child, #playersTable td:last-child {
+      border-right: none;
+    }
+    .table-wrapper {
+      width: 100%;
+    }
+    .header-table th, .body-table td {
+      padding: 8px 10px;
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      font-size: 1.08em;
+      line-height: 1.35em;
+      text-align: left;
+      box-sizing: border-box;
+    }
+    .header-table th {
+      background: linear-gradient(90deg, #00eaff 60%, #1a237e 100%);
+      color: #181828;
+      text-shadow: 0 0 8px #fff, 0 0 2px #00eaff;
+      font-weight: 700;
+      text-align: center;
+    }
+    .body-table td {
+      color: #00eaff;
+      background: transparent;
+      text-align: left;
+    }
+    .body-table td:first-child, .header-table th:first-child {
+      text-align: center;
+    }
+    .body-table td:last-child, .header-table th:last-child {
+      text-align: center;
+    }
+    .body-scroll {
       max-height: 810px;
       overflow-y: auto;
       width: 100%;
       scrollbar-width: thin;
       scrollbar-color: #00eaff #232946;
     }
-    #playersTable tbody::-webkit-scrollbar {
+    .body-scroll::-webkit-scrollbar {
       width: 8px;
       background: #232946;
       border-radius: 8px;
     }
-    #playersTable tbody::-webkit-scrollbar-thumb {
+    .body-scroll::-webkit-scrollbar-thumb {
       background: linear-gradient(135deg, #00eaff 40%, #181828 100%);
       border-radius: 8px;
       box-shadow: 0 0 8px #00eaff99;
     }
-    #playersTable tbody::-webkit-scrollbar-thumb:hover {
+    .body-scroll::-webkit-scrollbar-thumb:hover {
       background: #00eaff;
     }
   </style>
@@ -128,18 +153,20 @@
   <div class="container" style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: row; gap: 40px; align-items: flex-start; justify-content: center;">
     <div id="playerList" style="flex:1 1 0;max-width:50%;background:linear-gradient(135deg,#181828 80%,#1a237e 100%);border-radius:18px;box-shadow:0 0 32px 0 #00eaff55,0 0 0 4px #00eaff33;padding:18px 18px 24px 18px;border:2.5px solid #00eaff;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;font-size:1.25em;">
       <h2 style="font-family:'Orbitron',Arial,sans-serif;color:#00eaff;font-size:2.2em;letter-spacing:2px;text-shadow:0 0 12px #00eaff,0 0 2px #fff;margin-bottom:18px;text-align:center;display:flex;align-items:center;gap:10px;">
-        Danh sách người chơi
+        Danh sách Quý Đại Lý tham gia
       </h2>
-      <table id="playersTable" style="width:100%;border-collapse:separate;border-spacing:0;margin:0 auto;background:transparent;border-radius:0;box-shadow:none;font-family:'Orbitron','Courier New',monospace;font-size:1.22em;color:#00eaff;transition:box-shadow 0.3s;table-layout:fixed;">
-        <thead>
-          <tr>
-            <th style="width:12%;min-width:32px;max-width:54px;text-align:center;padding-left:0;padding-right:0;">Số</th>
-            <th style="width:58%;min-width:80px;text-align:left;padding-left:12px;padding-right:8px;word-break:break-word;">Tên</th>
-            <th style="width:30%;min-width:60px;text-align:center;padding-left:0;padding-right:0;">Kết quả</th>
-          </tr>
-        </thead>
-        <tbody id="players"></tbody>
-      </table>
+      <div class="table-wrapper" style="width:100%;">
+        <table id="playersTable" style="width:100%;border-collapse:separate;border-spacing:0;margin:0 auto;background:transparent;border-radius:0;box-shadow:none;font-family:'Orbitron','Courier New',monospace;font-size:1.22em;color:#00eaff;transition:box-shadow 0.3s;table-layout:fixed;">
+          <thead>
+            <tr>
+              <th style="width:12%;min-width:32px;max-width:54px;text-align:center;padding-left:0;padding-right:0;">Số</th>
+              <th style="width:58%;min-width:80px;text-align:left;padding-left:12px;padding-right:8px;word-break:break-word;">Tên</th>
+              <th style="width:30%;min-width:60px;text-align:center;padding-left:0;padding-right:0;">Kết quả</th>
+            </tr>
+          </thead>
+          <tbody id="players"></tbody>
+        </table>
+      </div>
     </div>
     <div id="wheel" style="flex:1 1 0;max-width:50%;">
       <h2>Vòng quay số</h2>    
@@ -254,6 +281,26 @@
         document.getElementById('prizeSelect').value = idx;
       });
     }
+
+    function syncTableHeaderWidth() {
+      const table = document.getElementById('playersTable');
+      if (!table) return;
+      const ths = table.querySelectorAll('thead th');
+      const firstRow = table.querySelector('tbody tr');
+      if (!firstRow) return;
+      const tds = firstRow.querySelectorAll('td');
+      if (tds.length === ths.length) {
+        ths.forEach((th, i) => {
+          th.style.width = tds[i].offsetWidth + 'px';
+        });
+      }
+    }
+    // Gọi lại sau mỗi lần render bảng
+    const playersTbody = document.getElementById('players');
+    const observer = new MutationObserver(syncTableHeaderWidth);
+    observer.observe(playersTbody, { childList: true, subtree: false });
+    window.addEventListener('resize', syncTableHeaderWidth);
+    setTimeout(syncTableHeaderWidth, 500);
   </script>
 </body>
 </html> 

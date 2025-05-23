@@ -240,9 +240,9 @@ function renderNumberGrid() {
       btn.disabled = true;
       btn.addEventListener('click', showLockedPopup);
     } else {
-      if (takenNumbers.includes(i)) {
-        btn.classList.add('taken');
-        btn.disabled = true;
+    if (takenNumbers.includes(i)) {
+      btn.classList.add('taken');
+      btn.disabled = true;
       }
     }
     

@@ -25,7 +25,7 @@ let spinInterval;
 let spinEffectFrame = 0;
 let spinSpeed = 0.1;
 let decelerating = false;
-let spinAudioLooping = false;   
+let spinAudioLooping = false;
 let canStop = false;
 let isManualPrize = false;
 let prizeTurn = 0;
@@ -389,10 +389,10 @@ function reset() {
     socket.emit('prizeSelected', getCurrentPrizeIndex());
   } else {
     // Nếu không có lịch sử thì chỉ reset vòng quay
-    currentRotation = 0;
-    drawWheel();
-    resultDiv.textContent = '';
-    showSuccessMessage('Đã reset vòng quay!');
+  currentRotation = 0;
+  drawWheel();
+  resultDiv.textContent = '';
+  showSuccessMessage('Đã reset vòng quay!');
   }
 }
 

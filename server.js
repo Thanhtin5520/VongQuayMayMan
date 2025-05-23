@@ -197,6 +197,30 @@ app.put('/history/:index', (req, res) => {
   }
 });
 
+// API xóa bản ghi cuối cùng và đồng bộ lại dữ liệu
+app.delete('/history/last', (req, res) => {
+  if (spinHistory.length === 0) {
+    return res.status(404).json({ error: 'Không có bản ghi nào để xóa' });
+  }
+  
+  // Lấy bản ghi cuối cùng
+  const lastRecord = spinHistory.pop();
+  
+  // Xóa prizeResult của player tương ứng
+  if (lastRecord && lastRecord.number) {
+    const player = players.find(p => p.number == lastRecord.number);
+    if (player) {
+      delete player.prizeResult;
+      io.emit('playersChanged');
+    }
+  }
+  
+  // Thông báo cho tất cả client cập nhật lịch sử
+  io.emit('historyChanged');
+  
+  res.json({ success: true });
+});
+
 // Socket.io kết nối
 io.on('connection', (socket) => {
   console.log('Client kết nối');
