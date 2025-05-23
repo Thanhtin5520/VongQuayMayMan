@@ -535,7 +535,11 @@ if (dealerSelect) {
 function focusJoinBtn() {
   setTimeout(() => {
     const joinBtn = form.querySelector('button[type="submit"]');
-    if (joinBtn) joinBtn.focus();
+    if (joinBtn) {
+      joinBtn.focus();
+      // Scroll để nút luôn hiện trên mobile
+      joinBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }, 100);
 }
 

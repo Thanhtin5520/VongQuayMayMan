@@ -375,12 +375,13 @@ function reset() {
       body: JSON.stringify({ number: last.number, result: null })
     });
     // Xóa lịch sử quay số cuối cùng trên server
-    fetch('https://vongquaymayman-production.up.railway.app/history', {
+    fetch('https://vongquaymayman-production.up.railway.app/history/last', {
       method: 'DELETE',
     });
     // Giảm prizeTurn về trước đó
     if (prizeTurn > 0) prizeTurn--;
-    updatePlayerList();
+    // Cập nhật lại danh sách người chơi từ server để sector khôi phục đúng
+    fetchPlayers();
     drawWheel();
     resultDiv.textContent = '';
     showSuccessMessage('Đã quay lại lượt trước!');

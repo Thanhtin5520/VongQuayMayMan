@@ -5,8 +5,120 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/refs/heads/main/LOGO.ico">
+  <style>
+    body {
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #181828 60%, #1a237e 100%);
+      color: #00eaff;
+      margin: 0;
+      padding: 0;
+    }
+    .main-title, h2, .akw-logo-small {
+      font-family: 'Orbitron', 'Montserrat', Arial, sans-serif;
+    }
+    table {
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    th, td {
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      font-size: 1.08em;
+      line-height: 1.35em;
+      vertical-align: middle;
+      padding: 8px 10px;
+      word-break: break-word;
+      text-align: left;
+    }
+    th {
+      font-weight: 700;
+      text-align: center;
+      background: linear-gradient(90deg, #00eaff 60%, #1a237e 100%);
+      color: #181828;
+      text-shadow: 0 0 8px #fff, 0 0 2px #00eaff;
+    }
+    td {
+      color: #00eaff;
+      background: transparent;
+      text-align: left;
+    }
+    td:first-child, th:first-child {
+      text-align: center;
+    }
+    td:last-child, th:last-child {
+      text-align: center;
+    }
+    /* Ép toàn bộ bảng kết quả dùng Montserrat/Roboto, không Orbitron, không in hoa, không letter-spacing lạ */
+    #playersTable td, #playersTable th, #playersTable tr, #playersTable tbody {
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif !important;
+      font-variant: normal !important;
+      text-transform: none !important;
+      letter-spacing: normal !important;
+    }
+    /* Làm đậm cho cột Số và Tên */
+    #playersTable td:first-child, #playersTable td:nth-child(2) {
+      font-weight: bold;
+    }
+    .akw-header, .akw-logo-img {
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    button, input, select {
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+    }
+    /* Tăng chiều cao bảng Danh sách người chơi, không ép chiều cao tuyệt đối 2 bảng */
+    #playerList {
+      height: 870px;
+      max-height: 870px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 0;
+    }
+    #playerList h2 {
+      margin: 0 0 8px 0;
+      padding: 18px 0 0 0;
+      flex: 0 0 auto;
+    }
+    #playersTable {
+      flex: 1 1 0;
+      height: auto;
+      max-height: none;
+      overflow: hidden;
+      background: transparent;
+      margin: 0;
+      border: none;
+    }
+    #playersTable thead {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+    #playersTable tbody {
+      display: block;
+      flex: 1 1 0;
+      height: 100%;
+      max-height: 810px;
+      overflow-y: auto;
+      width: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: #00eaff #232946;
+    }
+    #playersTable tbody::-webkit-scrollbar {
+      width: 8px;
+      background: #232946;
+      border-radius: 8px;
+    }
+    #playersTable tbody::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #00eaff 40%, #181828 100%);
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00eaff99;
+    }
+    #playersTable tbody::-webkit-scrollbar-thumb:hover {
+      background: #00eaff;
+    }
+  </style>
 </head>
 <body>   
   <header class="akw-header">
