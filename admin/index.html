@@ -193,6 +193,16 @@
   </div>
   <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>
   <audio id="doneAudio" src="./Sound/done.mp3" preload="auto"></audio>
+  <div id="passwordPopup" style="position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(24,24,40,0.98);display:flex;align-items:center;justify-content:center;">
+    <div style="background:#181828;border-radius:18px;box-shadow:0 0 32px #00eaff99;padding:36px 32px;display:flex;flex-direction:column;align-items:center;">
+      <h2 style="color:#00eaff;font-family:'Orbitron',Arial,sans-serif;margin-bottom:18px;">Nhập mật khẩu truy cập</h2>
+      <form id="passwordForm" onsubmit="return false;" style="display:flex;flex-direction:column;align-items:center;">
+        <input id="passwordInput" type="password" placeholder="Mật khẩu" style="padding:12px 18px;border-radius:8px;border:2px solid #00eaff;font-size:1.2em;margin-bottom:16px;outline:none;">
+        <button id="passwordBtn" type="button" style="padding:10px 32px;border-radius:8px;background:#00eaff;color:#181828;font-weight:bold;font-size:1.1em;border:none;cursor:pointer;">Xác nhận</button>
+        <div id="passwordError" style="color:#ff1744;margin-top:10px;display:none;">Sai mật khẩu, vui lòng thử lại!</div>
+      </form>
+    </div>
+  </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
   <script>
@@ -301,6 +311,32 @@
     observer.observe(playersTbody, { childList: true, subtree: false });
     window.addEventListener('resize', syncTableHeaderWidth);
     setTimeout(syncTableHeaderWidth, 500);
+  </script>
+  <script>
+  (function() {
+    const popup = document.getElementById('passwordPopup');
+    const input = document.getElementById('passwordInput');
+    const btn = document.getElementById('passwordBtn');
+    const error = document.getElementById('passwordError');
+    const form = document.getElementById('passwordForm');
+    if (!popup || !input || !btn || !error || !form) return;
+    function checkPassword() {
+      if(input.value === '2025') {
+        popup.style.display = 'none';
+        document.body.style.overflow = '';
+      } else {
+        error.style.display = 'block';
+        input.value = '';
+        input.focus();
+      }
+    }
+    btn.onclick = checkPassword;
+    form.onsubmit = function(e) { e.preventDefault(); checkPassword(); };
+    input.onkeydown = function(e) { if(e.key === 'Enter') checkPassword(); };
+    popup.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    input.focus();
+  })();
   </script>
 </body>
 </html> 
