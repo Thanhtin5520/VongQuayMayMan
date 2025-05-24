@@ -35,6 +35,11 @@ app.get('/setting', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'setting.html'));
 });
 
+// Route cho trang checkin
+app.get('/checkin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'checkin.html'));
+});
+
 // Lưu trữ dữ liệu tạm thời
 let players = [];
 let usedNumbers = new Set();

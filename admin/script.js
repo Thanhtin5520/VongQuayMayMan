@@ -229,6 +229,11 @@ function spin() {
     showErrorMessage('Cần tối thiểu 4 người chơi mới được quay!');
     return;
   }
+  // Kiểm tra số lượng giải thưởng
+  if (prizeTurn >= PRIZES.length) {
+    showErrorMessage('Đã hết giải thưởng!');
+    return;
+  }
   // Xóa dữ liệu JSON localStorage và sessionStorage khi quay
   localStorage.clear();
   sessionStorage.clear();
@@ -305,8 +310,8 @@ function stop() {
       const sectorSize = 2 * Math.PI / n;
       const winnerIndex = Math.floor(normalized / sectorSize) % n;
       const winner = activePlayers[winnerIndex];
-      // Hiển thị popup hiệu ứng số trước, sau đó type tên
-      if (winner) {
+      // Kiểm tra số lượng giải thưởng trước khi cập nhật kết quả
+      if (winner && prizeTurn < PRIZES.length) {
         const prizeIdx = isManualPrizeSelect ? selectedPrizeRow : getCurrentPrizeIndex();
         const prize = PRIZES[prizeIdx];
         // Tìm index thực trong players
@@ -339,6 +344,8 @@ function stop() {
         if (!isManualPrizeSelect) {
           socket.emit('prizeSelected', prizeIdx);
         }
+      } else if (winner) {
+        showErrorMessage('Đã hết giải thưởng!');
       } else {
         showResultPopup('Chưa có người chơi nào!');
       }
