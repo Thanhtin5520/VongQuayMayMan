@@ -45,7 +45,7 @@ const prizeOrder = [4, 3, 2, 1, 0];
 let selectedPrizeRow = 4; // Mặc định là Giải Ba cuối
 
 // Lưu lại lịch sử người trúng để có thể quay lại
-let winnerHistory = [];
+let winnerHistory = []; 
 
 function getCurrentPrizeIndex() {
   // Nếu còn trong 5 lần đầu thì lấy theo prizeOrder, hết thì luôn là giải Ba
