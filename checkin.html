@@ -415,7 +415,7 @@
 
       // Hiển thị danh sách đại lý theo filter
       dealers.forEach(dealer => {
-        const hasParticipated = players.some(p => p.name === dealer.name);
+        const hasParticipated = players.some(p => p.code === dealer.code);
         if (
           filter === 'participated' && !hasParticipated
           || filter === 'not-participated' && hasParticipated
