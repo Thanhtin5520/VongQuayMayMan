@@ -346,7 +346,7 @@ form.addEventListener('submit', async (e) => {
     const response = await fetch('https://vongquaymayman-production.up.railway.app/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: dealerObj.name, number })
+      body: JSON.stringify({ name: dealerObj.name, code: dealerObj.code, number })
     });
     const data = await response.json();
     if (data.success) {

@@ -85,16 +85,17 @@ app.post('/register', (req, res) => {
   if (isPlayersLocked) {
     return res.status(403).json({ error: 'Đã chốt danh sách, không thể đăng ký thêm!' });
   }
-  const { name, number } = req.body;
-  if (!name || !number) {
-    return res.status(400).json({ error: 'Vui lòng nhập tên và số' });
+  const { name, code, number } = req.body;
+  if (!name || !number || !code) {
+    return res.status(400).json({ error: 'Vui lòng nhập tên, mã và số' });
   }
   if (usedNumbers.has(number)) {
     return res.status(400).json({ error: 'Số này đã được chọn' });
   }
-  players.push({ name, number });
+  players.push({ name, code, number });
   usedNumbers.add(number);
-  io.emit('newPlayer', { name, number });
+  io.emit('newPlayer', { name, code, number });
+  io.emit('playersChanged');
   res.json({ success: true });
 });
 
