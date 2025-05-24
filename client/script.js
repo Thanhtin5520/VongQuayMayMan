@@ -141,40 +141,11 @@ function showSuccessMessage(message) {
 // Lấy danh sách đại lý realtime (tạm thời fetch từ setting nếu chưa có API/socket)
 async function fetchDealers() {
   try {
-    // Tạm lấy từ setting (cần backend hỗ trợ API /dealers hoặc socket)
-    const res = await fetch('https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/dealers.json');
+    const res = await fetch('https://vongquaymayman-production.up.railway.app/dealers');
     dealers = await res.json();
     renderDealerSelect();
   } catch (e) {
-    // Nếu không có file json thì hardcode
-    dealers = [
-      { code: 'CWS068', name: 'ĐỒNG HỒ HẢI TRIỀU' },
-      { code: 'CWS303', name: 'CÔNG TY TNHH TASMEDIA' },
-      { code: 'CWS378', name: 'HỘ KINH DOANH WATCHSTORE.VN' },
-      { code: 'CWS047', name: 'ĐỒNG HỒ -MK MINH' },
-      { code: 'CWS128', name: 'ĐỒNG HỒ ĐẶNG PHƯỚC QUÂN' },
-      { code: 'CWS333', name: 'CTY TNHH XNK & PP SKTIME' },
-      { code: 'CWS278', name: 'CTY TNHH XNK PP TRẦN ĐỨC' },
-      { code: 'CWS077', name: 'ĐỒNG HỒ ĐẠI LỘC' },
-      { code: 'CWS052', name: 'ĐỒNG HỒ SK TIME' },
-      { code: 'CWS407', name: 'CÔNG TY TNHH MERCURY NETWORK' },
-      { code: 'CWS097', name: 'ĐỒNG HỒ HƯNG THỊNH' },
-      { code: 'CWS369', name: 'HỘ KINH DOANH CAT WATCH' },
-      { code: 'CWS350', name: 'CTY CP TMẠI VÀ XNK TÂN HOÀNG HÀ' },
-      { code: 'CWS076', name: 'SHOPDONGHO.COM' },
-      { code: 'CWS043', name: 'SHOP ĐỒNG HỒ 24H' },
-      { code: 'CWS351', name: 'CTY TNHH ĐẦU TƯ GD QUỲNH PHÁT' },
-      { code: 'CWS140', name: 'ĐỒNG HỒ HỒNG ANH' },
-      { code: 'CWS057', name: 'CÔNG TY ĐỒNG VIỆT' },
-      { code: 'CWS408', name: 'HỘ KINH DOANH ĐỨC DŨNG' },
-      { code: 'CWS430', name: 'HKD BI WATCH' },
-      { code: 'CWS107', name: 'ĐỒNG HỒ VIỆT THẮNG' },
-      { code: 'CWS030', name: 'ĐỒNG HỒ CHÍ' },
-      { code: 'CWS271', name: 'ĐẶNG TUẤN KHANH' },
-      { code: 'CWS014', name: 'ĐỒNG HỒ ORI' },
-      { code: 'CWS212', name: 'CTY CP XUẤT NHẬP KHẨU HIỂN LONG' },
-      { code: 'CWS354', name: 'HKD WATCHSTORE TRẦN ĐẠI NGHĨA' }
-    ];
+    dealers = [];
     renderDealerSelect();
   }
 }
@@ -575,4 +546,7 @@ function addNumberEffects() {
       focusJoinBtn();
     });
   });
-} 
+}
+
+// Lắng nghe socket realtime cập nhật đại lý
+socket.on('dealersChanged', fetchDealers); 

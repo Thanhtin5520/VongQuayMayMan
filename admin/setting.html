@@ -10,8 +10,8 @@
   <style>
     .setting-container { max-width:1400px;margin:40px auto;background:rgba(24,24,40,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff55, 0 0 0 4px #00eaff33;padding:32px 24px; }
     .setting-title { text-align: center; color: #00eaff; font-family: 'Orbitron', Arial, sans-serif; font-size: 2em; margin-bottom: 24px; text-shadow: 0 0 18px #00eaff, 0 0 2px #fff; }
-    .setting-row-top { display: flex; gap: 32px; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
-    .setting-box { flex: 1 1 0; min-width: 320px; max-width: 33%; background:rgba(24,24,40,0.98); border-radius:18px; box-shadow:0 0 16px #00eaff55; padding:24px 16px; margin-bottom:0; display: flex; flex-direction: column; }
+    .setting-row-top { display: flex; gap: 48px; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+    .setting-box { flex: 1 1 0; min-width: 0; max-width: 49%; background:rgba(24,24,40,0.98); border-radius:18px; box-shadow:0 0 16px #00eaff55; padding:24px 16px; margin-bottom:0; display: flex; flex-direction: column; }
     .setting-form { display: flex; gap: 12px; margin-bottom: 18px; justify-content: center; width: 100%; box-sizing: border-box; }
     .setting-form input { flex: 1 1 0; min-width: 0; padding: 10px 16px; border-radius: 8px; border: 2px solid #00eaff; background: #181828; color: #00eaff; font-family: 'Orbitron', monospace; font-size: 1em; outline: none; box-sizing: border-box; }
     .setting-form button { flex: 0 0 auto; padding: 10px 24px; border-radius: 8px; border: 2px solid #00eaff; background: linear-gradient(135deg, #00eaff 0%, #181828 100%); color: #fff; font-family: 'Orbitron', monospace; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
@@ -35,7 +35,7 @@
       .setting-box { max-width: 100%; }
     }
     .setting-box.dealer-box {
-      max-width: 33%;
+      max-width: 49%;
     }
     #dealerTable {
       font-size: 0.82em;
@@ -54,8 +54,8 @@
       scrollbar-color: #00eaff #232946;
     }
     #dealerTbody::-webkit-scrollbar {
-      width: 8px;
-      background: #232946;
+      width: 10px;
+      background: #181828;
       border-radius: 8px;
     }
     #dealerTbody::-webkit-scrollbar-thumb {
@@ -71,13 +71,87 @@
       width: 100%;
       table-layout: fixed;
     }
+    /* Tăng chiều ngang cột Tên trong bảng DS Trong Vòng Quay */
+    #settingTable th:nth-child(2), #settingTable td:nth-child(2) {
+      width: 60%;
+      min-width: 220px;
+    }
+    #settingTable th:nth-child(1), #settingTable td:nth-child(1) {
+      width: 12%;
+      min-width: 48px;
+    }
+    #settingTable th:nth-child(3), #settingTable td:nth-child(3) {
+      width: 20%;
+      min-width: 80px;
+    }
+    /* Tăng chiều ngang cột Tên ĐL trong bảng ĐL */
+    #dealerTable th:nth-child(2), #dealerTable td:nth-child(2) {
+      width: 60%;
+      min-width: 220px;
+    }
+    #dealerTable th:nth-child(1), #dealerTable td:nth-child(1) {
+      width: 22%;
+      min-width: 80px;
+    }
+    #dealerTable th:nth-child(3), #dealerTable td:nth-child(3) {
+      width: 20%;
+      min-width: 80px;
+    }
+    /* Scroll cho danh sách tham gia */
+    #settingTable tbody {
+      display: block;
+      max-height: 420px;
+      overflow-y: auto;
+      width: 100%;
+    }
+    #settingTable thead, #settingTable tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+    /* Scroll neon/cyber cho danh sách tham gia */
+    #settingTable tbody::-webkit-scrollbar {
+      width: 10px;
+      background: #181828;
+      border-radius: 8px;
+    }
+    #settingTable tbody::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #00eaff 40%, #181828 100%);
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00eaff99;
+    }
+    #settingTable tbody::-webkit-scrollbar-thumb:hover {
+      background: #00eaff;
+    }
+    #settingTable tbody {
+      scrollbar-width: thin;
+      scrollbar-color: #00eaff #232946;
+    }
+    /* Scroll neon/cyber cho bảng ĐL */
+    #dealerTbody::-webkit-scrollbar {
+      width: 10px;
+      background: #181828;
+      border-radius: 8px;
+    }
+    #dealerTbody::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #00eaff 40%, #181828 100%);
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00eaff99;
+    }
+    #dealerTbody::-webkit-scrollbar-thumb:hover {
+      background: #00eaff;
+    }
+    #dealerTbody {
+      scrollbar-width: thin;
+      scrollbar-color: #00eaff #232946;
+    }
   </style>
 </head>
 <body>
   <div class="setting-container">
     <div class="setting-row-top">
       <div class="setting-box">
-        <div class="setting-title">Quản lý người tham gia</div>
+        <div class="setting-title">DS Trong Vòng Quay</div>
         <form class="setting-form" id="addForm">
           <input type="text" id="addName" placeholder="Tên người chơi" required>
           <input type="number" id="addNumber" placeholder="Số" min="1" required>
@@ -112,24 +186,6 @@
           </thead>
           <tbody id="dealerTbody"></tbody>
         </table>
-      </div>
-      <div class="setting-box">
-        <div class="setting-title">Bảng Giải Thưởng</div>
-        <div class="prize-table-wrap">
-          <button id="toggleManualPrize" class="manual-btn" style="margin-bottom:10px;background:#00eaff;color:#181828;font-weight:bold;padding:8px 18px;border-radius:8px;border:none;box-shadow:0 0 8px #00eaff;">Bật chỉnh tay</button>
-          <span id="prizeArrow" class="prize-arrow-selector">
-            <svg viewBox="0 0 32 32"><polygon points="0,16 32,8 32,24" fill="#ffe259"/></svg>
-          </span>
-          <table class="setting-table" id="prizeTable">
-            <thead>
-              <tr>
-                <th>Giải</th>
-                <th>Ảnh</th>
-              </tr>
-            </thead>
-            <tbody id="prizeTbody"></tbody>
-          </table>
-        </div>
       </div>
     </div>
     <div class="setting-bottom">
@@ -171,7 +227,6 @@
     const addDealerName = document.getElementById('addDealerName');
     let editingNumber = null;
     let editingDealerCode = null;
-    let isManualPrizeSelect = false;
     let players = [];
     let dealers = [
       { code: 'CWS068', name: 'ĐỒNG HỒ HẢI TRIỀU' },
@@ -284,17 +339,7 @@
     // Lắng nghe realtime socket.io cho lịch sử
     socket.on('historyChanged', () => {
       fetchHistory();
-      if (!isManualPrizeSelect) fetchPlayers();
-      else {
-        // Nếu đang chỉnh tay, chỉ fetch lại bảng và không autoSelectPrizeRow
-        const fetchPlayersNoAuto = async () => {
-          const res = await fetch(`${API}/players`);
-          players = await res.json();
-          renderTable(players);
-          renderPrizeTable(players);
-        };
-        fetchPlayersNoAuto();
-      }
+      fetchPlayers();
     });
 
     // Khi có kết quả mới từ trang admin, cũng tự động cập nhật (nếu server phát sự kiện)
@@ -303,11 +348,7 @@
     async function fetchPlayers() {
       const res = await fetch(`${API}/players`);
       players = await res.json();
-      if (!isManualPrizeSelect) {
-        autoSelectPrizeRow(players);
-      }
       renderTable(players);
-      renderPrizeTable(players);
     }
 
     // Lắng nghe realtime socket.io
@@ -396,148 +437,13 @@
     fetchPlayers();
     fetchHistory();
 
-    // Render bảng giải thưởng tĩnh
-    const prizeTbody = document.getElementById('prizeTbody');
-    const prizes = [
-      { name: 'Giải Nhất', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/dho.png' },
-      { name: 'Giải Nhì', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/viet.png' },
-      { name: 'Giải Nhì', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/viet.png' },
-      { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' },
-      { name: 'Giải Ba', img: 'https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/admin/image/balo.png' }
-    ];
-    // Thứ tự: Giải Ba cuối (4), Giải Ba trên (3), Giải Nhì cuối (2), Giải Nhì trên (1), Giải Nhất (0)
-    const prizeOrder = [4, 3, 2, 1, 0];
-    let selectedPrizeRow = 4; // Mặc định là Giải Ba cuối
-    
-    function autoSelectPrizeRow(players) {
-      // Đếm số người đã trúng từng giải
-      const count = { 'Giải Nhất': 0, 'Giải Nhì': 0, 'Giải Ba': 0 };
-      players.forEach(p => {
-        if (p.prizeResult) count[p.prizeResult.name] = (count[p.prizeResult.name] || 0) + 1;
-      });
-      // Tổng số giải đã trao
-      const totalWon = count['Giải Nhất'] + count['Giải Nhì'] + count['Giải Ba'];
-      if (totalWon < prizeOrder.length) {
-        selectedPrizeRow = prizeOrder[totalWon];
-      } else {
-        selectedPrizeRow = 4; // Sau khi hết giải, mặc định về Giải Ba cuối
-      }
-      socket.emit('prizeSelected', selectedPrizeRow);
-    }
-    function renderPrizeTable(players) {
-      prizeTbody.innerHTML = '';
-      const prizeTable = document.getElementById('prizeTable');
-      const prizeArrow = document.getElementById('prizeArrow');
-      prizes.forEach((prize, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${prize.name}</td>
-          <td><img src="${prize.img}" style="height:40px"></td>
-        `;
-        if (idx === selectedPrizeRow) {
-          tr.classList.add('active');
-          tr.style.background = 'rgba(255, 226, 89, 0.1)';
-          tr.style.boxShadow = '0 0 12px rgba(255, 226, 89, 0.3)';
-        }
-        if (isManualPrizeSelect) {
-          tr.style.cursor = 'pointer';
-          tr.onclick = () => {
-            if (selectedPrizeRow !== idx) {
-              selectedPrizeRow = idx;
-              socket.emit('prizeSelected', idx);
-              console.log('Setting emit prizeSelected', idx);
-              renderPrizeTable(players);
-            }
-          };
-        } else {
-          tr.onclick = null;
-          tr.style.cursor = '';
-        }
-        prizeTbody.appendChild(tr);
-      });
-      // Cập nhật vị trí con trỏ vàng
-      const rows = prizeTable.querySelectorAll('tbody tr');
-      if (rows[selectedPrizeRow]) {
-        const row = rows[selectedPrizeRow];
-        const offset = row.offsetTop + row.offsetHeight/2 - 18;
-        prizeArrow.style.top = offset + 'px';
-        prizeArrow.style.display = '';
-      }
+    // Thay đổi logic quản lý đại lý: dùng API backend thay vì thao tác trực tiếp trên biến dealers
+    async function fetchDealers() {
+      const res = await fetch('/dealers');
+      dealers = await res.json();
+      renderDealerTable();
     }
 
-    // --- Chốt danh sách người chơi ---
-    let isLocked = false;
-    const lockBtn = document.getElementById('lockPlayersBtn');
-    lockBtn.onclick = () => {
-      if (!isLocked) {
-        if (confirm('Bạn chắc chắn muốn chốt danh sách? Sau khi chốt sẽ không thể đăng ký thêm!')) {
-          socket.emit('lockPlayers');
-        }
-      } else {
-        if (confirm('Bạn muốn mở lại danh sách để cho phép đăng ký?')) {
-          socket.emit('unlockPlayers');
-        }
-      }
-    };
-    socket.on('playersLocked', () => {
-      isLocked = true;
-      lockBtn.disabled = false;
-      lockBtn.innerText = 'Đã chốt DS';
-      addName.disabled = true;
-      addNumber.disabled = true;
-      document.querySelector('#addForm button[type="submit"]').disabled = true;
-    });
-    socket.on('playersUnlocked', () => {
-      isLocked = false;
-      lockBtn.disabled = false;
-      lockBtn.innerText = 'Chốt DS';
-      addName.disabled = false;
-      addNumber.disabled = false;
-      document.querySelector('#addForm button[type="submit"]').disabled = false;
-    });
-
-    // Thêm lắng nghe sự kiện prizeSelected từ server
-    socket.on('prizeSelected', (idx) => {
-      if (!isManualPrizeSelect) {
-        selectedPrizeRow = idx;
-        fetchPlayers();
-        renderPrizeTable(players);
-      }
-    });
-
-    // Gọi autoSelectPrizeRow khi có người trúng giải
-    socket.on('playerWon', (data) => {
-      autoSelectPrizeRow(players);
-    });
-
-    function getCurrentPrizeIndex() {
-      return selectedPrizeRow;
-    }
-
-    function highlightPrizeRow(idx) {
-      const rows = document.querySelectorAll('#prizeTable tbody tr');
-      if (rows[idx]) {
-        rows[idx].classList.add('row-blink');
-        setTimeout(() => rows[idx].classList.remove('row-blink'), 1200);
-      }
-    }
-
-    // Thêm sự kiện cho nút 'Bật/Tắt chỉnh tay'
-    const toggleManualPrizeBtn = document.getElementById('toggleManualPrize');
-    toggleManualPrizeBtn.onclick = () => {
-      isManualPrizeSelect = !isManualPrizeSelect;
-      toggleManualPrizeBtn.innerText = isManualPrizeSelect ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';
-      socket.emit('toggleManualPrize', isManualPrizeSelect);
-      renderPrizeTable(players);
-    };
-
-    socket.on('toggleManualPrize', (manual) => {
-      isManualPrizeSelect = manual;
-      toggleManualPrizeBtn.innerText = manual ? 'Tắt chỉnh tay' : 'Bật chỉnh tay';
-      renderPrizeTable(players);
-    });
-
-    // Render bảng ĐL
     function renderDealerTable() {
       dealerTbody.innerHTML = '';
       dealers.forEach(dealer => {
@@ -562,53 +468,96 @@
           `;
         }
         dealerTbody.appendChild(tr);
-
         // Sửa
-        tr.querySelector('.edit-btn')?.addEventListener('click', () => {
+        tr.querySelector('.edit-btn')?.addEventListener('click', async () => {
           if (editingDealerCode === dealer.code) {
             const newCode = tr.querySelector('.edit-code').value;
             const newName = tr.querySelector('.edit-name').value;
             if (!newCode || !newName) return alert('Không được để trống!');
-            dealer.code = newCode;
-            dealer.name = newName;
+            // Nếu đổi mã ĐL, xóa mã cũ, thêm mã mới
+            if (newCode !== dealer.code) {
+              await fetch(`/dealers/${dealer.code}`, { method: 'DELETE' });
+              await fetch(`/dealers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: newCode, name: newName })
+              });
+            } else {
+              await fetch(`/dealers/${dealer.code}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName })
+              });
+            }
             editingDealerCode = null;
-            renderDealerTable();
+            fetchDealers();
           } else {
             editingDealerCode = dealer.code;
             renderDealerTable();
           }
         });
-
         // Xóa
-        tr.querySelector('.delete-btn')?.addEventListener('click', () => {
+        tr.querySelector('.delete-btn')?.addEventListener('click', async () => {
           if (editingDealerCode === dealer.code) {
             editingDealerCode = null;
             renderDealerTable();
             return;
           }
           if (confirm('Bạn chắc chắn muốn xóa?')) {
-            dealers = dealers.filter(d => d.code !== dealer.code);
-            renderDealerTable();
+            await fetch(`/dealers/${dealer.code}`, { method: 'DELETE' });
+            fetchDealers();
           }
+        });
+        // Lưu
+        tr.querySelector('.save')?.addEventListener('click', async () => {
+          const newCode = tr.querySelector('.edit-code').value;
+          const newName = tr.querySelector('.edit-name').value;
+          if (!newCode || !newName) return alert('Không được để trống!');
+          if (newCode !== dealer.code) {
+            await fetch(`/dealers/${dealer.code}`, { method: 'DELETE' });
+            await fetch(`/dealers`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code: newCode, name: newName })
+            });
+          } else {
+            await fetch(`/dealers/${dealer.code}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: newName })
+            });
+          }
+          editingDealerCode = null;
+          fetchDealers();
+        });
+        // Hủy
+        tr.querySelector('.cancel')?.addEventListener('click', () => {
+          editingDealerCode = null;
+          renderDealerTable();
         });
       });
     }
 
     // Thêm ĐL mới
-    addDealerForm.addEventListener('submit', (e) => {
+    addDealerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const code = addDealerCode.value.trim();
       const name = addDealerName.value.trim();
       if (!code || !name) return alert('Không được để trống!');
-      if (dealers.some(d => d.code === code)) return alert('Mã ĐL đã tồn tại!');
-      dealers.push({ code, name });
+      const res = await fetch(`/dealers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, name })
+      });
+      const data = await res.json();
+      if (!data.success) return alert(data.error || 'Lỗi thêm ĐL');
       addDealerCode.value = '';
       addDealerName.value = '';
-      renderDealerTable();
+      fetchDealers();
     });
 
-    // Render bảng ĐL khi load trang
-    renderDealerTable();
+    // Khi load trang, fetch lại danh sách ĐL từ API
+    fetchDealers();
 
     window.addEventListener('DOMContentLoaded', function() {
       const popup = document.getElementById('passwordPopup');

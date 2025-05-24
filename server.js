@@ -39,6 +39,36 @@ app.get('/setting', (req, res) => {
 let players = [];
 let usedNumbers = new Set();
 
+// Lưu trữ đại lý (dealers) realtime
+let dealers = [
+  { code: 'CWS068', name: 'ĐỒNG HỒ HẢI TRIỀU' },
+  { code: 'CWS303', name: 'CÔNG TY TNHH TASMEDIA' },
+  { code: 'CWS378', name: 'HỘ KINH DOANH WATCHSTORE.VN' },
+  { code: 'CWS047', name: 'ĐỒNG HỒ -MK MINH' },
+  { code: 'CWS128', name: 'ĐỒNG HỒ ĐẶNG PHƯỚC QUÂN' },
+  { code: 'CWS333', name: 'CTY TNHH XNK & PP SKTIME' },
+  { code: 'CWS278', name: 'CTY TNHH XNK PP TRẦN ĐỨC' },
+  { code: 'CWS077', name: 'ĐỒNG HỒ ĐẠI LỘC' },
+  { code: 'CWS052', name: 'ĐỒNG HỒ SK TIME' },
+  { code: 'CWS407', name: 'CÔNG TY TNHH MERCURY NETWORK' },
+  { code: 'CWS097', name: 'ĐỒNG HỒ HƯNG THỊNH' },
+  { code: 'CWS369', name: 'HỘ KINH DOANH CAT WATCH' },
+  { code: 'CWS350', name: 'CTY CP TMẠI VÀ XNK TÂN HOÀNG HÀ' },
+  { code: 'CWS076', name: 'SHOPDONGHO.COM' },
+  { code: 'CWS043', name: 'SHOP ĐỒNG HỒ 24H' },
+  { code: 'CWS351', name: 'CTY TNHH ĐẦU TƯ GD QUỲNH PHÁT' },
+  { code: 'CWS140', name: 'ĐỒNG HỒ HỒNG ANH' },
+  { code: 'CWS057', name: 'CÔNG TY ĐỒNG VIỆT' },
+  { code: 'CWS408', name: 'HỘ KINH DOANH ĐỨC DŨNG' },
+  { code: 'CWS430', name: 'HKD BI WATCH' },
+  { code: 'CWS107', name: 'ĐỒNG HỒ VIỆT THẮNG' },
+  { code: 'CWS030', name: 'ĐỒNG HỒ CHÍ' },
+  { code: 'CWS271', name: 'ĐẶNG TUẤN KHANH' },
+  { code: 'CWS014', name: 'ĐỒNG HỒ ORI' },
+  { code: 'CWS212', name: 'CTY CP XUẤT NHẬP KHẨU HIỂN LONG' },
+  { code: 'CWS354', name: 'HKD WATCHSTORE TRẦN ĐẠI NGHĨA' }
+];
+
 // Lưu trữ lịch sử quay số
 let spinHistory = [];
 
@@ -218,6 +248,43 @@ app.delete('/history/last', (req, res) => {
   // Thông báo cho tất cả client cập nhật lịch sử
   io.emit('historyChanged');
   
+  res.json({ success: true });
+});
+
+// API lấy danh sách đại lý
+app.get('/dealers', (req, res) => {
+  res.json(dealers);
+});
+
+// API thêm đại lý
+app.post('/dealers', (req, res) => {
+  const { code, name } = req.body;
+  if (!code || !name) return res.status(400).json({ error: 'Thiếu mã hoặc tên đại lý' });
+  if (dealers.some(d => d.code === code)) return res.status(400).json({ error: 'Mã ĐL đã tồn tại' });
+  dealers.push({ code, name });
+  io.emit('dealersChanged');
+  res.json({ success: true });
+});
+
+// API xóa đại lý
+app.delete('/dealers/:code', (req, res) => {
+  const code = req.params.code;
+  const idx = dealers.findIndex(d => d.code === code);
+  if (idx === -1) return res.status(404).json({ error: 'Không tìm thấy ĐL' });
+  dealers.splice(idx, 1);
+  io.emit('dealersChanged');
+  res.json({ success: true });
+});
+
+// API sửa đại lý
+app.put('/dealers/:code', (req, res) => {
+  const code = req.params.code;
+  const { name } = req.body;
+  const idx = dealers.findIndex(d => d.code === code);
+  if (idx === -1) return res.status(404).json({ error: 'Không tìm thấy ĐL' });
+  if (!name) return res.status(400).json({ error: 'Thiếu tên ĐL' });
+  dealers[idx].name = name;
+  io.emit('dealersChanged');
   res.json({ success: true });
 });
 

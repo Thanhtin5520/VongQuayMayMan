@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8"> 
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vòng Quay Con Số May Mắn - AKW</title>
   <link rel="stylesheet" href="style.css">
@@ -145,7 +145,7 @@
     }
   </style>
 </head>
-<body>   
+<body>
   <header class="akw-header">
     <img src="https://raw.githubusercontent.com/Thanhtin5520/VongQuayMayMan/main/image/W-LOGO-AKW-FULL-WHITE.png" alt="AKW Logo" class="akw-logo-img">
   </header>
@@ -169,12 +169,11 @@
       </div>
     </div>
     <div id="wheel" style="flex:1 1 0;max-width:50%;">
-      <h2>Vòng quay số</h2>    
+      <h2>Vòng quay số</h2>
       <canvas id="wheelCanvas" width="600" height="600"></canvas>
       <div id="controls">
         <button id="spin">Quay</button>
         <button id="stop">Dừng</button>
-        <button id="reset">Quay lại</button>
       </div>
       <div id="result"></div>
       <div id="successEffect" class="success-effect">
@@ -188,7 +187,6 @@
     <div class="result-content">
       <h3>Kết Quả</h3>
       <p id="resultMessage"></p>
-      <button id="closeResult">Đóng</button>
     </div>
   </div>
   <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>
@@ -207,11 +205,6 @@
   <script src="script.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      resultPopup.classList.remove('show');
-      resultPopup.style.display = 'none';
-    });
-
-    closeResult.addEventListener('click', () => {
       resultPopup.classList.remove('show');
       resultPopup.style.display = 'none';
     });
@@ -337,6 +330,22 @@
     document.body.style.overflow = 'hidden';
     input.focus();
   })();
+  </script>
+  <script>
+  // Thay đổi logic hiển thị popup kết quả: tự động ẩn sau 7 giây
+  function showResultPopup(message) {
+    const resultPopup = document.getElementById('resultPopup');
+    const resultMessage = document.getElementById('resultMessage');
+    resultMessage.innerHTML = message;
+    resultPopup.style.display = 'flex';
+    resultPopup.classList.add('show');
+    setTimeout(() => {
+      resultPopup.classList.remove('show');
+      resultPopup.style.display = 'none';
+    }, 7000);
+  }
+  // Gán lại hàm showResultPopup cho các nơi gọi popup kết quả
+  window.showResultPopup = showResultPopup;
   </script>
 </body>
 </html> 

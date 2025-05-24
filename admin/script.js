@@ -486,46 +486,22 @@ function showResultPopupWithTypeEffect(number, name) {
   }
   setTimeout(typeEffect, 700); // delay 0.7s cho bất ngờ
   updatePlayerList();
+  // Tự động ẩn popup sau 7 giây
+  setTimeout(() => {
+    resultPopup.classList.remove('show');
+    resultPopup.style.display = 'none';
+  }, 7000);
 }
 
 function showResultPopup(message) {
   resultPopup.style.display = 'flex';
   resultMessage.textContent = message;
   resultPopup.classList.add('show');
-  // Hiển thị thông báo
-  messageDiv.textContent = message;
-  messageDiv.classList.add('show');
-  messageDiv.style.color = '';
-  // Ẩn thông báo sau 2 giây
+  // Ẩn popup sau 7 giây
   setTimeout(() => {
     resultPopup.classList.remove('show');
-    messageDiv.classList.remove('show');
-  }, 2000);
-}
-
-// Đóng popup với hiệu ứng và cập nhật giải thưởng vào bảng
-if (closeResult) {
-  closeResult.addEventListener('click', () => {
-    resultPopup.classList.remove('show');
-    resultPopup.classList.add('hide');
-    setTimeout(() => {
-      resultPopup.style.display = 'none';
-      resultPopup.classList.remove('hide');
-    }, 400);
-    // Sau khi đóng popup, thêm text giải thưởng vào dòng người trúng
-    if (lastWinnerNumber && lastWinnerPrize) {
-      const rows = document.querySelectorAll('#playersTable tbody tr');
-      rows.forEach(row => {
-        const numberCell = row.children[0];
-        const resultCell = row.children[2];
-        if (numberCell && numberCell.textContent == lastWinnerNumber) {
-          resultCell.innerHTML = `<span class='prize-glow'>${lastWinnerPrize}</span>`;
-        }
-      });
-      lastWinnerNumber = null;
-      lastWinnerPrize = null;
-    }
-  });
+    resultPopup.style.display = 'none';
+  }, 7000);
 }
 
 function blinkWinnerRow(number) {
