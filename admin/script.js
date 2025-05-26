@@ -229,7 +229,6 @@ function spin() {
     showErrorMessage('Cần tối thiểu 4 người chơi mới được quay!');
     return;
   }
-  // Kiểm tra số lượng giải thưởng
   if (prizeTurn >= PRIZES.length) {
     showErrorMessage('Đã hết giải thưởng!');
     return;
@@ -242,8 +241,8 @@ function spin() {
   window.canStop = canStop;
   let spinStartTime = Date.now();
   let spinSpeedMin = 0.1;
-  let spinSpeedMax = 1.0;
-  let spinSpeedGrowTime = 1500;
+  let spinSpeedMax = 1.8; // Tăng tốc tối đa cao hơn
+  let spinSpeedGrowTime = 1800; // 1.8s tăng tốc
   spinSpeed = spinSpeedMin;
   // PHÁT ÂM THANH QUAY SỐ LẶP LIÊN TỤC
   if (spinAudio) {
@@ -257,15 +256,15 @@ function spin() {
       }
     };
   }
-  // Bắt đầu hiệu ứng động
+  // Hiệu ứng tăng tốc (ease-in)
   function animateSpinEffect() {
     if (!isSpinning) return;
     spinEffectFrame++;
     drawWheel();
-    // Tăng tốc dần trong 1.5s đầu
     let tGrow = (Date.now() - spinStartTime) / spinSpeedGrowTime;
     if (!decelerating && tGrow < 1) {
-      spinSpeed = spinSpeedMin + (spinSpeedMax - spinSpeedMin) * (1 - Math.pow(1 - tGrow, 2)); // ease-out
+      // Tăng tốc dần (ease-in cubic)
+      spinSpeed = spinSpeedMin + (spinSpeedMax - spinSpeedMin) * Math.pow(tGrow, 3);
     } else if (!decelerating) {
       spinSpeed = spinSpeedMax;
     }
@@ -281,10 +280,10 @@ function stop() {
   if (!isSpinning || !canStop) return;
   canStop = false;
   window.canStop = canStop;
-  // Bắt đầu giảm tốc trong 7s rồi dừng hẳn, giữ nguyên tốc độ hiện tại
   decelerating = true;
   let decelStart = Date.now();
   let initialSpeed = spinSpeed;
+  // Hiệu ứng giảm tốc (ease-out quartic)
   function decelerateToStop() {
     let t = (Date.now() - decelStart) / 7000;
     if (t >= 1) {
@@ -357,8 +356,8 @@ function stop() {
       showSuccessMessage('Đã dừng quay!');
       return;
     } else {
-      // Giảm tốc theo hàm ease-out quartic cho cảm giác chậm dần mạnh hơn
-      let ease = 1 - Math.pow(1 - t, 4); // quartic ease-out
+      // Giảm tốc từ từ (ease-out quartic)
+      let ease = 1 - Math.pow(1 - t, 4);
       spinSpeed = initialSpeed * (1 - ease);
       currentRotation += spinSpeed;
       drawWheel();
