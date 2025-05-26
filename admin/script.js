@@ -573,18 +573,23 @@ function isPopupOpen() {
   return resultPopup.classList.contains('show');
 }
 
-// Thêm phím tắt PgUp để quay, PgDown để dừng
+// Đảm bảo các hàm spin và stop khả dụng toàn cục
+window.spin = spin;
+window.stop = stop;
+
+// Lắng nghe phím tắt PageUp/PageDown để quay và dừng, chặn cuộn trang
 window.addEventListener('keydown', (e) => {
-  if (isPopupOpen()) return; // Nếu popup đang mở, không cho thao tác
+  // Nếu popup đang mở thì không cho thao tác
+  if (typeof isPopupOpen === 'function' && isPopupOpen()) return;
   if (e.code === 'PageUp') {
     spin();
-    triggerButtonHover(spinButton);
-    e.preventDefault();
+    if (typeof triggerButtonHover === 'function') triggerButtonHover(spinButton);
+    e.preventDefault(); // CHẶN cuộn trang
   }
   if (e.code === 'PageDown') {
     stop();
-    triggerButtonHover(stopButton);
-    e.preventDefault();
+    if (typeof triggerButtonHover === 'function') triggerButtonHover(stopButton);
+    e.preventDefault(); // CHẶN cuộn trang
   }
 });
 
@@ -636,4 +641,14 @@ socket.on('historyChanged', async () => {
   await fetchPlayers();
   updatePlayerList();
   drawWheel();
-}); 
+});
+
+// Chặn PageUp/PageDown cuộn bảng khi focus trong table-wrapper
+const tableWrapper = document.querySelector('.table-wrapper');
+if (tableWrapper) {
+  tableWrapper.addEventListener('keydown', function(e) {
+    if (e.code === 'PageUp' || e.code === 'PageDown') {
+      e.preventDefault();
+    }
+  });
+} 
