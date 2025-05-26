@@ -239,11 +239,12 @@ function spin() {
   canStop = true;
   window.isSpinning = isSpinning;
   window.canStop = canStop;
+  decelerating = false;
+  spinSpeed = 0.1;
   let spinStartTime = Date.now();
   let spinSpeedMin = 0.1;
-  let spinSpeedMax = 1.8; // Tăng tốc tối đa cao hơn
-  let spinSpeedGrowTime = 1800; // 1.8s tăng tốc
-  spinSpeed = spinSpeedMin;
+  let spinSpeedMax = 1.8;
+  let spinSpeedGrowTime = 1800;
   // PHÁT ÂM THANH QUAY SỐ LẶP LIÊN TỤC
   if (spinAudio) {
     spinAudio.currentTime = 0;
