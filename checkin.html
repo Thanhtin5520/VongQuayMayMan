@@ -322,6 +322,7 @@
           <option value="participated">Đã tham gia</option>
           <option value="not-participated">Chưa tham gia</option>
         </select>
+        <button id="exportExcelBtn" style="margin-left:10px;padding:6px 18px;border-radius:8px;background:#00eaff;color:#181828;font-weight:bold;font-size:1em;border:none;cursor:pointer;transition:all 0.2s;">Xuất Excel</button>
       </div>
       <div class="dealer-grid" id="dealerGrid"></div>
     </div>
@@ -454,6 +455,39 @@
 
     socket.on('connect', () => console.log('Socket connected!'));
     socket.on('disconnect', () => console.log('Socket disconnected!'));
+
+    // Xuất Excel (CSV) theo trạng thái filter hiện tại
+    document.getElementById('exportExcelBtn').onclick = function() {
+      const filter = document.getElementById('filterSelect')?.value || 'all';
+      let exportData = [];
+      dealers.forEach(dealer => {
+        const hasParticipated = players.some(p => p.code === dealer.code);
+        if (
+          filter === 'participated' && !hasParticipated
+          || filter === 'not-participated' && hasParticipated
+        ) return;
+        exportData.push({
+          'Mã ĐL': dealer.code,
+          'Tên ĐL': dealer.name,
+          'Trạng thái': hasParticipated ? 'Đã tham gia' : 'Chưa tham gia'
+        });
+      });
+      // Tạo CSV
+      let csv = 'Mã ĐL,Tên ĐL,Trạng thái\n';
+      exportData.forEach(row => {
+        csv += `"${row['Mã ĐL']}","${row['Tên ĐL']}","${row['Trạng thái']}"\n`;
+      });
+      // Tải file
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `DanhSachDaiLy_${filter}_${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
   </script>
 </body>
 </html> 

@@ -169,11 +169,10 @@ app.delete('/history/:index', (req, res) => {
 // API xóa     toàn bộ lịch sử
 app.delete('/history', (req, res) => {
   spinHistory = [];
-  // Xóa luôn prizeResult của tất cả player
-  players.forEach(p => {
-    delete p.prizeResult;
-  });
+  players = [];
+  usedNumbers = new Set();
   io.emit('historyChanged');
+  io.emit('playersChanged');
   res.json({ success: true });
 });
 

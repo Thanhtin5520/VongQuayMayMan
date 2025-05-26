@@ -96,6 +96,23 @@
     }
     .table-wrapper {
       width: 100%;
+      max-height: 700px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #00eaff #232946;
+    }
+    .table-wrapper::-webkit-scrollbar {
+      width: 8px;
+      background: #232946;
+      border-radius: 8px;
+    }
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #00eaff 40%, #181828 100%);
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00eaff99;
+    }
+    .table-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #00eaff;
     }
     .header-table th, .body-table td {
       padding: 8px 10px;
@@ -155,7 +172,7 @@
       <h2 style="font-family:'Orbitron',Arial,sans-serif;color:#00eaff;font-size:2.2em;letter-spacing:2px;text-shadow:0 0 12px #00eaff,0 0 2px #fff;margin-bottom:18px;text-align:center;display:flex;align-items:center;gap:10px;">
         Danh sách Quý Đại Lý tham gia
       </h2>
-      <div class="table-wrapper" style="width:100%;">
+      <div class="table-wrapper">
         <table id="playersTable" style="width:100%;border-collapse:separate;border-spacing:0;margin:0 auto;background:transparent;border-radius:0;box-shadow:none;font-family:'Orbitron','Courier New',monospace;font-size:1.22em;color:#00eaff;transition:box-shadow 0.3s;table-layout:fixed;">
           <thead>
             <tr>
