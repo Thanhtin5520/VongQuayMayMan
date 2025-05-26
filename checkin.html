@@ -340,6 +340,7 @@
   </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     const socket = io('https://vongquaymayman-production.up.railway.app/');
     let dealers = [];
@@ -456,7 +457,7 @@
     socket.on('connect', () => console.log('Socket connected!'));
     socket.on('disconnect', () => console.log('Socket disconnected!'));
 
-    // Xuất Excel (CSV) theo trạng thái filter hiện tại
+    // Xuất Excel (XLSX) theo trạng thái filter hiện tại
     document.getElementById('exportExcelBtn').onclick = function() {
       const filter = document.getElementById('filterSelect')?.value || 'all';
       let exportData = [];
@@ -472,21 +473,12 @@
           'Trạng thái': hasParticipated ? 'Đã tham gia' : 'Chưa tham gia'
         });
       });
-      // Tạo CSV
-      let csv = 'Mã ĐL,Tên ĐL,Trạng thái\n';
-      exportData.forEach(row => {
-        csv += `"${row['Mã ĐL']}","${row['Tên ĐL']}","${row['Trạng thái']}"\n`;
-      });
-      // Tải file
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `DanhSachDaiLy_${filter}_${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Tạo worksheet và workbook
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'DanhSachDaiLy');
+      // Xuất file
+      XLSX.writeFile(wb, `DanhSachDaiLy_${filter}_${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.xlsx`);
     };
   </script>
 </body>
