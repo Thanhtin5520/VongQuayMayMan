@@ -234,16 +234,16 @@ function spin() {
     showErrorMessage('Đã hết giải thưởng!');
     return;
   }
-  // Xóa dữ liệu JSON localStorage và sessionStorage khi quay
   localStorage.clear();
   sessionStorage.clear();
   isSpinning = true;
-  decelerating = false;
   canStop = true;
+  window.isSpinning = isSpinning;
+  window.canStop = canStop;
   let spinStartTime = Date.now();
   let spinSpeedMin = 0.1;
   let spinSpeedMax = 1.0;
-  let spinSpeedGrowTime = 1500; // 1.5s tăng tốc
+  let spinSpeedGrowTime = 1500;
   spinSpeed = spinSpeedMin;
   // PHÁT ÂM THANH QUAY SỐ LẶP LIÊN TỤC
   if (spinAudio) {
@@ -280,15 +280,17 @@ function spin() {
 function stop() {
   if (!isSpinning || !canStop) return;
   canStop = false;
+  window.canStop = canStop;
   // Bắt đầu giảm tốc trong 7s rồi dừng hẳn, giữ nguyên tốc độ hiện tại
   decelerating = true;
   let decelStart = Date.now();
   let initialSpeed = spinSpeed;
   function decelerateToStop() {
-    let t = (Date.now() - decelStart) / 7000; // 7s giảm tốc
+    let t = (Date.now() - decelStart) / 7000;
     if (t >= 1) {
       spinSpeed = 0;
       isSpinning = false;
+      window.isSpinning = isSpinning;
       drawWheel();
       // DỪNG ÂM THANH QUAY SỐ NGAY KHI DỪNG HẲN
       if (spinAudio) {
@@ -335,6 +337,7 @@ function stop() {
         // Lưu lại lịch sử người trúng để có thể quay lại
         winnerHistory.push({ number: winner.number, prize: prize.name });
         prizeTurn++;
+        window.prizeTurn = prizeTurn;
         fetch('https://vongquaymayman-production.up.railway.app/players/updateResult', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -387,6 +390,7 @@ function reset() {
     });
     // Giảm prizeTurn về trước đó
     if (prizeTurn > 0) prizeTurn--;
+    window.prizeTurn = prizeTurn;
     // Cập nhật lại danh sách người chơi từ server để sector khôi phục đúng
     fetchPlayers();
     drawWheel();
@@ -396,10 +400,10 @@ function reset() {
     socket.emit('prizeSelected', getCurrentPrizeIndex());
   } else {
     // Nếu không có lịch sử thì chỉ reset vòng quay
-  currentRotation = 0;
-  drawWheel();
-  resultDiv.textContent = '';
-  showSuccessMessage('Đã reset vòng quay!');
+    currentRotation = 0;
+    drawWheel();
+    resultDiv.textContent = '';
+    showSuccessMessage('Đã reset vòng quay!');
   }
 }
 
@@ -577,19 +581,22 @@ function isPopupOpen() {
 window.spin = spin;
 window.stop = stop;
 
-// Lắng nghe phím tắt PageUp/PageDown để quay và dừng, chặn cuộn trang
+// Lắng nghe phím tắt PageUp/PageDown để quay và dừng, luôn chặn mặc định trên toàn trang
 window.addEventListener('keydown', (e) => {
   // Nếu popup đang mở thì không cho thao tác
   if (typeof isPopupOpen === 'function' && isPopupOpen()) return;
-  if (e.code === 'PageUp') {
-    spin();
-    if (typeof triggerButtonHover === 'function') triggerButtonHover(spinButton);
-    e.preventDefault(); // CHẶN cuộn trang
-  }
-  if (e.code === 'PageDown') {
-    stop();
-    if (typeof triggerButtonHover === 'function') triggerButtonHover(stopButton);
-    e.preventDefault(); // CHẶN cuộn trang
+  // Luôn chặn mặc định PageUp/PageDown
+  if (e.code === 'PageUp' || e.code === 'PageDown') {
+    e.preventDefault();
+    // Xử lý phím tắt
+    if (e.code === 'PageUp' && !isSpinning) {
+      spin();
+      if (typeof triggerButtonHover === 'function') triggerButtonHover(spinButton);
+    }
+    if (e.code === 'PageDown' && isSpinning && canStop) {
+      stop();
+      if (typeof triggerButtonHover === 'function') triggerButtonHover(stopButton);
+    }
   }
 });
 
@@ -641,14 +648,4 @@ socket.on('historyChanged', async () => {
   await fetchPlayers();
   updatePlayerList();
   drawWheel();
-});
-
-// Chặn PageUp/PageDown cuộn bảng khi focus trong table-wrapper
-const tableWrapper = document.querySelector('.table-wrapper');
-if (tableWrapper) {
-  tableWrapper.addEventListener('keydown', function(e) {
-    if (e.code === 'PageUp' || e.code === 'PageDown') {
-      e.preventDefault();
-    }
-  });
-} 
+}); 

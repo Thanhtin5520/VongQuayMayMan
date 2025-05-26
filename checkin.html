@@ -480,6 +480,27 @@
       // Xuất file
       XLSX.writeFile(wb, `DanhSachDaiLy_${filter}_${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.xlsx`);
     };
+
+    function handlePgKey(e) {
+      if (typeof isPopupOpen === 'function' && isPopupOpen()) return;
+      if (e.code === 'PageUp' || e.code === 'PageDown') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement !== document.body) {
+          document.activeElement.blur();
+        }
+        document.body.focus();
+        if (e.code === 'PageUp' && !isSpinning) {
+          spin();
+          if (typeof triggerButtonHover === 'function') triggerButtonHover(spinButton);
+        }
+        if (e.code === 'PageDown' && isSpinning && canStop) {
+          stop();
+          if (typeof triggerButtonHover === 'function') triggerButtonHover(stopButton);
+        }
+      }
+    }
+    window.addEventListener('keydown', handlePgKey, true);
+    document.addEventListener('keydown', handlePgKey, true);
   </script>
 </body>
 </html> 

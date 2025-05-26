@@ -208,5 +208,192 @@
   </div>
   <audio id="spinAudio" src="./Sound/soundSpin.mp3" preload="auto"></audio>
   <audio id="doneAudio" src="./Sound/done.mp3" preload="auto"></audio>
+  <div id="passwordPopup" style="position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(24,24,40,0.98);display:flex;align-items:center;justify-content:center;">
+    <div style="background:#181828;border-radius:18px;box-shadow:0 0 32px #00eaff99;padding:36px 32px;display:flex;flex-direction:column;align-items:center;">
+      <h2 style="color:#00eaff;font-family:'Orbitron',Arial,sans-serif;margin-bottom:18px;">Nhập mật khẩu truy cập</h2>
+      <form id="passwordForm" onsubmit="return false;" style="display:flex;flex-direction:column;align-items:center;">
+        <input id="passwordInput" type="password" placeholder="Mật khẩu" style="padding:12px 18px;border-radius:8px;border:2px solid #00eaff;font-size:1.2em;margin-bottom:16px;outline:none;">
+        <button id="passwordBtn" type="button" style="padding:10px 32px;border-radius:8px;background:#00eaff;color:#181828;font-weight:bold;font-size:1.1em;border:none;cursor:pointer;">Xác nhận</button>
+        <div id="passwordError" style="color:#ff1744;margin-top:10px;display:none;">Sai mật khẩu, vui lòng thử lại!</div>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      resultPopup.classList.remove('show');
+      resultPopup.style.display = 'none';
+    });
+
+    const editPrizeBtn = document.getElementById('editPrizeBtn');
+    const prizeEditPopup = document.getElementById('prizeEditPopup');
+    const closePrizePopup = document.getElementById('closePrizePopup');
+    const savePrizeBtn = document.getElementById('savePrizeBtn');
+    editPrizeBtn.onclick = () => {
+      renderPrizeTablePopup();
+      prizeEditPopup.style.display = 'flex';
+      prizeEditPopup.classList.add('show');
+    };
+    function renderPrizeTablePopup() {
+      const tbody = document.querySelector('#prizeTablePopup tbody');
+      tbody.innerHTML = '';
+      if (!window.PRIZES) return;
+      window.PRIZES.forEach((prize, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${prize.name}</td><td><img src='${prize.img}' style='height:40px'></td>`;
+        tr.style.cursor = 'pointer';
+        if (idx === window.selectedPrizeRow) {
+          tr.classList.add('active');
+          tr.style.background = 'rgba(255, 226, 89, 0.1)';
+          tr.style.boxShadow = '0 0 12px rgba(255, 226, 89, 0.3)';
+        }
+        tr.onclick = () => {
+          window.setPrizeByIndex(idx);
+          renderPrizeTablePopup();
+        };
+        tbody.appendChild(tr);
+      });
+    }
+    // Khi quay xong, tự động nhảy lên dòng tiếp theo theo rule mặc định
+    window.autoNextPrizeRow = function() {
+      // Rule: từ nhỏ đến lớn (Ba dưới -> Ba trên -> Nhì dưới -> Nhì trên -> Nhất)
+      const order = [4,3,2,1,0];
+      const currentIdx = order.indexOf(window.selectedPrizeRow);
+      if (currentIdx < order.length - 1) {
+        window.setPrizeByIndex(order[currentIdx+1]);
+      }
+    };
+    closePrizePopup.onclick = () => {
+      prizeEditPopup.classList.remove('show');
+      setTimeout(() => { prizeEditPopup.style.display = 'none'; }, 300);
+    };
+    savePrizeBtn.onclick = () => {
+      const idx = Number(prizeSelect.value);
+      window.setPrizeByIndex && window.setPrizeByIndex(idx);
+      prizeEditPopup.classList.remove('show');
+      setTimeout(() => { prizeEditPopup.style.display = 'none'; }, 300);
+    };
+    // Render option động cho prizeSelect
+    function renderPrizeSelect() {
+      const select = document.getElementById('prizeSelect');
+      if (!window.PRIZES) return;
+      select.innerHTML = '';
+      window.PRIZES.forEach((prize, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = prize.name + (idx === 1 ? ' (trên)' : idx === 2 ? ' (dưới)' : idx === 3 ? ' (trên)' : idx === 4 ? ' (dưới)' : '');
+        select.appendChild(opt);
+      });
+      select.value = window.selectedPrizeRow || 0;
+    }
+    // Khi chọn combobox, đổi giải và realtime
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPrizeSelect();
+      document.getElementById('prizeSelect').onchange = function() {
+        const idx = Number(this.value);
+        window.setPrizeByIndex && window.setPrizeByIndex(idx);
+      };
+    });
+    // Khi đổi giải từ socket, cập nhật lại combobox
+    if (window.socket) {
+      window.socket.on('prizeSelected', (idx) => {
+        document.getElementById('prizeSelect').value = idx;
+      });
+    }
+
+    function syncTableHeaderWidth() {
+      const table = document.getElementById('playersTable');
+      if (!table) return;
+      const ths = table.querySelectorAll('thead th');
+      const firstRow = table.querySelector('tbody tr');
+      if (!firstRow) return;
+      const tds = firstRow.querySelectorAll('td');
+      if (tds.length === ths.length) {
+        ths.forEach((th, i) => {
+          th.style.width = tds[i].offsetWidth + 'px';
+        });
+      }
+    }
+    // Gọi lại sau mỗi lần render bảng
+    const playersTbody = document.getElementById('players');
+    const observer = new MutationObserver(syncTableHeaderWidth);
+    observer.observe(playersTbody, { childList: true, subtree: false });
+    window.addEventListener('resize', syncTableHeaderWidth);
+    setTimeout(syncTableHeaderWidth, 500);
+  </script>
+  <script>
+  (function() {
+    const popup = document.getElementById('passwordPopup');
+    const input = document.getElementById('passwordInput');
+    const btn = document.getElementById('passwordBtn');
+    const error = document.getElementById('passwordError');
+    const form = document.getElementById('passwordForm');
+    if (!popup || !input || !btn || !error || !form) return;
+    function checkPassword() {
+      if(input.value === '2025') {
+        popup.style.display = 'none';
+        document.body.style.overflow = '';
+      } else {
+        error.style.display = 'block';
+        input.value = '';
+        input.focus();
+      }
+    }
+    btn.onclick = checkPassword;
+    form.onsubmit = function(e) { e.preventDefault(); checkPassword(); };
+    input.onkeydown = function(e) { if(e.key === 'Enter') checkPassword(); };
+    popup.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    input.focus();
+  })();
+  </script>
+  <script>
+  // Thay đổi logic hiển thị popup kết quả: tự động ẩn sau 7 giây
+  function showResultPopup(message) {
+    const resultPopup = document.getElementById('resultPopup');
+    const resultMessage = document.getElementById('resultMessage');
+    resultMessage.innerHTML = message;
+    resultPopup.style.display = 'flex';
+    resultPopup.classList.add('show');
+    setTimeout(() => {
+      resultPopup.classList.remove('show');
+      resultPopup.style.display = 'none';
+    }, 7000);
+  }
+  // Gán lại hàm showResultPopup cho các nơi gọi popup kết quả
+  window.showResultPopup = showResultPopup;
+  </script>
+  <script>
+  window.spin = spin;
+  window.stop = stop;
+  window.isSpinning = isSpinning;
+  window.canStop = canStop;
+  window.spinButton = spinButton;
+  window.stopButton = stopButton;
+  window.triggerButtonHover = triggerButtonHover;
+  </script>
+  <script>
+  function handlePgKey(e) {
+    if (typeof isPopupOpen === 'function' && isPopupOpen()) return;
+    if (e.code === 'PageUp' || e.code === 'PageDown') {
+      e.preventDefault();
+      if (document.activeElement && document.activeElement !== document.body) {
+        document.activeElement.blur();
+      }
+      document.body.focus();
+      if (e.code === 'PageUp' && !window.isSpinning) {
+        window.spin();
+        if (typeof window.triggerButtonHover === 'function') window.triggerButtonHover(window.spinButton);
+      }
+      if (e.code === 'PageDown' && window.isSpinning && window.canStop) {
+        window.stop();
+        if (typeof window.triggerButtonHover === 'function') window.triggerButtonHover(window.stopButton);
+      }
+    }
+  }
+  window.addEventListener('keydown', handlePgKey, true);
+  document.addEventListener('keydown', handlePgKey, true);
+  </script>
 </body>
 </html> 
